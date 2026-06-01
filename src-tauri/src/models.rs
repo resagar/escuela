@@ -1,0 +1,53 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Hermano {
+    pub id: i64,
+    pub nombre: String,
+    pub sexo: String, // "masculino" / "femenino"
+    pub rol: String,  // "anciano" / "siervo_ministerial" / "publicador" / "estudiante_biblia"
+    pub puede_presidir: bool,
+    pub puede_conducir_estudio: bool,
+    pub puede_ser_consejero_sala: bool,
+    pub activo: bool,
+    pub notas: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Semana {
+    pub id: i64,
+    pub fecha_inicio: String, // ISO 8601 "YYYY-MM-DD"
+    pub fecha_fin: String,
+    pub libro_biblico: Option<String>,
+    pub cancion_apertura: Option<i32>,
+    pub cancion_intermedia: Option<i32>,
+    pub cancion_cierre: Option<i32>,
+    pub tipo_especial: String, // "normal" / "asamblea" / "conmemoracion" / "visita_superintendente"
+    pub presidente_id: Option<i64>,
+    pub consejero_sala_id: Option<i64>,
+    pub orador_oracion_apertura_id: Option<i64>,
+    pub orador_oracion_intermedia_id: Option<i64>,
+    pub orador_oracion_cierre_id: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Parte {
+    pub id: i64,
+    pub semana_id: i64,
+    pub numero_orden: i32,
+    pub seccion: String, // "tesoros" / "mejores_maestros" / "vida_cristiana"
+    pub tipo_asignacion: String, // ver catálogo
+    pub titulo: Option<String>,
+    pub duracion_minutos: Option<i32>,
+    pub requiere_sala_auxiliar: bool,
+    pub requiere_ayudante: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Asignacion {
+    pub id: i64,
+    pub parte_id: i64,
+    pub ambito: String, // "auditorio_principal" / "sala_auxiliar"
+    pub rol: String,    // "estudiante" / "ayudante" / "conductor" / "lector"
+    pub hermano_id: i64,
+}

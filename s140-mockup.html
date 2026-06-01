@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S-140 — Vida y Ministerio Cristianos</title>
+    <style>
+      /* === RESET === */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* === COLORS === */
+      :root {
+        --color-slate: #575a5d; /* slate gray for Tesoros, times, and labels */
+        --color-gold: #be8900; /* gold/mustard for Seamos Mejores */
+        --color-maroon: #7e0024; /* maroon/burgundy for Nuestra Vida */
+        --color-text: #000000; /* black for assigned names and titles */
+        --color-border: #dfdfdf; /* light gray for table borders */
+        --color-white: #ffffff;
+      }
+
+      /* === PAGE SETUP === */
+      @page {
+        size: letter;
+        margin: 0.5in 0.5in 0.5in 0.5in;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--color-text);
+        background: var(--color-white);
+        max-width: 7.5in;
+        margin: 0 auto;
+        padding: 10px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* === UNIFIED TABLE === */
+      .s140-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10pt;
+        margin-bottom: 20px;
+      }
+
+      /* --- Row Heights and Paddings --- */
+      .s140-table td {
+        padding: 3px 6px;
+        vertical-align: middle;
+        border: 0.5px solid var(--color-border);
+      }
+
+      /* --- Top Header Row --- */
+      .s140-table .row-header td {
+        border: none;
+        border-bottom: 2px solid var(--color-slate);
+        padding: 0 0 4px 0;
+      }
+      .s140-table .cong-name {
+        font-size: 12pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: left;
+      }
+      .s140-table .main-title {
+        font-size: 14pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: right;
+        letter-spacing: 0.5px;
+      }
+
+      /* --- Date and President Rows --- */
+      .s140-table .row-info td {
+        border: none;
+        padding: 2px 0;
+      }
+      .s140-table .date-text {
+        font-size: 11pt;
+        font-weight: bold;
+        text-align: left;
+      }
+      .s140-table .pres-text {
+        text-align: right;
+        font-size: 9.5pt;
+      }
+
+      /* --- Shared Font Weights & Colors --- */
+      .lbl {
+        font-size: 8.5pt;
+        font-weight: bold;
+        color: var(--color-slate);
+      }
+      .val {
+        font-size: 10pt;
+        font-weight: normal;
+        color: var(--color-text);
+      }
+      .time {
+        font-size: 9pt;
+        font-weight: bold;
+        color: var(--color-slate);
+        text-align: center;
+        width: 45px;
+      }
+      .bullet-part {
+        font-size: 10pt;
+        font-weight: normal;
+      }
+
+      /* --- Section Headers --- */
+      .s140-table .sec-header {
+        font-size: 10.5pt;
+        font-weight: bold;
+        color: var(--color-white);
+        text-align: left;
+        padding: 4px 8px;
+        border: none;
+      }
+      .s140-table .sec-tesoros {
+        background-color: var(--color-slate);
+      }
+      .s140-table .sec-mejores {
+        background-color: var(--color-gold);
+      }
+      .s140-table .sec-vida {
+        background-color: var(--color-maroon);
+      }
+
+      /* --- Columns Setup --- */
+      .col-title-header {
+        font-size: 8.5pt;
+        font-weight: bold;
+        color: var(--color-slate);
+        text-align: left;
+        background-color: transparent;
+      }
+      .col-sala-header,
+      .col-aud-header {
+        font-size: 8.5pt;
+        font-weight: bold;
+        color: var(--color-slate);
+        text-align: left;
+        width: 175px;
+      }
+
+      /* --- Print/Page Breaks --- */
+      .week-container {
+        page-break-inside: avoid;
+        margin-bottom: 25px;
+      }
+      .week-separator {
+        border: none;
+        border-top: 1px dashed var(--color-slate);
+        margin: 25px 0;
+      }
+
+      @media print {
+        body {
+          padding: 0;
+          max-width: none;
+          margin: 0;
+        }
+        .no-print {
+          display: none;
+        }
+        .week-separator {
+          border-top: 1px solid var(--color-slate);
+          margin: 15px 0;
+        }
+      }
+
+      /* === SCREEN ONLY INFO BAR === */
+      .no-print {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 10pt;
+        border-radius: 4px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="no-print">
+      🖨️ <strong>Vista previa mejorada del S-140</strong> — Colores, negritas y
+      fuentes exactas según el formato oficial.
+      <button
+        onclick="window.print()"
+        style="
+          margin-left: 12px;
+          padding: 6px 20px;
+          cursor: pointer;
+          font-size: 11pt;
+          font-weight: bold;
+        "
+      >
+        Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- WEEK 1: 23-29 DE MARZO -->
+    <!-- ============================================================ -->
+    <div class="week-container">
+      <table class="s140-table">
+        <!-- Row 0: Congregation & Main Title -->
+        <tr class="row-header">
+          <td colspan="2" class="cong-name">Cong. CASANAY</td>
+          <td colspan="2" class="main-title">Vida y Ministerio Cristianos</td>
+        </tr>
+
+        <!-- Spacing -->
+        <tr style="height: 4px; border: none">
+          <td colspan="4" style="border: none; padding: 0"></td>
+        </tr>
+
+        <!-- Row 2: Date & President -->
+        <tr class="row-info">
+          <td colspan="2" class="date-text">23-29 DE MARZO | ISAÍAS 48, 49</td>
+          <td colspan="2" class="pres-text">
+            <span class="lbl">Presidente:</span>
+            <span class="val">Héctor Gómez</span>
+          </td>
+        </tr>
+
+        <!-- Row 3: Consejero -->
+        <tr class="row-info">
+          <td colspan="2"></td>
+          <td colspan="2" class="pres-text">
+            <span class="lbl">Consejero de la sala auxiliar:</span>
+            <span class="val">Miguel Bello</span>
+          </td>
+        </tr>
+
+        <!-- Row 4: Song & Prayer -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">• Canción 89</td>
+          <td>
+            <span class="lbl">Oración:</span>
+            <span class="val">Antonio Carrera</span>
+          </td>
+        </tr>
+
+        <!-- Row 5: Intro -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">
+            • Palabras de introducción (1 min.)
+          </td>
+        </tr>
+
+        <!-- TESOROS HEADER -->
+        <tr>
+          <td class="sec-header sec-tesoros" colspan="2">
+            TESOROS DE LA BIBLIA
+          </td>
+          <td class="col-sala-header">Sala auxiliar</td>
+          <td class="col-aud-header">Auditorio principal</td>
+        </tr>
+
+        <!-- Part 1 (Tesoros Discourse - No Sala Aux) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            1. Si le prestamos atención a Jehová, nos irá bien (10 mins.)
+          </td>
+          <td class="val">Miguel Bello</td>
+        </tr>
+
+        <!-- Part 2 (Perlas - No Sala Aux) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            2. Busquemos perlas escondidas (10 mins.)
+          </td>
+          <td class="val">José León</td>
+        </tr>
+
+        <!-- Part 3 (Lectura - With Sala Aux) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">3. Lectura de la Biblia (4 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante:</span> Carlos García
+          </td>
+          <td class="val">Alfonzo Alcántara</td>
+        </tr>
+
+        <!-- SEAMOS MEJORES HEADER -->
+        <tr>
+          <td class="sec-header sec-mejores" colspan="2">
+            SEAMOS MEJORES MAESTROS
+          </td>
+          <td class="col-sala-header">Sala auxiliar</td>
+          <td class="col-aud-header">Auditorio principal</td>
+        </tr>
+
+        <!-- Part 4 (Empiece conversaciones) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">4. Empiece conversaciones (3 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Rosalis de P / María de Zapata
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Rosangelis de G / Maryuris de A
+          </td>
+        </tr>
+
+        <!-- Part 5 (Haga revisitas) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">5. Haga revisitas (4 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Rosa de L / Boni Salamanca
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Daily de G / Carmen Ag
+          </td>
+        </tr>
+
+        <!-- Part 6 (Haga revisitas) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">6. Haga revisitas (5 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Joselin de C / Jasly A.
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Karla de G / Marisol de L
+          </td>
+        </tr>
+
+        <!-- VIDA CRISTIANA HEADER (No Sala Aux) -->
+        <tr>
+          <td class="sec-header sec-vida" colspan="4">
+            NUESTRA VIDA CRISTIANA
+          </td>
+        </tr>
+
+        <!-- Intermediate Song -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">• Canción 107</td>
+        </tr>
+
+        <!-- Part 7 (Discurso VC) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            7. Aproveche bien el día más importante del año (15 mins.)
+          </td>
+          <td class="val">Deivis López</td>
+        </tr>
+
+        <!-- Part 8 (Estudio Bíblico) -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            8. Estudio bíblico de la congregación (30 mins.)
+          </td>
+          <td class="val">
+            <span class="lbl">Conductor/Lector:</span><br />
+            Juan H / Leonardo Zapata
+          </td>
+        </tr>
+
+        <!-- Conclusion -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">
+            • Palabras de conclusión (3 min.)
+          </td>
+        </tr>
+
+        <!-- Closing Song & Prayer -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">• Canción 134</td>
+          <td class="val">
+            <span class="lbl">Oración:</span>
+            <span class="val">Arquímedes González</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <hr class="week-separator" />
+
+    <!-- ============================================================ -->
+    <!-- WEEK 2: 6-12 DE ABRIL -->
+    <!-- ============================================================ -->
+    <div class="week-container">
+      <table class="s140-table">
+        <!-- Row 0: Congregation & Main Title -->
+        <tr class="row-header">
+          <td colspan="2" class="cong-name">Cong. CASANAY</td>
+          <td colspan="2" class="main-title">Vida y Ministerio Cristianos</td>
+        </tr>
+
+        <!-- Spacing -->
+        <tr style="height: 4px; border: none">
+          <td colspan="4" style="border: none; padding: 0"></td>
+        </tr>
+
+        <!-- Row 2: Date & President -->
+        <tr class="row-info">
+          <td colspan="2" class="date-text">6-12 DE ABRIL | ISAÍAS 50, 51</td>
+          <td colspan="2" class="pres-text">
+            <span class="lbl">Presidente:</span>
+            <span class="val">Juan C. Hernández</span>
+          </td>
+        </tr>
+
+        <!-- Row 3: Consejero -->
+        <tr class="row-info">
+          <td colspan="2"></td>
+          <td colspan="2" class="pres-text">
+            <span class="lbl">Consejero de la sala auxiliar:</span>
+            <span class="val">René García</span>
+          </td>
+        </tr>
+
+        <!-- Row 4: Song & Prayer -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">• Canción 88</td>
+          <td>
+            <span class="lbl">Oración:</span>
+            <span class="val">Carlos Carrera</span>
+          </td>
+        </tr>
+
+        <!-- Row 5: Intro -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">
+            • Palabras de introducción (1 min.)
+          </td>
+        </tr>
+
+        <!-- TESOROS HEADER -->
+        <tr>
+          <td class="sec-header sec-tesoros" colspan="2">
+            TESOROS DE LA BIBLIA
+          </td>
+          <td class="col-sala-header">Sala auxiliar</td>
+          <td class="col-aud-header">Auditorio principal</td>
+        </tr>
+
+        <!-- Part 1 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            1. Escuchemos al que fue instruido por Dios (10 mins.)
+          </td>
+          <td class="val">René García</td>
+        </tr>
+
+        <!-- Part 2 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            2. Busquemos perlas escondidas (10 mins.)
+          </td>
+          <td class="val">Leonardo Zapata</td>
+        </tr>
+
+        <!-- Part 3 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">3. Lectura de la Biblia (4 mins.)</td>
+          <td class="val"><span class="lbl">Estudiante:</span> José Tineo</td>
+          <td class="val">Antonio Carrera</td>
+        </tr>
+
+        <!-- SEAMOS MEJORES HEADER -->
+        <tr>
+          <td class="sec-header sec-mejores" colspan="2">
+            SEAMOS MEJORES MAESTROS
+          </td>
+          <td class="col-sala-header">Sala auxiliar</td>
+          <td class="col-aud-header">Auditorio principal</td>
+        </tr>
+
+        <!-- Part 4 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">4. Empiece conversaciones (3 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Rosa C / Ana Carrera
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Danais H / Josefina H.
+          </td>
+        </tr>
+
+        <!-- Part 5 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">5. Haga revisitas (4 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Elis de B / Rosa Placencio
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Yusmaris de M / Sabina G
+          </td>
+        </tr>
+
+        <!-- Part 6 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part">6. Explique sus creencias (5 mins.)</td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Zelandia F / Marlene Rojas
+          </td>
+          <td class="val">
+            <span class="lbl">Estudiante/Ayudante:</span><br />
+            Luisa de J / Iris Velasquez
+          </td>
+        </tr>
+
+        <!-- VIDA CRISTIANA HEADER -->
+        <tr>
+          <td class="sec-header sec-vida" colspan="4">
+            NUESTRA VIDA CRISTIANA
+          </td>
+        </tr>
+
+        <!-- Intermediate Song -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">• Canción 99</td>
+        </tr>
+
+        <!-- Part 7 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            7. Necesidades de la congregación (15 mins.)
+          </td>
+          <td class="val"></td>
+        </tr>
+
+        <!-- Part 8 -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">
+            8. Estudio bíblico de la congregación (30 mins.)
+          </td>
+          <td class="val">
+            <span class="lbl">Conductor/Lector:</span><br />
+            Deivis L / José León
+          </td>
+        </tr>
+
+        <!-- Conclusion -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="3">
+            • Palabras de conclusión (3 mins.)
+          </td>
+        </tr>
+
+        <!-- Closing Song & Prayer -->
+        <tr>
+          <td class="time">0:00</td>
+          <td class="bullet-part" colspan="2">• Canción 13</td>
+          <td class="val">
+            <span class="lbl">Oración:</span>
+            <span class="val">Héctor Gómez</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
