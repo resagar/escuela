@@ -1,5 +1,6 @@
 mod commands;
 mod db;
+mod eligibility;
 mod models;
 pub mod mwb_parser;
 
@@ -41,6 +42,13 @@ pub fn run() {
             commands::partes::list_partes,
             commands::partes::update_parte,
             commands::partes::delete_parte,
+            commands::familias::create_familia,
+            commands::familias::list_familias,
+            commands::familias::get_familia,
+            commands::familias::delete_familia,
+            commands::familias::add_familia_member,
+            commands::familias::remove_familia_member,
+            commands::eligibility::get_eligible_brothers,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());

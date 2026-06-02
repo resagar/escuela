@@ -28,8 +28,7 @@ impl Database {
         let conn = self.conn.lock().unwrap();
 
         conn.execute_batch(
-            "
-            CREATE TABLE IF NOT EXISTS hermanos (
+            "CREATE TABLE IF NOT EXISTS hermanos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
                 sexo TEXT NOT NULL CHECK(sexo IN ('masculino', 'femenino')),
@@ -80,7 +79,18 @@ impl Database {
                     CHECK(rol IN ('estudiante', 'ayudante', 'conductor', 'lector')),
                 hermano_id INTEGER NOT NULL REFERENCES hermanos(id)
             );
-            ",
+
+            CREATE TABLE IF NOT EXISTS familias (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                notas TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS familia_miembros (
+                familia_id INTEGER NOT NULL REFERENCES familias(id) ON DELETE CASCADE,
+                hermano_id INTEGER NOT NULL REFERENCES hermanos(id) ON DELETE CASCADE,
+                PRIMARY KEY (familia_id, hermano_id)
+            );",
         )?;
 
         Ok(())

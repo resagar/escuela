@@ -126,3 +126,18 @@ pub struct Asignacion {
     pub rol: String,    // "estudiante" / "ayudante" / "conductor" / "lector"
     pub hermano_id: i64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Familia {
+    pub id: i64,
+    pub nombre: String,
+    pub notas: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FamiliaWithMembers {
+    pub id: i64,
+    pub nombre: String,
+    pub notas: Option<String>,
+    pub miembros: Vec<Hermano>,
+}
