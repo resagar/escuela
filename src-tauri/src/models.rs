@@ -1,5 +1,80 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum TipoAsignacion {
+    DiscursoNoEstudiante,
+    BusquemosPerlas,
+    LecturaBiblia,
+    EmpieceConversaciones,
+    HagaRevisitas,
+    HagaDiscipulos,
+    ExpliqueCreenciasDiscurso,
+    ExpliqueCreenciasEscenificacion,
+    DiscursoEstudiante,
+    AnalisisAuditorio,
+    NecesidadesCongregacion,
+    EstudioBiblico,
+    Oracion,
+    Cancion,
+    Introduccion,
+    Conclusion,
+}
+
+impl TipoAsignacion {
+    pub fn seccion(&self) -> &'static str {
+        match self {
+            Self::DiscursoNoEstudiante | Self::BusquemosPerlas | Self::LecturaBiblia => "tesoros",
+            Self::EmpieceConversaciones | Self::HagaRevisitas | Self::HagaDiscipulos
+            | Self::ExpliqueCreenciasDiscurso | Self::ExpliqueCreenciasEscenificacion
+            | Self::DiscursoEstudiante => "mejores_maestros",
+            Self::AnalisisAuditorio | Self::NecesidadesCongregacion | Self::EstudioBiblico => "vida_cristiana",
+            Self::Oracion | Self::Cancion | Self::Introduccion | Self::Conclusion => "marco",
+        }
+    }
+
+    pub fn requiere_sala_auxiliar(&self) -> bool {
+        matches!(
+            self,
+            Self::LecturaBiblia
+                | Self::EmpieceConversaciones
+                | Self::HagaRevisitas
+                | Self::HagaDiscipulos
+                | Self::ExpliqueCreenciasDiscurso
+                | Self::ExpliqueCreenciasEscenificacion
+                | Self::DiscursoEstudiante
+        )
+    }
+
+    pub fn requiere_ayudante(&self) -> bool {
+        matches!(
+            self,
+            Self::EmpieceConversaciones
+                | Self::HagaRevisitas
+                | Self::HagaDiscipulos
+                | Self::ExpliqueCreenciasEscenificacion
+        )
+    }
+
+    pub fn solo_varones(&self) -> bool {
+        matches!(
+            self,
+            Self::LecturaBiblia | Self::ExpliqueCreenciasDiscurso | Self::DiscursoEstudiante
+        )
+    }
+
+    pub fn solo_no_estudiante(&self) -> bool {
+        matches!(
+            self,
+            Self::DiscursoNoEstudiante
+                | Self::BusquemosPerlas
+                | Self::AnalisisAuditorio
+                | Self::NecesidadesCongregacion
+                | Self::EstudioBiblico
+        )
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Hermano {
     pub id: i64,

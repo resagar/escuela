@@ -1,25 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-
-interface Hermano {
-	id: number;
-	nombre: string;
-	sexo: string;
-	rol: string;
-	puede_presidir: boolean;
-	puede_conducir_estudio: boolean;
-	puede_ser_consejero_sala: boolean;
-	activo: boolean;
-	notas: string | null;
-}
-
-const ROL_LABELS: Record<string, string> = {
-	anciano: "Anciano",
-	siervo_ministerial: "Siervo Ministerial",
-	publicador: "Publicador",
-	estudiante_biblia: "Estudiante de la Biblia",
-};
+import type { Hermano } from "../types";
+import { ROL_LABELS } from "../types";
 
 export default function HermanosListPage() {
 	const [hermanos, setHermanos] = useState<Hermano[]>([]);

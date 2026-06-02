@@ -1,7 +1,21 @@
-# Tauri + React + Typescript
+# Escuela — Asignaciones VyM
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Aplicación de escritorio local-first para gestionar el roster de la congregación y automatizar las asignaciones del programa semanal de la Reunión Vida y Ministerio Cristianos (formulario S-140).
 
-## Recommended IDE Setup
+## Stack
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- **Plataforma**: Tauri 2 (Rust + WebView)
+- **Frontend**: React 19 + TypeScript + Tailwind CSS v4 + React Router v7
+- **Backend**: Rust + SQLite (rusqlite)
+- **Parser PDF**: lopdf (Rust nativo)
+
+## Desarrollo
+
+```bash
+pnpm install
+pnpm tauri dev
+```
+
+## Documentación
+
+Toda la documentación del proyecto está en [.docs/](.docs/).
