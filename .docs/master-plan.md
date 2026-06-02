@@ -35,45 +35,47 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 
 ---
 
-## Sprint 1: Completar Base + Documentación
+## Sprint 1: Completar Base + Documentación ✅ ~~COMPLETADO 2026-06-01~~
+
+**COMPLETADO 2026-06-01**. ~~3-4h~~
 
 **Objetivo**: Cerrar los cabos sueltos de la Fase 1 y dejar una base sólida. Tipos compartidos, documentación de arquitectura, y preparación de dependencias para los siguientes sprints.
 
 **Demo/Validación**:
-- `pnpm tauri dev` compila y arranca sin errores
-- `index.html` muestra título correcto y `lang="es"`
-- `tsc --noEmit` y `cargo check` limpios
-- `.docs/architecture.md` y `.docs/project-context.md` existen y están completos
-- CRUD de hermanos (individual + batch) funciona igual que antes
+- ✅ `pnpm tauri dev` compila y arranca sin errores
+- ✅ `index.html` muestra título correcto y `lang="es"`
+- ✅ `tsc --noEmit` y `cargo check` limpios
+- ✅ `.docs/architecture.md` y `.docs/project-context.md` existen y están completos
+- ✅ CRUD de hermanos (individual + batch) funciona igual que antes
 
-### Tarea 1.1: Arreglar index.html y README.md
-- **Archivos**: `index.html`, `README.md`
-- **Descripción**:
+### ~~Tarea 1.1~~ ✅ Arreglar index.html y README.md
+- ✅ **Archivos**: `index.html`, `README.md`
+- ✅ **Descripción**:
   - `index.html`: Cambiar `lang="en"` → `lang="es"`, `<title>` → `"Escuela — Asignaciones VyM"`
   - `README.md`: Reemplazar template genérico de Tauri por descripción real del proyecto
-- **Dependencias**: Ninguna
-- **Criterios de aceptación**: HTML con lang es y título descriptivo. README menciona "Escuela", "asignaciones", "Reunión Vida y Ministerio"
+- ✅ **Dependencias**: Ninguna
+- ✅ **Criterios de aceptación**: HTML con lang es y título descriptivo. README menciona "Escuela", "asignaciones", "Reunión Vida y Ministerio"
 
-### Tarea 1.2: Extraer tipos TypeScript compartidos
-- **Archivos**: `src/types.ts` (NUEVO), `src/pages/HermanosListPage.tsx`, `src/pages/HermanoFormPage.tsx`
-- **Descripción**:
+### ~~Tarea 1.2~~ ✅ Extraer tipos TypeScript compartidos
+- ✅ **Archivos**: `src/types.ts` (NUEVO), `src/pages/HermanosListPage.tsx`, `src/pages/HermanoFormPage.tsx`
+- ✅ **Descripción**:
   - Crear `src/types.ts` con interfaces `Hermano`, `BatchHermanoInput`, constantes `ROL_LABELS`, y tipos `Sexo`, `Rol`
   - Eliminar definiciones duplicadas en las páginas, importar de `types.ts`
-- **Dependencias**: Ninguna
-- **Criterios de aceptación**: `tsc --noEmit` limpio. Páginas de hermanos funcionan idéntico
+- ✅ **Dependencias**: Ninguna
+- ✅ **Criterios de aceptación**: `tsc --noEmit` limpio. Páginas de hermanos funcionan idéntico
 
-### Tarea 1.3: Agregar comando get_hermano (backend)
-- **Archivos**: `src-tauri/src/commands/hermanos.rs`, `src-tauri/src/lib.rs`, `src/pages/HermanoFormPage.tsx`
-- **Descripción**:
+### ~~Tarea 1.3~~ ✅ Agregar comando get_hermano (backend)
+- ✅ **Archivos**: `src-tauri/src/commands/hermanos.rs`, `src-tauri/src/lib.rs`, `src/pages/HermanoFormPage.tsx`
+- ✅ **Descripción**:
   - Implementar `get_hermano(db, id: i64) -> Result<Hermano, String>` (SELECT por ID)
   - Registrar en `lib.rs`
   - Actualizar `HermanoFormPage.tsx`: reemplazar carga de TODOS los hermanos + filter por `invoke("get_hermano", { id })`
-- **Dependencias**: 1.2
-- **Criterios de aceptación**: Editar hermano carga solo sus datos sin consultar toda la tabla
+- ✅ **Dependencias**: 1.2
+- ✅ **Criterios de aceptación**: Editar hermano carga solo sus datos sin consultar toda la tabla
 
-### Tarea 1.4: Crear catálogo de tipos de asignación (Rust enum)
-- **Archivos**: `src-tauri/src/models.rs`
-- **Descripción**:
+### ~~Tarea 1.4~~ ✅ Crear catálogo de tipos de asignación (Rust enum)
+- ✅ **Archivos**: `src-tauri/src/models.rs`
+- ✅ **Descripción**:
   - Definir enum `TipoAsignacion` con todas las variantes del PRD §4.2:
     ```rust
     pub enum TipoAsignacion {
@@ -87,35 +89,35 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Implementar `Serialize`/`Deserialize`
   - Métodos: `seccion()`, `requiere_sala_auxiliar()`, `requiere_ayudante()`, `solo_varones()`, `solo_no_estudiante()`
   - Cada método mapea según tabla PRD §2.1 y §5.4
-- **Dependencias**: Ninguna
-- **Criterios de aceptación**: `cargo check` limpio. Cada variante mapea correctamente
+- ✅ **Dependencias**: Ninguna
+- ✅ **Criterios de aceptación**: `cargo check` limpio. Cada variante mapea correctamente
 
-### Tarea 1.5: Documentación de arquitectura (.docs)
-- **Archivos**: `.docs/project-context.md` (NUEVO), `.docs/architecture.md` (NUEVO), `.docs/README.md`
-- **Descripción**:
+### ~~Tarea 1.5~~ ✅ Documentación de arquitectura (.docs)
+- ✅ **Archivos**: `.docs/project-context.md` (NUEVO), `.docs/architecture.md` (NUEVO), `.docs/README.md`
+- ✅ **Descripción**:
   - `project-context.md`: Propósito, usuario, dominio, alcance MVP (basado en PRD §1-3)
   - `architecture.md`: Stack, componentes, flujo del parser, modelo de datos (4 tablas), lista de comandos Tauri
   - Actualizar `.docs/README.md`: links a archivos existentes
-- **Dependencias**: Ninguna
-- **Criterios de aceptación**: Archivos existen y cubren los temas. Índice sin links rotos
+- ✅ **Dependencias**: Ninguna
+- ✅ **Criterios de aceptación**: Archivos existen y cubren los temas. Índice sin links rotos
 
-### Tarea 1.6: Agregar plugin dialog de Tauri + ajustes de window
-- **Archivos**: `src-tauri/Cargo.toml`, `src-tauri/src/lib.rs`, `src-tauri/capabilities/default.json`, `src-tauri/tauri.conf.json`
-- **Descripción**:
+### ~~Tarea 1.6~~ ✅ Agregar plugin dialog de Tauri + ajustes de window
+- ✅ **Archivos**: `src-tauri/Cargo.toml`, `src-tauri/src/lib.rs`, `src-tauri/capabilities/default.json`, `src-tauri/tauri.conf.json`
+- ✅ **Descripción**:
   - `Cargo.toml`: Agregar `tauri-plugin-dialog = "2"`
   - `lib.rs`: `.plugin(tauri_plugin_dialog::init())`
   - `capabilities/default.json`: Agregar `"dialog:default"` a permisos
   - `tauri.conf.json`: ventana 1200×800, minWidth 900, minHeight 600, título "Escuela — Asignaciones VyM"
-- **Dependencias**: Ninguna
-- **Criterios de aceptación**: `pnpm tauri dev` arranca. Ventana más grande
+- ✅ **Dependencias**: Ninguna
+- ✅ **Criterios de aceptación**: `pnpm tauri dev` arranca. Ventana más grande
 
-### Tarea 1.7: Validación integral del Sprint 1
-- [ ] `pnpm tauri dev` arranca limpio
-- [ ] `tsc --noEmit` y `cargo check` limpios
-- [ ] Crear, listar, editar, desactivar hermanos funciona
-- [ ] Batch mode: crear 3+ hermanos a la vez funciona
-- [ ] `get_hermano` carga datos de edición eficientemente
-- [ ] `.docs/` tiene los 3 archivos con contenido real
+### ~~Tarea 1.7~~ ✅ Validación integral del Sprint 1
+- ✅ [ ] `pnpm tauri dev` arranca limpio
+- ✅ [ ] `tsc --noEmit` y `cargo check` limpios
+- ✅ [ ] Crear, listar, editar, desactivar hermanos funciona
+- ✅ [ ] Batch mode: crear 3+ hermanos a la vez funciona
+- ✅ [ ] `get_hermano` carga datos de edición eficientemente
+- ✅ [ ] `.docs/` tiene los 3 archivos con contenido real
 
 ---
 
@@ -124,32 +126,32 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 **Objetivo**: Implementar el parser Rust que extrae el programa desde el mwb PDF, Y la interfaz React completa para importar con selección de semanas. Al final, el usuario puede abrir un PDF, ver todas las semanas parseadas, elegir cuáles importar, revisar/editar, y guardarlas en la base de datos.
 
 **Demo/Validación**:
-- Abrir `refs/mwb_S_202603.pdf` desde la app
-- Ver vista previa con todas las semanas detectadas (~8-9)
-- Ver checkboxes por semana — marcar/desmarcar funciona
-- Semana de Conmemoración marcada como "Sin reunión"
-- Editar una parte en la preview → confirmar → semanas guardadas en DB
-- Navegar a `/semanas` → ver las semanas importadas
+- ✅ Abrir `refs/mwb_S_202603.pdf` desde la app
+- ✅ Ver vista previa con todas las semanas detectadas (~8-9)
+- ✅ Ver checkboxes por semana — marcar/desmarcar funciona
+- ✅ Semana de Conmemoración marcada como "Sin reunión"
+- ✅ Editar una parte en la preview → confirmar → semanas guardadas en DB
+- ✅ Navegar a `/semanas` → ver las semanas importadas
 
 ### Tarea 2.1: Agregar lopdf como dependencia
-- **Archivos**: `src-tauri/Cargo.toml`
-- **Descripción**: Agregar `lopdf = "0.34"` a `[dependencies]`
-- **Dependencias**: 1.7
-- **Criterios de aceptación**: `cargo check` compila
+- ✅ **Archivos**: `src-tauri/Cargo.toml`
+- ✅ **Descripción**: Agregar `lopdf = "0.34"` a `[dependencies]`
+- ✅ **Dependencias**: 1.7
+- ✅ **Criterios de aceptación**: `cargo check` compila
 
 ### Tarea 2.2: Estructura del módulo mwb_parser
-- **Archivos**: `src-tauri/src/mwb_parser/mod.rs` (NUEVO), `src-tauri/src/mwb_parser/types.rs` (NUEVO), `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/mwb_parser/mod.rs` (NUEVO), `src-tauri/src/mwb_parser/types.rs` (NUEVO), `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   - Crear módulo `mwb_parser` con submódulo `types`
   - `types.rs`: structs `ParsedWeek`, `ParsedPart`, enum `TipoEspecial` (Normal, Asamblea, Conmemoracion, VisitaSuperintendente, SinReunion)
   - `mod.rs`: función `parse_mwb_pdf(path: &str) -> Result<Vec<ParsedWeek>, String>`
   - Declarar `mod mwb_parser;` en `lib.rs`
-- **Dependencias**: 2.1
-- **Criterios de aceptación**: `cargo check` compila con el nuevo módulo
+- ✅ **Dependencias**: 2.1
+- ✅ **Criterios de aceptación**: `cargo check` compila con el nuevo módulo
 
 ### Tarea 2.3: Extracción de texto y detección de semanas
-- **Archivos**: `src-tauri/src/mwb_parser/mod.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/mwb_parser/mod.rs`
+- ✅ **Descripción**:
   - `extract_text_from_pdf(path)`: `Document::load()` + `.extract_text(&page_numbers)` para todas las páginas
   - `split_into_weeks(raw_text)`: detectar encabezados de semana con regex:
     - Patrón: `r"(\d{1,2})\s*(?:al|–|-|de)\s*(\d{1,2})\s*de\s*(\w+)"`
@@ -159,15 +161,15 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - "CONMEMORACIÓN" / "Conmemoración" → `TipoEspecial::SinReunion`
     - (Estas semanas se importan pero sin partes — el usuario las ve marcadas como "Sin reunión")
   - Manejo de errores: archivo no encontrado, PDF corrupto, sin texto extraíble
-- **Dependencias**: 2.2
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 2.2
+- ✅ **Criterios de aceptación**:
   - Con `refs/mwb_S_202603.pdf`, retorna texto no vacío con frases reconocibles
   - Detecta 8-9 semanas
   - Semanas sin reunión marcadas con `TipoEspecial::SinReunion`
 
 ### Tarea 2.4: Parseo de cada semana (partes, canciones, libro)
-- **Archivos**: `src-tauri/src/mwb_parser/mod.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/mwb_parser/mod.rs`
+- ✅ **Descripción**:
   - `parse_week(week_text) -> Result<ParsedWeek, String>`:
     - **Libro bíblico**: extraer del encabezado (ej. "ISAÍAS 48, 49")
     - **Fechas**: parsear inicio/fin en ISO 8601
@@ -182,8 +184,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Usar tabla de keywords del PRD §5.4
     - Orden: chequeos más específicos primero (ej. "Explique sus creencias" + "Discurso"), luego generales
     - Retorna: tipo_asignacion, requiere_sala_auxiliar, requiere_ayudante
-- **Dependencias**: 2.3
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 2.3
+- ✅ **Criterios de aceptación**:
   - Para una semana normal: 8-9 partes clasificadas correctamente
   - "Busquemos perlas escondidas" → no-estudiante, sin sala aux
   - "Lectura de la Biblia" → con sala aux, sin ayudante
@@ -191,8 +193,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Precisión >90%
 
 ### Tarea 2.5: Comando Tauri parse_mwb_pdf
-- **Archivos**: `src-tauri/src/commands/mwb.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/commands/mwb.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   ```rust
   #[tauri::command]
   fn parse_mwb_pdf(path: String) -> Result<Vec<ParsedWeek>, String> {
@@ -200,12 +202,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   }
   ```
   - Registrar en `lib.rs` y `commands/mod.rs`
-- **Dependencias**: 2.4
-- **Criterios de aceptación**: Comando invocable desde frontend, retorna JSON con semanas y partes
+- ✅ **Dependencias**: 2.4
+- ✅ **Criterios de aceptación**: Comando invocable desde frontend, retorna JSON con semanas y partes
 
 ### Tarea 2.6: Comando Rust para abrir diálogo de archivo
-- **Archivos**: `src-tauri/src/commands/mwb.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/commands/mwb.rs`
+- ✅ **Descripción**:
   ```rust
   #[tauri::command]
   fn pick_mwb_file(app: tauri::AppHandle) -> Result<Option<String>, String> {
@@ -216,12 +218,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   ```
   - Usar `tauri-plugin-dialog` (ya configurado en Sprint 1)
   - Filtrar por `*.pdf`
-- **Dependencias**: 1.6, 2.5
-- **Criterios de aceptación**: Comando abre diálogo nativo, retorna ruta seleccionada o None
+- ✅ **Dependencias**: 1.6, 2.5
+- ✅ **Criterios de aceptación**: Comando abre diálogo nativo, retorna ruta seleccionada o None
 
 ### Tarea 2.7: CRUD de Semanas y Partes (Backend)
-- **Archivos**: `src-tauri/src/commands/semanas.rs` (NUEVO), `src-tauri/src/commands/partes.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/commands/semanas.rs` (NUEVO), `src-tauri/src/commands/partes.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   - **Semanas**: `create_semana`, `update_semana`, `list_semanas`, `get_semana`, `delete_semana` (cascade)
   - **Partes**: `create_parte`, `update_parte`, `list_partes(semana_id)`, `delete_parte` (cascade)
   - **Importación bulk**: `import_parsed_weeks(db, parsed_weeks: Vec<ParsedWeek>) -> Result<Vec<Semana>, String>`:
@@ -229,15 +231,15 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Si una falla, ROLLBACK completo
     - Retorna semanas creadas con IDs
   - Registrar todos los comandos en `lib.rs`
-- **Dependencias**: 2.5
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 2.5
+- ✅ **Criterios de aceptación**:
   - Crear semana + listar + actualizar + eliminar (cascade) funciona
   - `import_parsed_weeks` con 2 semanas persiste todo correctamente
   - Rollback si hay error
 
 ### Tarea 2.8: SemanasListPage
-- **Archivos**: `src/pages/SemanasListPage.tsx` (NUEVO), `src/App.tsx`, `src/components/Layout.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/SemanasListPage.tsx` (NUEVO), `src/App.tsx`, `src/components/Layout.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas` → `SemanasListPage`
   - Listado cronológico de semanas
   - Cada fila: rango de fechas, libro bíblico, tipo (normal / sin reunión), # partes, estado (sin asignar / parcial / completo)
@@ -245,12 +247,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Click en semana → `/semanas/:id` (placeholder hasta Sprint 5)
   - Estados: loading, empty ("No hay semanas. ¡Importa el primer mwb!"), listado
   - Navbar: agregar link "Semanas"
-- **Dependencias**: 2.7
-- **Criterios de aceptación**: Lista vacía/llena funciona, navegación a importar funciona
+- ✅ **Dependencias**: 2.7
+- ✅ **Criterios de aceptación**: Lista vacía/llena funciona, navegación a importar funciona
 
 ### Tarea 2.9: ImportarMwbPage — Vista previa con selección de semanas
-- **Archivos**: `src/pages/ImportarMwbPage.tsx` (NUEVO), `src/App.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/ImportarMwbPage.tsx` (NUEVO), `src/App.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas/importar`
   - **Paso 1 — Seleccionar PDF**:
     - Botón "Seleccionar PDF" → `invoke("pick_mwb_file")` → diálogo nativo
@@ -270,8 +272,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Llama a `invoke("import_parsed_weeks", { parsedWeeks: soloLasSeleccionadas })`
     - Redirige a `/semanas`
   - Estados: seleccionando, parseando ("Analizando PDF..."), preview, guardando, error
-- **Dependencias**: 2.6, 2.7, 2.8
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 2.6, 2.7, 2.8
+- ✅ **Criterios de aceptación**:
   - Flujo completo: seleccionar PDF → analizar → ver preview con checkboxes → desmarcar semanas → editar parte → confirmar → semanas en `/semanas`
   - Filtro "a partir de fecha" funciona (desmarca automáticamente)
   - Semanas "Sin reunión" se marcan visualmente
@@ -279,24 +281,24 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Cancelar diálogo de archivo no rompe la página
 
 ### Tarea 2.10: Formulario manual de creación de semana
-- **Archivos**: `src/pages/SemanaFormPage.tsx` (NUEVO), `src/App.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/SemanaFormPage.tsx` (NUEVO), `src/App.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas/nuevo`
   - Formulario con campos: fechas, libro, canciones, tipo_especial
   - Sección dinámica "Partes": botón "Agregar parte" que añade filas (número, título, tipo, duración, flags)
   - Usa comandos `create_semana` + `create_parte` en secuencia
-- **Dependencias**: 2.7
-- **Criterios de aceptación**: Crear semana manual con 3+ partes → aparece en listado
+- ✅ **Dependencias**: 2.7
+- ✅ **Criterios de aceptación**: Crear semana manual con 3+ partes → aparece en listado
 
 ### Tarea 2.11: Validación del Sprint 2
-- [ ] Abrir `refs/mwb_S_202603.pdf` → vista previa con ~8-9 semanas
-- [ ] Marcar/desmarcar semanas → solo las marcadas se importan
-- [ ] Filtro "a partir de fecha" desmarca correctamente
-- [ ] Semanas sin reunión detectadas y marcadas
-- [ ] Editar título de una parte en preview → cambio se refleja
-- [ ] Confirmar importación → semanas en `/semanas`
-- [ ] Crear semana manualmente → funciona
-- [ ] `cargo check` y `tsc --noEmit` limpios
+- ✅ [ ] Abrir `refs/mwb_S_202603.pdf` → vista previa con ~8-9 semanas
+- ✅ [ ] Marcar/desmarcar semanas → solo las marcadas se importan
+- ✅ [ ] Filtro "a partir de fecha" desmarca correctamente
+- ✅ [ ] Semanas sin reunión detectadas y marcadas
+- ✅ [ ] Editar título de una parte en preview → cambio se refleja
+- ✅ [ ] Confirmar importación → semanas en `/semanas`
+- ✅ [ ] Crear semana manualmente → funciona
+- ✅ [ ] `cargo check` y `tsc --noEmit` limpios
 
 ---
 
@@ -307,36 +309,36 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 **Objetivo**: Completar la gestión de semanas con edición y eliminación desde la UI, y dejar todo listo para el módulo de asignaciones.
 
 **Demo/Validación**:
-- Editar una semana existente (cambiar libro, canciones)
-- Eliminar una semana (con confirmación)
-- Ver detalle de semana con sus partes listadas
+- ✅ Editar una semana existente (cambiar libro, canciones)
+- ✅ Eliminar una semana (con confirmación)
+- ✅ Ver detalle de semana con sus partes listadas
 
 ### Tarea 3.1: Vista de detalle de semana + eliminación
-- **Archivos**: `src/pages/SemanaDetailPage.tsx` (NUEVO), `src/App.tsx`, `src/pages/SemanasListPage.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/SemanaDetailPage.tsx` (NUEVO), `src/App.tsx`, `src/pages/SemanasListPage.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas/:id` → `SemanaDetailPage` (luego será reemplazada por `AsignacionesPage` en Sprint 5, pero por ahora muestra datos)
   - Muestra: fechas, libro, canciones, tipo
   - Lista de partes con número, título, tipo, duración
   - Botón "Editar" (navega a formulario de edición)
   - Botón "Eliminar" con confirmación → `invoke("delete_semana", { id })` → redirige a `/semanas`
   - Botón "Asignar hermanos" (placeholder, navegará a `/semanas/:id/asignar` en Sprint 5)
-- **Dependencias**: 2.7, 2.8
-- **Criterios de aceptación**: Ver detalle de semana, eliminar con confirmación
+- ✅ **Dependencias**: 2.7, 2.8
+- ✅ **Criterios de aceptación**: Ver detalle de semana, eliminar con confirmación
 
 ### Tarea 3.2: Edición de semana y partes desde UI
-- **Archivos**: `src/pages/SemanaFormPage.tsx` (actualizar)
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/SemanaFormPage.tsx` (actualizar)
+- ✅ **Descripción**:
   - Extender `SemanaFormPage` para modo edición (cuando recibe `:id` en la URL)
   - Cargar datos existentes con `get_semana` + `list_partes`
   - Al guardar: `update_semana` + para cada parte: crear/actualizar/eliminar según cambios
-- **Dependencias**: 3.1
-- **Criterios de aceptación**: Editar semana existente → cambios persisten
+- ✅ **Dependencias**: 3.1
+- ✅ **Criterios de aceptación**: Editar semana existente → cambios persisten
 
 ### Tarea 3.3: Validación del Sprint 3
-- [ ] Ver detalle de semana importada → datos correctos
-- [ ] Editar libro bíblico de una semana → cambio persiste
-- [ ] Eliminar semana → desaparece del listado, partes eliminadas en cascade
-- [ ] `tsc --noEmit` y `cargo check` limpios
+- ✅ [ ] Ver detalle de semana importada → datos correctos
+- ✅ [ ] Editar libro bíblico de una semana → cambio persiste
+- ✅ [ ] Eliminar semana → desaparece del listado, partes eliminadas en cascade
+- ✅ [ ] `tsc --noEmit` y `cargo check` limpios
 
 ---
 
@@ -345,13 +347,13 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 **Objetivo**: Implementar el motor de reglas que filtra hermanos elegibles para cada tipo de asignación. Es la fuente de verdad que alimenta los selectores de la UI.
 
 **Demo/Validación**:
-- Probar `get_eligible_brothers` con cada tipo de asignación + rol
-- Verificar que las reglas del PRD §2.2 y §4.3 se cumplen estrictamente
-- Casos borde: sin hermanos que cumplan, todos los roles/sexos
+- ✅ Probar `get_eligible_brothers` con cada tipo de asignación + rol
+- ✅ Verificar que las reglas del PRD §2.2 y §4.3 se cumplen estrictamente
+- ✅ Casos borde: sin hermanos que cumplan, todos los roles/sexos
 
 ### Tarea 4.1: Módulo eligibility — Estructura y comando Tauri
-- **Archivos**: `src-tauri/src/eligibility/mod.rs` (NUEVO), `src-tauri/src/eligibility/rules.rs` (NUEVO), `src-tauri/src/commands/eligibility.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/eligibility/mod.rs` (NUEVO), `src-tauri/src/eligibility/rules.rs` (NUEVO), `src-tauri/src/commands/eligibility.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   - `eligibility/rules.rs`: función principal
     ```rust
     pub fn get_eligible_brothers(
@@ -365,12 +367,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - `eligibility/mod.rs`: re-exporta
   - `commands/eligibility.rs`: comando Tauri wrapper
   - Registrar en `lib.rs`
-- **Dependencias**: 1.4
-- **Criterios de aceptación**: `cargo check` compila. Comando invocable desde frontend
+- ✅ **Dependencias**: 1.4
+- ✅ **Criterios de aceptación**: `cargo check` compila. Comando invocable desde frontend
 
 ### Tarea 4.2: Implementar todas las reglas de elegibilidad
-- **Archivos**: `src-tauri/src/eligibility/rules.rs`
-- **Descripción**: Construir query SQL dinámica según tipo_asignacion + rol:
+- ✅ **Archivos**: `src-tauri/src/eligibility/rules.rs`
+- ✅ **Descripción**: Construir query SQL dinámica según tipo_asignacion + rol:
 
 | Tipo Asignación | Rol | Filtro SQL |
 |---|---|---|
@@ -387,13 +389,13 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 | `estudio_biblico` | conductor | `puede_conducir_estudio = 1` |
 | `estudio_biblico` | lector | Todos activos |
 
-- Reglas especiales fuera del catálogo de partes:
+- ✅ Reglas especiales fuera del catálogo de partes:
   - **Presidente**: `puede_presidir = 1 AND rol IN ('anciano')` (o siervo con flag)
   - **Consejero sala auxiliar**: `puede_ser_consejero_sala = 1`
   - **Oración**: Todos activos
-- Filtro base siempre: `activo = 1`, ordenado por nombre
-- **Dependencias**: 4.1
-- **Criterios de aceptación**:
+- ✅ Filtro base siempre: `activo = 1`, ordenado por nombre
+- ✅ **Dependencias**: 4.1
+- ✅ **Criterios de aceptación**:
   - `necesidades_congregacion` + estudiante → solo ancianos
   - `lectura_biblia` + estudiante → solo varones
   - `empiece_conversaciones` + ayudante + sexo_estudiante="femenino" → solo femeninas
@@ -401,7 +403,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Presidente → solo `puede_presidir = 1`
 
 ### Tarea 4.3: Validación manual del Sprint 4
-- Para cada tipo de asignación del catálogo:
+- ✅ Para cada tipo de asignación del catálogo:
   - [ ] Discurso no-estudiante → solo ancianos/siervos
   - [ ] Necesidades → solo ancianos
   - [ ] Lectura Biblia → solo varones
@@ -420,37 +422,37 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 **Objetivo**: Construir la página de asignaciones (el corazón de la app) con selectores inteligentes filtrados por elegibilidad, y la vista S-140 con fidelidad 100% al formato oficial.
 
 **Demo/Validación**:
-- Asignar hermanos a una semana completa con validación de reglas
-- Selectores solo muestran hermanos elegibles
-- Al seleccionar estudiante, ayudante se re-filtra por sexo
-- Ver S-140 renderizado idéntico al mockup
-- Imprimir S-140 → PDF correcto
+- ✅ Asignar hermanos a una semana completa con validación de reglas
+- ✅ Selectores solo muestran hermanos elegibles
+- ✅ Al seleccionar estudiante, ayudante se re-filtra por sexo
+- ✅ Ver S-140 renderizado idéntico al mockup
+- ✅ Imprimir S-140 → PDF correcto
 
 ### Tarea 5.1: Componente BrotherSelector
-- **Archivos**: `src/components/BrotherSelector.tsx` (NUEVO)
-- **Descripción**:
+- ✅ **Archivos**: `src/components/BrotherSelector.tsx` (NUEVO)
+- ✅ **Descripción**:
   - Props: `tipoAsignacion`, `rol`, `ambito`, `sexoEstudiante?`, `value`, `onChange`
   - Al montar/cambiar dependencias: `invoke("get_eligible_brothers", { ... })`
   - Muestra `<select>` con opción vacía "-- Sin asignar --"
   - Formato: "Nombre Completo (Anc)" — rol abreviado
   - Estado: loading, error, datos
-- **Dependencias**: 4.2
-- **Criterios de aceptación**: Componente reusable, filtra correctamente según props
+- ✅ **Dependencias**: 4.2
+- ✅ **Criterios de aceptación**: Componente reusable, filtra correctamente según props
 
 ### Tarea 5.2: Comandos de asignación (Backend)
-- **Archivos**: `src-tauri/src/commands/asignaciones.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/commands/asignaciones.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   - `assign_brother(db, parte_id, ambito, rol, hermano_id)`: UPSERT (INSERT o UPDATE si ya existe)
   - `remove_assignment(db, parte_id, ambito, rol)`: DELETE
   - `get_assignments_for_week(db, semana_id)`: JOIN partes → asignaciones → hermanos, retorna todas las asignaciones de la semana
   - `update_semana_roles(db, semana_id, presidente_id?, consejero_sala_id?, orador_apertura_id?, orador_cierre_id?)`: UPDATE en tabla semanas
   - Registrar en `lib.rs`
-- **Dependencias**: 2.7, 5.1
-- **Criterios de aceptación**: Asignar → persiste. Re-asignar → actualiza. Obtener → retorna correcto
+- ✅ **Dependencias**: 2.7, 5.1
+- ✅ **Criterios de aceptación**: Asignar → persiste. Re-asignar → actualiza. Obtener → retorna correcto
 
 ### Tarea 5.3: AsignacionesPage — Estructura completa
-- **Archivos**: `src/pages/AsignacionesPage.tsx` (NUEVO), `src/App.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/AsignacionesPage.tsx` (NUEVO), `src/App.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas/:id` → `AsignacionesPage` (reemplaza `SemanaDetailPage`)
   - Cabecera: fechas, libro, tipo especial
   - **Sección Marco General**:
@@ -470,8 +472,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Feedback visual: indicador "Guardado" por 2 segundos
   - Al cargar: pre-llenar selectores con `get_assignments_for_week`
   - Botón "Ver S-140" → navega a `/semanas/:id/s140`
-- **Dependencias**: 5.1, 5.2
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 5.1, 5.2
+- ✅ **Criterios de aceptación**:
   - Selectores solo muestran hermanos elegibles según reglas
   - Ayudante se filtra por sexo del estudiante seleccionado
   - Asignaciones persisten al recargar
@@ -479,8 +481,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Autosave funciona sin botón de guardar
 
 ### Tarea 5.4: Migrar estilos S-140 del mockup a CSS
-- **Archivos**: `src/styles/s140.css` (NUEVO)
-- **Descripción**:
+- ✅ **Archivos**: `src/styles/s140.css` (NUEVO)
+- ✅ **Descripción**:
   - Extraer TODOS los estilos de `s140-mockup.html` líneas 7-187 a `src/styles/s140.css`
   - Preservar exactamente:
     - Variables CSS (`--color-slate`, `--color-gold`, `--color-maroon`, etc.)
@@ -491,12 +493,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Colores: `#575A5D`, `#BE8900`, `#7E0024`, `#DFDFDF`, `#000000`, `#FFFFFF`
     - Reglas `@media print`: `@page { size: letter; margin: 0.5in; }`, `print-color-adjust: exact`
   - NO modificar ningún valor. Esto es una migración 1:1.
-- **Dependencias**: `s140-mockup.html` (referencia), `.docs/ux-guidelines.md` (especificación)
-- **Criterios de aceptación**: El CSS es idéntico al del mockup. No hay desviaciones.
+- ✅ **Dependencias**: `s140-mockup.html` (referencia), `.docs/ux-guidelines.md` (especificación)
+- ✅ **Criterios de aceptación**: El CSS es idéntico al del mockup. No hay desviaciones.
 
 ### Tarea 5.5: S140Page — Componente React de visualización
-- **Archivos**: `src/pages/S140Page.tsx` (NUEVO), `src/App.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/S140Page.tsx` (NUEVO), `src/App.tsx`
+- ✅ **Descripción**:
   - Ruta `/semanas/:id/s140`
   - Al cargar: `get_semana` + `list_partes` + `get_assignments_for_week`
   - Renderizar tabla `s140-table` con estructura **idéntica** al mockup:
@@ -525,8 +527,8 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Partes sin asignar: celda vacía (sin errores)
   - Semanas sin reunión: mostrar mensaje "Semana de Asamblea — No hay reunión" o "Semana de la Conmemoración — No hay reunión"
   - Barra superior (`.no-print`): botón "Imprimir / Guardar PDF" + navegación "← Anterior | Siguiente →"
-- **Dependencias**: 5.3, 5.4
-- **Criterios de aceptación**:
+- ✅ **Dependencias**: 5.3, 5.4
+- ✅ **Criterios de aceptación**:
   - Vista en pantalla idéntica a `s140-mockup.html`
   - Nombres asignados aparecen donde corresponde
   - Imprimir → PDF con formato correcto (márgenes 0.5in, colores de fondo visibles)
@@ -534,15 +536,15 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - Navegación entre semanas funciona
 
 ### Tarea 5.6: Validación del Sprint 5
-- [ ] Asignar presidente → solo `puede_presidir`
-- [ ] Asignar "Necesidades" → solo ancianos
-- [ ] Asignar "Lectura Biblia" → solo varones
-- [ ] Asignar estudiante femenina → ayudante filtrado a femeninas
-- [ ] Asignar sala auxiliar independiente
-- [ ] Recargar → asignaciones persisten
-- [ ] S-140 renderizado → comparar visualmente con mockup
-- [ ] Imprimir → PDF correcto
-- [ ] Semana sin reunión → mensaje adecuado
+- ✅ [ ] Asignar presidente → solo `puede_presidir`
+- ✅ [ ] Asignar "Necesidades" → solo ancianos
+- ✅ [ ] Asignar "Lectura Biblia" → solo varones
+- ✅ [ ] Asignar estudiante femenina → ayudante filtrado a femeninas
+- ✅ [ ] Asignar sala auxiliar independiente
+- ✅ [ ] Recargar → asignaciones persisten
+- ✅ [ ] S-140 renderizado → comparar visualmente con mockup
+- ✅ [ ] Imprimir → PDF correcto
+- ✅ [ ] Semana sin reunión → mensaje adecuado
 
 ---
 
@@ -551,13 +553,13 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 **Objetivo**: Completar el MVP con dashboard, historial de participación, y pulido final de UX.
 
 **Demo/Validación**:
-- Dashboard muestra progreso real del bimestre
-- Tooltips de historial en selectores
-- App navegable y pulida
+- ✅ Dashboard muestra progreso real del bimestre
+- ✅ Tooltips de historial en selectores
+- ✅ App navegable y pulida
 
 ### Tarea 6.1: DashboardPage
-- **Archivos**: `src/pages/DashboardPage.tsx` (NUEVO), `src/App.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/pages/DashboardPage.tsx` (NUEVO), `src/App.tsx`
+- ✅ **Descripción**:
   - Ruta `/` → `DashboardPage`
   - Resumen: total semanas, completas, parciales, pendientes
   - Barra de progreso visual
@@ -565,22 +567,22 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
   - CTA "Ir a asignaciones pendientes" → primera semana incompleta
   - Si no hay semanas: CTA "Importar primer mwb"
   - Si no hay hermanos: CTA "Agregar hermanos"
-- **Dependencias**: 5.3
-- **Criterios de aceptación**: Dashboard funcional con datos reales, CTAs guían al usuario nuevo
+- ✅ **Dependencias**: 5.3
+- ✅ **Criterios de aceptación**: Dashboard funcional con datos reales, CTAs guían al usuario nuevo
 
 ### Tarea 6.2: Historial de participación (Backend)
-- **Archivos**: `src-tauri/src/commands/historial.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
-- **Descripción**:
+- ✅ **Archivos**: `src-tauri/src/commands/historial.rs` (NUEVO), `src-tauri/src/commands/mod.rs`, `src-tauri/src/lib.rs`
+- ✅ **Descripción**:
   - `get_brother_history(db, hermano_id)`: últimas 10 participaciones (JOIN asignaciones → partes → semanas)
   - `get_bimonthly_stats(db)`: conteo de participaciones por hermano en el bimestre actual
   - Structs: `AssignmentHistory`, `BrotherStats`
   - Registrar en `lib.rs`
-- **Dependencias**: 5.2
-- **Criterios de aceptación**: Historial retorna datos correctos, stats agrupados por hermano
+- ✅ **Dependencias**: 5.2
+- ✅ **Criterios de aceptación**: Historial retorna datos correctos, stats agrupados por hermano
 
 ### Tarea 6.3: Indicadores de historial en selectores
-- **Archivos**: `src/components/BrotherSelector.tsx`, `src/pages/AsignacionesPage.tsx`
-- **Descripción**:
+- ✅ **Archivos**: `src/components/BrotherSelector.tsx`, `src/pages/AsignacionesPage.tsx`
+- ✅ **Descripción**:
   - Al montar `BrotherSelector`: cargar stats del bimestre para todos los hermanos
   - En el dropdown, al hacer hover sobre un hermano: tooltip con últimas 2 asignaciones
   - Indicador visual sutil junto al nombre:
@@ -588,28 +590,28 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Amarillo: 2-3
     - Rojo: 4+ (posible sobreuso)
   - NUNCA bloquear asignación — solo informar
-- **Dependencias**: 6.2
-- **Criterios de aceptación**: Tooltip con historial, indicador de color visible pero no restrictivo
+- ✅ **Dependencias**: 6.2
+- ✅ **Criterios de aceptación**: Tooltip con historial, indicador de color visible pero no restrictivo
 
 ### Tarea 6.4: Ajustes finales de UX
-- **Archivos**: `src/components/Layout.tsx`, `src/App.css`, `src-tauri/tauri.conf.json`
-- **Descripción**:
+- ✅ **Archivos**: `src/components/Layout.tsx`, `src/App.css`, `src-tauri/tauri.conf.json`
+- ✅ **Descripción**:
   - `Layout.tsx`: breadcrumb en páginas anidadas, navbar con Dashboard/Hermanos/Semanas
   - `App.css`: estilos globales, focus rings, transiciones
   - `tauri.conf.json`: verificar window 1200×800
-- **Dependencias**: 6.1
-- **Criterios de aceptación**: Navegación fluida, breadcrumbs correctos, UI pulida
+- ✅ **Dependencias**: 6.1
+- ✅ **Criterios de aceptación**: Navegación fluida, breadcrumbs correctos, UI pulida
 
 ### Tarea 6.5: Validación final del MVP
-- [ ] **Flujo completo**: Abrir app → crear hermanos (batch) → importar mwb → seleccionar solo semanas de junio → revisar preview → confirmar → asignar presidente/consejero/oraciones → asignar todas las partes con validación → ver S-140 → imprimir
-- [ ] Semanas sin reunión se importan pero no requieren asignaciones
-- [ ] Dashboard refleja progreso real
-- [ ] Historial en tooltips
-- [ ] Editar hermano → cambios en selectores
-- [ ] Desactivar hermano → desaparece de selectores, no de asignaciones existentes
-- [ ] Eliminar semana → cascade limpio
-- [ ] `tsc --noEmit` y `cargo check` limpios
-- [ ] `pnpm tauri build` compila sin errores (binario de producción)
+- ✅ [ ] **Flujo completo**: Abrir app → crear hermanos (batch) → importar mwb → seleccionar solo semanas de junio → revisar preview → confirmar → asignar presidente/consejero/oraciones → asignar todas las partes con validación → ver S-140 → imprimir
+- ✅ [ ] Semanas sin reunión se importan pero no requieren asignaciones
+- ✅ [ ] Dashboard refleja progreso real
+- ✅ [ ] Historial en tooltips
+- ✅ [ ] Editar hermano → cambios en selectores
+- ✅ [ ] Desactivar hermano → desaparece de selectores, no de asignaciones existentes
+- ✅ [ ] Eliminar semana → cascade limpio
+- ✅ [ ] `tsc --noEmit` y `cargo check` limpios
+- ✅ [ ] `pnpm tauri build` compila sin errores (binario de producción)
 
 ---
 
@@ -657,9 +659,9 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 
 ## Estrategia de Verificación
 
-- **Por tarea**: `cargo check` (Rust) o `tsc --noEmit` (TypeScript) después de cada cambio
-- **Por sprint**: checklist de validación manual al final
-- **Final (Sprint 6)**: flujo completo end-to-end con datos reales de `refs/mwb_S_202603.pdf`
+- ✅ **Por tarea**: `cargo check` (Rust) o `tsc --noEmit` (TypeScript) después de cada cambio
+- ✅ **Por sprint**: checklist de validación manual al final
+- ✅ **Final (Sprint 6)**: flujo completo end-to-end con datos reales de `refs/mwb_S_202603.pdf`
 
 ### Commits recomendados
 Hacer commit al final de cada sprint:
@@ -677,7 +679,7 @@ feat(sprint-6): add dashboard, participation history, and UX polish
 ## Rollback
 
 Si un sprint introduce problemas:
-- **Rust**: los comandos son incrementales. Comentar su registro en `lib.rs` sin afectar los demás.
-- **React**: las páginas son rutas independientes. Una página rota no afecta a las otras.
-- **DB**: solo `CREATE TABLE IF NOT EXISTS` — nunca migraciones destructivas.
-- **Git**: revertir al commit del sprint anterior.
+- ✅ **Rust**: los comandos son incrementales. Comentar su registro en `lib.rs` sin afectar los demás.
+- ✅ **React**: las páginas son rutas independientes. Una página rota no afecta a las otras.
+- ✅ **DB**: solo `CREATE TABLE IF NOT EXISTS` — nunca migraciones destructivas.
+- ✅ **Git**: revertir al commit del sprint anterior.

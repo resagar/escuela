@@ -1,6 +1,7 @@
 mod commands;
 mod db;
 mod models;
+pub mod mwb_parser;
 
 use db::Database;
 use std::path::PathBuf;
@@ -28,6 +29,18 @@ pub fn run() {
             commands::hermanos::create_hermanos_batch,
             commands::hermanos::update_hermano,
             commands::hermanos::deactivate_hermano,
+            commands::mwb::parse_mwb_pdf,
+            commands::mwb::pick_mwb_file,
+            commands::semanas::create_semana,
+            commands::semanas::list_semanas,
+            commands::semanas::get_semana,
+            commands::semanas::update_semana,
+            commands::semanas::delete_semana,
+            commands::semanas::import_parsed_weeks,
+            commands::partes::create_parte,
+            commands::partes::list_partes,
+            commands::partes::update_parte,
+            commands::partes::delete_parte,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());

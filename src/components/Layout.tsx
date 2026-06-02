@@ -10,6 +10,12 @@ export default function Layout() {
 					</a>
 					<div className="flex gap-4 text-sm">
 						<a
+							href="/semanas"
+							className="hover:text-slate-300 transition-colors"
+						>
+							Semanas
+						</a>
+						<a
 							href="/hermanos"
 							className="hover:text-slate-300 transition-colors"
 						>
