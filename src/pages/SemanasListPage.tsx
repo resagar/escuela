@@ -147,6 +147,12 @@ export default function SemanasListPage() {
 										>
 											Ver
 										</Link>
+										<Link
+											to={`/semanas/${s.id}/editar`}
+											className="text-slate-600 hover:text-slate-800 underline text-xs"
+										>
+											Editar
+										</Link>
 										<button
 											onClick={() =>
 												handleDelete(s.id, s.fecha_inicio)

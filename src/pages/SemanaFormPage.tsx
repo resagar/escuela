@@ -1,14 +1,28 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { ASIGNACION_LABELS } from "../types";
+import type { Semana } from "../types";
 
 interface PartForm {
+	id?: number;
 	numero_orden: number;
 	seccion: string;
 	tipo_asignacion: string;
 	titulo: string;
 	duracion_minutos: number;
+	requiere_sala_auxiliar: boolean;
+	requiere_ayudante: boolean;
+}
+
+interface Parte {
+	id: number;
+	semana_id: number;
+	numero_orden: number;
+	seccion: string;
+	tipo_asignacion: string;
+	titulo: string | null;
+	duracion_minutos: number | null;
 	requiere_sala_auxiliar: boolean;
 	requiere_ayudante: boolean;
 }
@@ -33,6 +47,10 @@ function emptyPart(): PartForm {
 
 export default function SemanaFormPage() {
 	const navigate = useNavigate();
+	const { id } = useParams();
+	const isEditing = id !== undefined;
+
+	const [loading, setLoading] = useState(isEditing);
 	const [fechaInicio, setFechaInicio] = useState("");
 	const [fechaFin, setFechaFin] = useState("");
 	const [libroBiblico, setLibroBiblico] = useState("");
@@ -43,6 +61,41 @@ export default function SemanaFormPage() {
 	const [partes, setPartes] = useState<PartForm[]>([]);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!id) return;
+		(async () => {
+			try {
+				setLoading(true);
+				const sem = await invoke<Semana>("get_semana", { id: Number(id) });
+				const pts = await invoke<Parte[]>("list_partes", { semanaId: Number(id) });
+
+				setFechaInicio(sem.fecha_inicio);
+				setFechaFin(sem.fecha_fin);
+				setLibroBiblico(sem.libro_biblico ?? "");
+				setCancionApertura(sem.cancion_apertura?.toString() ?? "");
+				setCancionIntermedia(sem.cancion_intermedia?.toString() ?? "");
+				setCancionCierre(sem.cancion_cierre?.toString() ?? "");
+				setTipoEspecial(sem.tipo_especial);
+				setPartes(
+					pts.map((p) => ({
+						id: p.id,
+						numero_orden: p.numero_orden,
+						seccion: p.seccion,
+						tipo_asignacion: p.tipo_asignacion,
+						titulo: p.titulo ?? "",
+						duracion_minutos: p.duracion_minutos ?? 5,
+						requiere_sala_auxiliar: p.requiere_sala_auxiliar,
+						requiere_ayudante: p.requiere_ayudante,
+					})),
+				);
+			} catch (err) {
+				setError(String(err));
+			} finally {
+				setLoading(false);
+			}
+		})();
+	}, [id]);
 
 	const addParte = () => {
 		setPartes((prev) => [
@@ -71,46 +124,96 @@ export default function SemanaFormPage() {
 			setSaving(true);
 			setError(null);
 
-			const semana = await invoke("create_semana", {
-				fechaInicio,
-				fechaFin,
-				libroBiblico: libroBiblico || null,
-				cancionApertura: cancionApertura
-					? Number(cancionApertura)
-					: null,
-				cancionIntermedia: cancionIntermedia
-					? Number(cancionIntermedia)
-					: null,
-				cancionCierre: cancionCierre ? Number(cancionCierre) : null,
-				tipoEspecial,
-			});
-
-			for (const p of partes) {
-				await invoke("create_parte", {
-					semanaId: (semana as { id: number }).id,
-					numeroOrden: p.numero_orden,
-					seccion: p.seccion,
-					tipoAsignacion: p.tipo_asignacion,
-					titulo: p.titulo || null,
-					duracionMinutos: p.duracion_minutos,
-					requiereSalaAuxiliar: p.requiere_sala_auxiliar,
-					requiereAyudante: p.requiere_ayudante,
+			if (isEditing && id) {
+				await invoke("update_semana", {
+					id: Number(id),
+					fechaInicio,
+					fechaFin,
+					libroBiblico: libroBiblico || null,
+					cancionApertura: cancionApertura ? Number(cancionApertura) : null,
+					cancionIntermedia: cancionIntermedia ? Number(cancionIntermedia) : null,
+					cancionCierre: cancionCierre ? Number(cancionCierre) : null,
+					tipoEspecial,
 				});
+
+				const originalIds = new Set(
+					(await invoke<Parte[]>("list_partes", { semanaId: Number(id) })).map((p) => p.id),
+				);
+				const currentIds = new Set(
+					partes.filter((p) => p.id != null).map((p) => p.id!),
+				);
+
+				for (const p of partes) {
+					if (p.id != null) {
+						await invoke("update_parte", {
+							id: p.id,
+							titulo: p.titulo || null,
+							tipoAsignacion: p.tipo_asignacion,
+							duracionMinutos: p.duracion_minutos,
+							requiereSalaAuxiliar: p.requiere_sala_auxiliar,
+							requiereAyudante: p.requiere_ayudante,
+						});
+					} else {
+						await invoke("create_parte", {
+							semanaId: Number(id),
+							numeroOrden: p.numero_orden,
+							seccion: p.seccion,
+							tipoAsignacion: p.tipo_asignacion,
+							titulo: p.titulo || null,
+							duracionMinutos: p.duracion_minutos,
+							requiereSalaAuxiliar: p.requiere_sala_auxiliar,
+							requiereAyudante: p.requiere_ayudante,
+						});
+					}
+				}
+
+				for (const origId of originalIds) {
+					if (!currentIds.has(origId)) {
+						await invoke("delete_parte", { id: origId });
+					}
+				}
+			} else {
+				const semana = await invoke("create_semana", {
+					fechaInicio,
+					fechaFin,
+					libroBiblico: libroBiblico || null,
+					cancionApertura: cancionApertura ? Number(cancionApertura) : null,
+					cancionIntermedia: cancionIntermedia ? Number(cancionIntermedia) : null,
+					cancionCierre: cancionCierre ? Number(cancionCierre) : null,
+					tipoEspecial,
+				});
+
+				for (const p of partes) {
+					await invoke("create_parte", {
+						semanaId: (semana as { id: number }).id,
+						numeroOrden: p.numero_orden,
+						seccion: p.seccion,
+						tipoAsignacion: p.tipo_asignacion,
+						titulo: p.titulo || null,
+						duracionMinutos: p.duracion_minutos,
+						requiereSalaAuxiliar: p.requiere_sala_auxiliar,
+						requiereAyudante: p.requiere_ayudante,
+					});
+				}
 			}
 
 			navigate("/semanas");
 		} catch (err) {
-			console.error("Error creating semana:", err);
+			console.error("Error saving semana:", err);
 			setError(String(err));
 		} finally {
 			setSaving(false);
 		}
 	};
 
+	if (loading) {
+		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+	}
+
 	return (
 		<div>
 			<h1 className="text-xl font-bold text-gray-800 mb-4">
-				Nueva Semana
+				{isEditing ? "Editar Semana" : "Nueva Semana"}
 			</h1>
 
 			{error && (
@@ -380,7 +483,11 @@ export default function SemanaFormPage() {
 								: "bg-slate-700 text-white hover:bg-slate-800"
 						}`}
 					>
-						{saving ? "Guardando..." : "Guardar Semana"}
+						{saving
+						? "Guardando..."
+						: isEditing
+							? "Guardar Cambios"
+							: "Guardar Semana"}
 					</button>
 					<button
 						type="button"

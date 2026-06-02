@@ -198,14 +198,20 @@ fn is_week_header_line(line: &str) -> bool {
         return false;
     }
 
-    // Must contain alphabetic characters (month names)
-    let has_letters = trimmed.chars().any(|c| c.is_alphabetic());
+    // Reject page numbers (single digit, nothing else)
+    if Regex::new(r"^\d{1,2}$").unwrap().is_match(trimmed) {
+        return false;
+    }
 
-    // Must not look like a regular content line (parts, sections, etc.)
-    let looks_like_content =
-        trimmed.contains("min") || trimmed.contains("(") || trimmed.contains(")");
+    // Must contain a known month name (check for month fragments)
+    let upper = trimmed.to_uppercase();
+    let has_month = SPANISH_MONTHS.iter().any(|(name, _)| {
+        let compact: String = name.chars().filter(|c| *c != ' ').collect();
+        let line_no_spaces: String = upper.chars().filter(|c| *c != ' ').collect();
+        line_no_spaces.contains(&compact)
+    });
 
-    has_letters && !looks_like_content
+    has_month
 }
 
 #[derive(Debug)]
@@ -288,6 +294,11 @@ fn parse_week_header(header: &str) -> Result<ParsedHeader, String> {
 
     // The rest is the book reference
     let book_reference = normalize_book_reference(&tokens[pos..]);
+
+    // A valid week header must have a book reference with at least one digit
+    if !book_reference.chars().any(|c| c.is_ascii_digit()) {
+        return Err("Header sin capítulo bíblico (falta referencia)".to_string());
+    }
 
     Ok(ParsedHeader {
         start_day,
@@ -436,13 +447,17 @@ fn parse_week_block(
 
     let libro_biblico = parsed_header.book_reference;
 
+    let has_regular_structure = Regex::new(r"(?i)TESOROS\s+DE\s+LA\s+BIBLIA").unwrap().is_match(body)
+        || Regex::new(r"(?i)SEAMOS\s+MEJORES\s+MAESTROS").unwrap().is_match(body)
+        || Regex::new(r"(?i)NUESTRA\s+VIDA\s+CRISTIANA").unwrap().is_match(body);
+
     let is_asamblea = body.to_uppercase().contains("ASAMBLEA");
     let is_conmemoracion = body.to_uppercase().contains("CONMEMORACIÓN")
         || body.to_uppercase().contains("CONMEMORACIÓ")
         || body.to_uppercase().contains("CONMEMORACION");
     let is_visita = body.to_uppercase().contains("VISITA DEL SUPERINTENDENTE");
 
-    let tipo_especial = if is_asamblea || is_conmemoracion {
+    let tipo_especial = if !has_regular_structure && (is_asamblea || is_conmemoracion) {
         if is_conmemoracion {
             TipoEspecial::Conmemoracion
         } else {
@@ -476,36 +491,31 @@ fn parse_week_block(
     })
 }
 
-fn clean_book_name(raw: &str) -> String {
-    let s = raw.trim();
-    let re = Regex::new(r"\s+").unwrap();
-    let s = re.replace_all(s, " ").to_string();
-    let s = s
-        .chars()
-        .filter(|&c| c.is_alphanumeric() || c == ' ' || c == ',' || c == '.' || c == ';')
-        .collect::<String>();
-    let re = Regex::new(r"\s*,\s*").unwrap();
-    re.replace_all(&s, ", ").to_string()
-}
-
 fn detect_songs(text: &str) -> (u8, u8, u8) {
     let song_re = Regex::new(r"(?:\[SONG\]|Canción|Cántico)\s*(\d+)").unwrap();
-    let song_nums: Vec<u8> = song_re
+
+    // Collect (song_number, byte_position)
+    let song_positions: Vec<(u8, usize)> = song_re
         .captures_iter(text)
-        .filter_map(|c| c[1].parse().ok())
+        .filter_map(|c| {
+            let num: u8 = c[1].parse().ok()?;
+            Some((num, c.get(0).unwrap().start()))
+        })
         .collect();
 
-    let apertura = *song_nums.first().unwrap_or(&0);
-    let cierre = *song_nums.last().unwrap_or(&0);
+    let apertura = song_positions.first().map(|n| n.0).unwrap_or(0);
+    let cierre = song_positions.last().map(|n| n.0).unwrap_or(0);
 
-    let vida_cristiana_pos = text.to_uppercase().find("NUESTRA VIDA CRISTIANA");
-    let intermedia = if let Some(pos) = vida_cristiana_pos {
-        let before_vc = &text[..pos];
-        let songs_before_vc: Vec<u8> = song_re
-            .captures_iter(before_vc)
-            .filter_map(|c| c[1].parse().ok())
-            .collect();
-        *songs_before_vc.last().unwrap_or(&0)
+    // Find "NUESTRA VIDA CRISTIANA" section (handles line breaks with \s+)
+    let vc_re = Regex::new(r"(?i)NUESTRA\s+VIDA\s+CRISTIANA").unwrap();
+    let intermedia = if let Some(vc_match) = vc_re.find(text) {
+        let vc_pos = vc_match.start();
+        // First song AFTER the Vida Cristiana heading
+        song_positions
+            .iter()
+            .find(|(_, pos)| *pos > vc_pos)
+            .map(|n| n.0)
+            .unwrap_or(0)
     } else {
         0
     };
@@ -514,115 +524,300 @@ fn detect_songs(text: &str) -> (u8, u8, u8) {
 }
 
 fn parse_parts(text: &str) -> Vec<ParsedPart> {
-    let mut current_section = "tesoros".to_string();
+    let lines: Vec<&str> = text.lines().collect();
     let mut parts: Vec<ParsedPart> = Vec::new();
 
-    let section_re =
-        Regex::new(r"(?i)TESOROS\s+DE\s+LA\s+BIBLIA|SEAMOS\s+MEJORES\s+MAESTROS|NUESTRA\s+VIDA\s+CRISTIANA")
-            .unwrap();
-    let part_re =
-        Regex::new(r"(\d+)\.\s+(.+?)\s+\((\d+)\s*(?:min|mins?)\.?\s*\)")
-            .unwrap();
+    // ── Find introduction ──
+    let intro_re = Regex::new(r"(?i)Palabras\s+de\s+introducci[óo]n").unwrap();
+    let intro_min_re = Regex::new(r"\((\d+)\s*(?:min|mins?)\.?\)").unwrap();
 
-    for sec_match in section_re.find_iter(text) {
-        let sec_upper = sec_match.as_str().to_uppercase();
-        if sec_upper.contains("TESOROS") {
-            current_section = "tesoros".to_string();
-        } else if sec_upper.contains("SEAMOS") {
-            current_section = "mejores_maestros".to_string();
-        } else if sec_upper.contains("NUESTRA") {
-            current_section = "vida_cristiana".to_string();
+    let mut has_intro = false;
+    let mut has_conclusion = false;
+
+    // ── Extract parts ──
+    let mut i = 0;
+    while i < lines.len() {
+        let line = lines[i].trim();
+        if line.is_empty() {
+            i += 1;
+            continue;
+        }
+
+        // Check for introduction
+        if intro_re.is_match(line) {
+            has_intro = true;
+            let minutos = line_to_u8(&intro_min_re, line, 1);
+            let (tipo, sala_aux, ayudante) = classify_part_type("Palabras de introducción", "marco");
+            parts.push(ParsedPart {
+                numero_orden: 0,
+                seccion: "marco".to_string(),
+                tipo_asignacion: tipo,
+                titulo: "Palabras de introducción".to_string(),
+                duracion_minutos: minutos,
+                requiere_sala_auxiliar: sala_aux,
+                requiere_ayudante: ayudante,
+            });
+            i += 1;
+            continue;
+        }
+
+        // Check for conclusion
+        if line.to_uppercase().contains("PALABRAS DE CONCLUSI") {
+            has_conclusion = true;
+            let minutos = line_to_u8(&intro_min_re, line, 3);
+            let (tipo, sala_aux, ayudante) = classify_part_type("Palabras de conclusión", "marco");
+            parts.push(ParsedPart {
+                numero_orden: 99, // will be reassigned after sorting
+                seccion: "marco".to_string(),
+                tipo_asignacion: tipo,
+                titulo: "Palabras de conclusión".to_string(),
+                duracion_minutos: minutos,
+                requiere_sala_auxiliar: sala_aux,
+                requiere_ayudante: ayudante,
+            });
+            i += 1;
+            continue;
+        }
+
+        // Match part numbers like "1.", "2.", "9."
+        let part_start = Regex::new(r"^(\d{1,2})\.\s(.*)$").unwrap();
+        if let Some(caps) = part_start.captures(line) {
+            let numero_orden: u8 = caps[1].parse().unwrap_or(0);
+            let first_part = caps[2].trim();
+            let has_minute_on_same_line = intro_min_re.is_match(first_part);
+
+            let mut title_parts: Vec<&str> = Vec::new();
+            if !first_part.is_empty() {
+                title_parts.push(first_part);
+            }
+            i += 1;
+
+            // Only scan forward if the minute isn't already on this line
+            if !has_minute_on_same_line {
+                while i < lines.len() {
+                    let next_line = lines[i].trim();
+                    if next_line.is_empty() {
+                        i += 1;
+                        continue;
+                    }
+                    if Regex::new(r"^\d{1,2}\.\s").unwrap().is_match(next_line) {
+                        break;
+                    }
+                    if Regex::new(r"(?i)^(TESOROS|SEAMOS|NUESTRA|VIDA\s+CRISTIANA)").unwrap().is_match(next_line) {
+                        break;
+                    }
+                    if next_line.to_uppercase().contains("PALABRAS DE CONCLUSI") {
+                        break;
+                    }
+                    if intro_min_re.is_match(next_line) {
+                        i += 1;
+                        break;
+                    }
+                    title_parts.push(next_line);
+                    i += 1;
+                }
+            }
+
+            let titulo = compact_spaces(&title_parts.join(" "));
+            if titulo.is_empty() || titulo.contains("Palabras de introducci") {
+                continue;
+            }
+
+            // Extract minutes and clean title
+            let mut minutos: u8 = 0;
+            let mut clean_title = titulo.clone();
+            if let Some(m) = titre_min_capture(&titulo) {
+                minutos = m;
+                let re = Regex::new(r"\s*\(\d+\s*(?:min|mins?)\.?\)\s*").unwrap();
+                clean_title = re.replace_all(&titulo, "").trim().to_string();
+            } else if i > 0 && i <= lines.len() {
+                let after_line = lines[i - 1].trim();
+                if let Some(m) = line_to_u8_maybe(&intro_min_re, after_line) {
+                    minutos = m;
+                }
+            }
+
+            // Clean up trailing garbage (page numbers, underscores, etc.)
+            let re_garbage = Regex::new(r"[\s_\-]{20,}.*$").unwrap();
+            clean_title = re_garbage.replace(&clean_title, "").trim().to_string();
+
+            // Remove trailing page numbers (standalone digits at end)
+            let re_page = Regex::new(r"\s+\d{1,2}$").unwrap();
+            clean_title = re_page.replace(&clean_title, "").trim().to_string();
+
+            if clean_title.is_empty() {
+                continue;
+            }
+
+            let tipo_str = classify_part_title(&clean_title);
+            let seccion = classify_part_section(numero_orden, &clean_title, &tipo_str);
+
+            let (tipo, sala_aux, ayudante) = classify_part_type(&clean_title, &seccion);
+
+            parts.push(ParsedPart {
+                numero_orden,
+                seccion,
+                tipo_asignacion: tipo,
+                titulo: clean_title,
+                duracion_minutos: minutos,
+                requiere_sala_auxiliar: sala_aux,
+                requiere_ayudante: ayudante,
+            });
+        } else {
+            i += 1;
         }
     }
 
-    let special_intro_re = Regex::new(r"(?i)Palabras\s+de\s+introducci[óo]n\s*\((\d+)\s*(?:min|mins?)\.?\s*\)")
-        .unwrap();
-    let special_concl_re = Regex::new(r"(?i)Palabras\s+de\s+conclusi[óo]n\s*\((\d+)\s*(?:min|mins?)\.?\s*\)")
-        .unwrap();
-
-    let mut seen_contexts: Vec<(usize, usize, &str)> = Vec::new();
-    for m in section_re.find_iter(text) {
-        let sec_upper = m.as_str().to_uppercase();
-        let ctx = if sec_upper.contains("TESOROS") {
-            "tesoros"
-        } else if sec_upper.contains("SEAMOS") {
-            "mejores_maestros"
-        } else {
-            "vida_cristiana"
-        };
-        seen_contexts.push((m.start(), m.end(), ctx));
-    }
-
-    let mut part_order: u8 = 0;
-
-    if let Some(intro_cap) = special_intro_re.captures(text) {
-        let minutos: u8 = intro_cap[1].parse().unwrap_or(1);
-        let (tipo, sala_aux, ayudante) =
-            classify_part_type("Palabras de introducción", "marco");
-        part_order += 1;
+    // If no intro was found, add a default one
+    if !has_intro {
+        let (tipo, sala_aux, ayudante) = classify_part_type("Palabras de introducción", "marco");
         parts.push(ParsedPart {
-            numero_orden: part_order,
+            numero_orden: 0,
             seccion: "marco".to_string(),
             tipo_asignacion: tipo,
             titulo: "Palabras de introducción".to_string(),
-            duracion_minutos: minutos,
+            duracion_minutos: 1,
             requiere_sala_auxiliar: sala_aux,
             requiere_ayudante: ayudante,
         });
     }
 
-    for cap in part_re.captures_iter(text) {
-        let full_start = cap.get(0).unwrap().start();
-
-        let mut section_for_part = current_section.clone();
-        for &(_ctx_start, ctx_end, ctx) in seen_contexts.iter().rev() {
-            if ctx_end <= full_start {
-                section_for_part = ctx.to_string();
-                break;
-            }
-        }
-
-        let order: u8 = cap[1].parse().unwrap_or(0);
-        let titulo_raw = cap[2].trim();
-        let minutos: u8 = cap[3].parse().unwrap_or(0);
-
-        let (tipo, sala_aux, ayudante) = if titulo_raw.to_uppercase().contains("PALABRAS DE INTRODUCCI") {
-            continue;
-        } else if titulo_raw.to_uppercase().contains("PALABRAS DE CONCLUSI") {
-            continue;
-        } else {
-            classify_part_type(titulo_raw, &section_for_part)
-        };
-
-        part_order = order.max(part_order + 1);
+    // If no conclusion, add a default one
+    if !has_conclusion {
+        let (tipo, sala_aux, ayudante) = classify_part_type("Palabras de conclusión", "marco");
         parts.push(ParsedPart {
-            numero_orden: order,
-            seccion: section_for_part,
-            tipo_asignacion: tipo,
-            titulo: titulo_raw.to_string(),
-            duracion_minutos: minutos,
-            requiere_sala_auxiliar: sala_aux,
-            requiere_ayudante: ayudante,
-        });
-    }
-
-    if let Some(concl_cap) = special_concl_re.captures(text) {
-        let minutos: u8 = concl_cap[1].parse().unwrap_or(3);
-        let (tipo, sala_aux, ayudante) =
-            classify_part_type("Palabras de conclusión", "marco");
-        part_order += 1;
-        parts.push(ParsedPart {
-            numero_orden: part_order,
+            numero_orden: 255,
             seccion: "marco".to_string(),
             tipo_asignacion: tipo,
             titulo: "Palabras de conclusión".to_string(),
-            duracion_minutos: minutos,
+            duracion_minutos: 3,
             requiere_sala_auxiliar: sala_aux,
             requiere_ayudante: ayudante,
         });
     }
 
+    // Sort by numero_orden (255 ensures conclusion stays at end)
+    parts.sort_by_key(|p| p.numero_orden);
+
+    // Fix intro/conclusion numero_orden
+    for (i, p) in parts.iter_mut().enumerate() {
+        if p.titulo == "Palabras de introducción" {
+            p.numero_orden = 0;
+        } else if p.titulo == "Palabras de conclusión" {
+            p.numero_orden = i as u8;
+        } else {
+            p.numero_orden = i as u8;
+        }
+    }
+
     parts
+}
+
+fn titre_min_capture(title: &str) -> Option<u8> {
+    let re = Regex::new(r"\((\d+)\s*(?:min|mins?)\.?\)").unwrap();
+    re.captures(title)
+        .and_then(|c| c[1].parse::<u8>().ok())
+}
+
+fn line_to_u8(re: &Regex, line: &str, default: u8) -> u8 {
+    re.captures(line)
+        .and_then(|c| c[1].parse::<u8>().ok())
+        .unwrap_or(default)
+}
+
+fn line_to_u8_maybe(re: &Regex, line: &str) -> Option<u8> {
+    re.captures(line)
+        .and_then(|c| c[1].parse::<u8>().ok())
+}
+
+fn classify_part_title(title: &str) -> String {
+    let upper = title.to_uppercase();
+    if upper.contains("BUSQUEMOS PERLAS") {
+        "busquemos_perlas".to_string()
+    } else if upper.contains("LECTURA DE LA BIBLIA") {
+        "lectura_biblia".to_string()
+    } else if upper.contains("EMPIECE CONVERSACIONES") {
+        "empiece_conversaciones".to_string()
+    } else if upper.contains("HAGA REVISITAS") {
+        "haga_revisitas".to_string()
+    } else if upper.contains("HAGA DISCÍPULOS") || upper.contains("HAGA DISCIPULOS") {
+        "haga_discipulos".to_string()
+    } else if upper.contains("EXPLIQUE SUS CREENCIAS") {
+        "explique_creencias".to_string()
+    } else if upper.contains("NECESIDADES DE LA CONGREGACIÓN")
+        || upper.contains("NECESIDADES DE LA CONGREGACION")
+    {
+        "necesidades_congregacion".to_string()
+    } else if upper.contains("ESTUDIO BÍBLICO DE LA CONGREGACIÓN")
+        || upper.contains("ESTUDIO BIBLICO DE LA CONGREGACION")
+    {
+        "estudio_biblico".to_string()
+    } else if upper.contains("HAZTE AMIGO DE JEHOVÁ") {
+        "hazte_amigo".to_string()
+    } else if upper.contains("LOGROS DE LA ORGANIZACIÓN") {
+        "logros_organizacion".to_string()
+    } else if upper.contains("DISCURSO") {
+        "discurso".to_string()
+    } else {
+        "discurso_no_estudiante".to_string()
+    }
+}
+
+fn classify_part_section(numero_orden: u8, title: &str, tipo: &str) -> String {
+    // Rules 1-3 are always tesoros
+    if numero_orden <= 3 {
+        return "tesoros".to_string();
+    }
+
+    // Known tesoros types
+    if tipo == "busquemos_perlas" || tipo == "lectura_biblia" {
+        return "tesoros".to_string();
+    }
+
+    // Known mejores_maestros types
+    if tipo == "empiece_conversaciones"
+        || tipo == "haga_revisitas"
+        || tipo == "haga_discipulos"
+        || tipo == "explique_creencias"
+    {
+        return "mejores_maestros".to_string();
+    }
+
+    // Known vida_cristiana types
+    if tipo == "necesidades_congregacion"
+        || tipo == "estudio_biblico"
+        || tipo == "hazte_amigo"
+        || tipo == "logros_organizacion"
+    {
+        return "vida_cristiana".to_string();
+    }
+
+    // Title-based heuristics
+    let upper = title.to_uppercase();
+    if upper.contains("ANÁLISIS CON EL AUDITORIO")
+        || upper.contains("ANALISIS CON EL AUDITORIO")
+        || upper.contains("QUE NINGÚN")
+        || upper.contains("NUNCA DEJE")
+        || upper.contains("APROVECHE")
+    {
+        return "vida_cristiana".to_string();
+    }
+
+    // Discurso in the 7 slot
+    if numero_orden == 7 && tipo.contains("discurso") {
+        return "mejores_maestros".to_string();
+    }
+
+    // Default: if it has a student assignment feel, it's mejores_maestros
+    if numero_orden >= 4 && numero_orden <= 6 {
+        return "mejores_maestros".to_string();
+    }
+
+    if numero_orden >= 7 && numero_orden <= 9 {
+        return "vida_cristiana".to_string();
+    }
+
+    "tesoros".to_string()
 }
 
 fn classify_part_type(titulo: &str, seccion: &str) -> (String, bool, bool) {
@@ -709,15 +904,19 @@ fn parse_weeks_from_normalized(normalized: &str, year: i32, base_month: u32) -> 
 
     let mut weeks = Vec::new();
 
-    for (i, (header, body)) in week_blocks.iter().enumerate() {
+    for (_i, (header, body)) in week_blocks.iter().enumerate() {
         match parse_week_block(header, body, year, base_month) {
             Ok(week) => {
                 weeks.push(week);
             }
-            Err(e) => {
-                return Err(format!("Error en semana {}: {}", i + 1, e));
+            Err(_e) => {
+                // Skip false positives (lines that look like headers but aren't valid weeks)
             }
         }
+    }
+
+    if weeks.is_empty() {
+        return Err("Ninguna semana válida detectada en el PDF".to_string());
     }
 
     Ok(weeks)

@@ -63,7 +63,7 @@ impl Database {
                 semana_id INTEGER NOT NULL REFERENCES semanas(id) ON DELETE CASCADE,
                 numero_orden INTEGER NOT NULL,
                 seccion TEXT NOT NULL
-                    CHECK(seccion IN ('tesoros', 'mejores_maestros', 'vida_cristiana')),
+                    CHECK(seccion IN ('tesoros', 'mejores_maestros', 'vida_cristiana', 'marco')),
                 tipo_asignacion TEXT NOT NULL,
                 titulo TEXT,
                 duracion_minutos INTEGER,
