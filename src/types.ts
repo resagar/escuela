@@ -86,6 +86,10 @@ export interface FamiliaWithMembers extends Familia {
 	miembros: Hermano[];
 }
 
+export interface FamiliaWithCount extends Familia {
+	miembros_count: number;
+}
+
 export interface ParsedPart {
 	numero_orden: number;
 	seccion: string;

@@ -48,6 +48,7 @@ pub fn run() {
             commands::familias::delete_familia,
             commands::familias::add_familia_member,
             commands::familias::remove_familia_member,
+            commands::familias::list_familias_with_count,
             commands::eligibility::get_eligible_brothers,
             commands::asignaciones::assign_brother,
             commands::asignaciones::remove_assignment,

@@ -21,6 +21,12 @@ export default function Layout() {
 						>
 							Hermanos
 						</a>
+						<a
+							href="/familias"
+							className="hover:text-slate-300 transition-colors"
+						>
+							Familias
+						</a>
 					</div>
 				</div>
 			</nav>

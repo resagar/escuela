@@ -6,6 +6,8 @@ import SemanasListPage from "./pages/SemanasListPage";
 import ImportarMwbPage from "./pages/ImportarMwbPage";
 import SemanaFormPage from "./pages/SemanaFormPage";
 import AsignacionesPage from "./pages/AsignacionesPage";
+import FamiliasListPage from "./pages/FamiliasListPage";
+import FamiliaDetailPage from "./pages/FamiliaDetailPage";
 
 function App() {
 	return (
@@ -21,6 +23,8 @@ function App() {
 					<Route path="/semanas/nuevo" element={<SemanaFormPage />} />
 					<Route path="/semanas/:id/editar" element={<SemanaFormPage />} />
 					<Route path="/semanas/:id" element={<AsignacionesPage />} />
+					<Route path="/familias" element={<FamiliasListPage />} />
+					<Route path="/familias/:id" element={<FamiliaDetailPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

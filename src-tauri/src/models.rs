@@ -153,3 +153,11 @@ pub struct FamiliaWithMembers {
     pub notas: Option<String>,
     pub miembros: Vec<Hermano>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FamiliaWithCount {
+    pub id: i64,
+    pub nombre: String,
+    pub notas: Option<String>,
+    pub miembros_count: i64,
+}

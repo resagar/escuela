@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::models::{Familia, FamiliaWithMembers, Hermano};
+use crate::models::{Familia, FamiliaWithCount, FamiliaWithMembers, Hermano};
 use tauri::State;
 
 #[tauri::command]
@@ -133,4 +133,33 @@ pub fn remove_familia_member(
     )
     .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn list_familias_with_count(db: State<'_, Database>) -> Result<Vec<FamiliaWithCount>, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+    let mut stmt = conn
+        .prepare(
+            "SELECT f.id, f.nombre, f.notas, COUNT(fm.hermano_id) as miembros_count
+             FROM familias f
+             LEFT JOIN familia_miembros fm ON f.id = fm.familia_id
+             GROUP BY f.id
+             ORDER BY f.nombre",
+        )
+        .map_err(|e| e.to_string())?;
+
+    let familias = stmt
+        .query_map([], |row| {
+            Ok(FamiliaWithCount {
+                id: row.get(0)?,
+                nombre: row.get(1)?,
+                notas: row.get(2)?,
+                miembros_count: row.get(3)?,
+            })
+        })
+        .map_err(|e| e.to_string())?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| e.to_string())?;
+
+    Ok(familias)
 }
