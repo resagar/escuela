@@ -1,0 +1,176 @@
+/* === COLORS (CSS Variables — scoped, no global conflict) === */
+:root {
+  --color-slate: #575a5d;
+  --color-gold: #be8900;
+  --color-maroon: #7e0024;
+  --color-text: #000000;
+  --color-border: #dfdfdf;
+  --color-white: #ffffff;
+}
+
+/* === PAGE SETUP (print only) === */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--color-text);
+    background: var(--color-white);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* === SCREEN WRAPPER (solo para impresión, no afecta el layout de la app) === */
+.s140-wrapper {
+  max-width: 7.5in;
+  margin: 0 auto;
+  font-family: "Segoe UI", Arial, sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* === UNIFIED TABLE === */
+.s140-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+  margin-bottom: 20px;
+}
+
+.s140-table td {
+  padding: 3px 6px;
+  vertical-align: middle;
+  border: 0.5px solid var(--color-border);
+}
+
+/* --- Top Header Row --- */
+.s140-table .row-header td {
+  border: none;
+  border-bottom: 2px solid var(--color-slate);
+  padding: 0 0 4px 0;
+}
+.s140-table .cong-name {
+  font-size: 12pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+}
+.s140-table .main-title {
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: right;
+  letter-spacing: 0.5px;
+}
+
+/* --- Date and President Rows --- */
+.s140-table .row-info td {
+  border: none;
+  padding: 2px 0;
+}
+.s140-table .date-text {
+  font-size: 11pt;
+  font-weight: bold;
+  text-align: left;
+}
+.s140-table .pres-text {
+  text-align: right;
+  font-size: 9.5pt;
+}
+
+/* --- Shared Font Weights & Colors (scoped to .s140-table) --- */
+.s140-table .lbl {
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: var(--color-slate);
+}
+.s140-table .val {
+  font-size: 10pt;
+  font-weight: normal;
+  color: var(--color-text);
+}
+.s140-table .time {
+  font-size: 9pt;
+  font-weight: bold;
+  color: var(--color-slate);
+  text-align: center;
+  width: 45px;
+}
+.s140-table .bullet-part {
+  font-size: 10pt;
+  font-weight: normal;
+}
+
+/* --- Section Headers --- */
+.s140-table .sec-header {
+  font-size: 10.5pt;
+  font-weight: bold;
+  color: var(--color-white);
+  text-align: left;
+  padding: 4px 8px;
+  border: none;
+}
+.s140-table .sec-tesoros {
+  background-color: var(--color-slate);
+}
+.s140-table .sec-mejores {
+  background-color: var(--color-gold);
+}
+.s140-table .sec-vida {
+  background-color: var(--color-maroon);
+}
+
+/* --- Columns Setup --- */
+.s140-table .col-title-header {
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: var(--color-slate);
+  text-align: left;
+  background-color: transparent;
+}
+.s140-table .col-sala-header,
+.s140-table .col-aud-header {
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: var(--color-slate);
+  text-align: left;
+  width: 175px;
+}
+
+/* --- Print/Page Breaks --- */
+.s140-wrapper .week-container {
+  page-break-inside: avoid;
+  margin-bottom: 25px;
+}
+.s140-wrapper .week-separator {
+  border: none;
+  border-top: 1px dashed var(--color-slate);
+  margin: 25px 0;
+}
+
+@media print {
+  .s140-wrapper .week-separator {
+    border-top: 1px solid var(--color-slate);
+    margin: 15px 0;
+  }
+  .no-print {
+    display: none;
+  }
+}
+
+/* === SCREEN ONLY INFO BAR === */
+.no-print {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 10pt;
+  border-radius: 4px;
+  text-align: center;
+}

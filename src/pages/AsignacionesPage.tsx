@@ -350,6 +350,9 @@ export default function AsignacionesPage() {
 					</div>
 				</div>
 				<div className="flex gap-2">
+					<Link to={`/semanas/${semana.id}/s140`} className="text-slate-600 hover:text-slate-800 underline text-sm">
+						Ver S-140
+					</Link>
 					<Link to="/semanas" className="text-slate-600 hover:text-slate-800 underline text-sm">
 						← Volver
 					</Link>
