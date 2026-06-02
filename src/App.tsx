@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import DashboardPage from "./pages/DashboardPage";
 import HermanosListPage from "./pages/HermanosListPage";
 import HermanoFormPage from "./pages/HermanoFormPage";
 import SemanasListPage from "./pages/SemanasListPage";
@@ -15,7 +16,7 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route element={<Layout />}>
-					<Route path="/" element={<SemanasListPage />} />
+					<Route path="/" element={<DashboardPage />} />
 					<Route path="/hermanos" element={<HermanosListPage />} />
 					<Route path="/hermanos/nuevo" element={<HermanoFormPage />} />
 					<Route path="/hermanos/:id/editar" element={<HermanoFormPage />} />

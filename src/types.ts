@@ -127,3 +127,18 @@ export const ASIGNACION_LABELS: Record<string, string> = {
 	introduccion: "Palabras de introducción",
 	conclusion: "Palabras de conclusión",
 };
+
+export interface AssignmentHistory {
+	semana_fecha_inicio: string;
+	semana_fecha_fin: string;
+	parte_titulo: string;
+	parte_tipo: string;
+	ambito: string;
+	rol: string;
+}
+
+export interface BrotherStats {
+	hermano_id: number;
+	hermano_nombre: string;
+	total_participaciones: number;
+}

@@ -54,6 +54,8 @@ pub fn run() {
             commands::asignaciones::remove_assignment,
             commands::asignaciones::get_assignments_for_week,
             commands::asignaciones::update_semana_roles,
+            commands::historial::get_brother_history,
+            commands::historial::get_bimonthly_stats,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());

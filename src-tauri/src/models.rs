@@ -161,3 +161,20 @@ pub struct FamiliaWithCount {
     pub notas: Option<String>,
     pub miembros_count: i64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AssignmentHistory {
+    pub semana_fecha_inicio: String,
+    pub semana_fecha_fin: String,
+    pub parte_titulo: String,
+    pub parte_tipo: String,
+    pub ambito: String,
+    pub rol: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BrotherStats {
+    pub hermano_id: i64,
+    pub hermano_nombre: String,
+    pub total_participaciones: i64,
+}

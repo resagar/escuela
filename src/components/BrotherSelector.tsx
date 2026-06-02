@@ -17,6 +17,7 @@ interface BrotherSelectorProps {
 	estudianteId?: number | null;
 	value: number | null;
 	onChange: (id: number | null) => void;
+	stats?: Map<number, number>;
 }
 
 export default function BrotherSelector({
@@ -27,6 +28,7 @@ export default function BrotherSelector({
 	estudianteId,
 	value,
 	onChange,
+	stats,
 }: BrotherSelectorProps) {
 	const [hermanos, setHermanos] = useState<Hermano[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -84,11 +86,15 @@ export default function BrotherSelector({
 			className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
 		>
 			<option value="">-- Sin asignar --</option>
-			{hermanos.map((h) => (
-				<option key={h.id} value={h.id}>
-					{h.nombre} ({ROL_ABBREV[h.rol] ?? h.rol})
-				</option>
-			))}
+			{hermanos.map((h) => {
+				const count = stats?.get(h.id);
+				return (
+					<option key={h.id} value={h.id}>
+						{h.nombre} ({ROL_ABBREV[h.rol] ?? h.rol})
+						{count !== undefined && count > 0 ? ` [${count}x]` : ""}
+					</option>
+				);
+			})}
 		</select>
 	);
 }
