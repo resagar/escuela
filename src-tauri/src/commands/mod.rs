@@ -1,3 +1,4 @@
+pub mod asignaciones;
 pub mod eligibility;
 pub mod familias;
 pub mod hermanos;

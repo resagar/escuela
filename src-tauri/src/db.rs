@@ -86,6 +86,9 @@ impl Database {
                 notas TEXT
             );
 
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_asignaciones_unique
+                ON asignaciones(parte_id, ambito, rol);
+
             CREATE TABLE IF NOT EXISTS familia_miembros (
                 familia_id INTEGER NOT NULL REFERENCES familias(id) ON DELETE CASCADE,
                 hermano_id INTEGER NOT NULL REFERENCES hermanos(id) ON DELETE CASCADE,

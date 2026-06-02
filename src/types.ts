@@ -45,6 +45,47 @@ export interface Semana {
 	orador_oracion_cierre_id: number | null;
 }
 
+export interface Parte {
+	id: number;
+	semana_id: number;
+	numero_orden: number;
+	seccion: string;
+	tipo_asignacion: string;
+	titulo: string | null;
+	duracion_minutos: number | null;
+	requiere_sala_auxiliar: boolean;
+	requiere_ayudante: boolean;
+}
+
+export interface Asignacion {
+	id: number;
+	parte_id: number;
+	ambito: string;
+	rol: string;
+	hermano_id: number;
+}
+
+export interface AsignacionDetail {
+	id: number;
+	parte_id: number;
+	ambito: string;
+	rol: string;
+	hermano_id: number;
+	hermano_nombre: string;
+	hermano_rol: string;
+	hermano_sexo: string;
+}
+
+export interface Familia {
+	id: number;
+	nombre: string;
+	notas: string | null;
+}
+
+export interface FamiliaWithMembers extends Familia {
+	miembros: Hermano[];
+}
+
 export interface ParsedPart {
 	numero_orden: number;
 	seccion: string;

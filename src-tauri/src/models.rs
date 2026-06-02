@@ -128,6 +128,18 @@ pub struct Asignacion {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AsignacionDetail {
+    pub id: i64,
+    pub parte_id: i64,
+    pub ambito: String,
+    pub rol: String,
+    pub hermano_id: i64,
+    pub hermano_nombre: String,
+    pub hermano_rol: String,
+    pub hermano_sexo: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Familia {
     pub id: i64,
     pub nombre: String,

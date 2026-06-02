@@ -49,6 +49,10 @@ pub fn run() {
             commands::familias::add_familia_member,
             commands::familias::remove_familia_member,
             commands::eligibility::get_eligible_brothers,
+            commands::asignaciones::assign_brother,
+            commands::asignaciones::remove_assignment,
+            commands::asignaciones::get_assignments_for_week,
+            commands::asignaciones::update_semana_roles,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());
