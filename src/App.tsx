@@ -10,6 +10,7 @@ import AsignacionesPage from "./pages/AsignacionesPage";
 import FamiliasListPage from "./pages/FamiliasListPage";
 import FamiliaDetailPage from "./pages/FamiliaDetailPage";
 import S140Page from "./pages/S140Page";
+import S140RangoPage from "./pages/S140RangoPage";
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 					<Route path="/familias" element={<FamiliasListPage />} />
 					<Route path="/familias/:id" element={<FamiliaDetailPage />} />
 					<Route path="/semanas/:id/s140" element={<S140Page />} />
+					<Route path="/s140/rango" element={<S140RangoPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

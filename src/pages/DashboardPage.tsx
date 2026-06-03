@@ -208,6 +208,14 @@ export default function DashboardPage() {
 								Continuar asignaciones
 							</Link>
 						)}
+						{semanasNormales.length > 0 && (
+							<Link
+								to="/s140/rango"
+								className="bg-white text-slate-700 border border-slate-300 px-5 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+							>
+								Ver S-140 del bimestre
+							</Link>
+						)}
 						<Link
 							to="/semanas"
 							className="bg-white text-slate-700 border border-slate-300 px-5 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
