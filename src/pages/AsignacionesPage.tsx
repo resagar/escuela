@@ -33,10 +33,6 @@ interface AssignmentKey {
 	rol: string;
 }
 
-function assignmentKey(parte_id: number, ambito: string, rol: string): string {
-	return `${parte_id}|${ambito}|${rol}`;
-}
-
 export default function AsignacionesPage() {
 	const { id } = useParams();
 	const semanaId = Number(id);
@@ -114,25 +110,11 @@ export default function AsignacionesPage() {
 					rol,
 				});
 			}
-			setAssignments((prev) => {
-				const key = assignmentKey(parte_id, ambito, rol);
-				if (hermano_id === null) {
-					return prev.filter(
-						(a) => assignmentKey(a.parte_id, a.ambito, a.rol) !== key,
-					);
-				}
-				const existing = prev.find(
-					(a) => assignmentKey(a.parte_id, a.ambito, a.rol) === key,
-				);
-				if (existing) {
-					return prev.map((a) =>
-						assignmentKey(a.parte_id, a.ambito, a.rol) === key
-							? { ...a, hermano_id, hermano_nombre: "", hermano_sexo: "" }
-							: a,
-					);
-				}
-				return [...prev, { id: 0, parte_id, ambito, rol, hermano_id, hermano_nombre: "", hermano_rol: "", hermano_sexo: "" }];
-			});
+			const updatedAssignments = await invoke<AsignacionDetail[]>(
+				"get_assignments_for_week",
+				{ semanaId },
+			);
+			setAssignments(updatedAssignments);
 			showSaved();
 		} catch (err) {
 			console.error("Error saving assignment:", err);
