@@ -40,7 +40,7 @@ export default function Layout() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<nav className="bg-slate-700 text-white px-4 py-3 shadow">
+			<nav className="no-print bg-slate-700 text-white px-4 py-3 shadow">
 				<div className="max-w-4xl mx-auto flex items-center justify-between">
 					<a href="/" className="text-lg font-bold tracking-wide">
 						Escuela — Asignaciones VyM
@@ -70,7 +70,7 @@ export default function Layout() {
 			</nav>
 			<main className="max-w-4xl mx-auto p-4">
 				{breadcrumbs.length > 0 && (
-					<nav className="text-xs text-gray-400 mb-3">
+					<nav className="no-print text-xs text-gray-400 mb-3">
 						{breadcrumbs.map((crumb, i) => (
 							<span key={crumb.path}>
 								{i > 0 && <span className="mx-1">/</span>}

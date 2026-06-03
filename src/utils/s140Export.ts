@@ -6,12 +6,22 @@ export async function downloadS140AsJpeg(
 	element: HTMLElement,
 	filename: string,
 ): Promise<void> {
-	const canvas = await html2canvas(element, {
+	const wrapper = document.createElement("div");
+	wrapper.style.backgroundColor = "#ffffff";
+	wrapper.style.padding = "24px";
+	wrapper.style.display = "inline-block";
+	const clone = element.cloneNode(true) as HTMLElement;
+	wrapper.appendChild(clone);
+	document.body.appendChild(wrapper);
+
+	const canvas = await html2canvas(wrapper, {
 		scale: 2,
 		useCORS: true,
 		backgroundColor: "#ffffff",
 		logging: false,
 	});
+
+	document.body.removeChild(wrapper);
 
 	const blob = await new Promise<Blob>((resolve) => {
 		canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.95);
