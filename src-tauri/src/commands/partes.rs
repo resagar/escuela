@@ -129,6 +129,13 @@ pub fn update_parte(
             rusqlite::params![val as i32, id],
         )
         .map_err(|e| e.to_string())?;
+        if !val {
+            conn.execute(
+                "DELETE FROM asignaciones WHERE parte_id = ?1 AND ambito = 'sala_auxiliar'",
+                rusqlite::params![id],
+            )
+            .map_err(|e| e.to_string())?;
+        }
     }
     if let Some(val) = requiere_ayudante {
         conn.execute(

@@ -197,10 +197,21 @@ export default function S140Page() {
 		}
 
 		if (tipo === "lectura_biblia" || tipo === "discurso_estudiante") {
-			const estudianteAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante") ||
-				getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
-			const estudianteAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante") ||
-				getAssignmentName(parte.id, "auditorio_principal", "estudiante");
+			const estudianteAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
+			const estudianteAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
+
+			if (!parte.requiere_sala_auxiliar) {
+				return (
+					<tr key={parte.id}>
+						<td className="time">0:00</td>
+						<td className="bullet-part" colSpan={2}>
+							{index}. {titulo} ({dur} mins.)
+						</td>
+						<td className="val">{estudianteAud}</td>
+					</tr>
+				);
+			}
+
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
@@ -217,9 +228,26 @@ export default function S140Page() {
 
 		// empiece_conversaciones, haga_revisitas, haga_discipulos, explique_creencias_escenificacion
 		const estAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
-			const ayuAux = getAssignmentName(parte.id, "sala_auxiliar", "ayudante");
-			const estAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
-			const ayuAud = getAssignmentName(parte.id, "auditorio_principal", "ayudante");
+		const ayuAux = getAssignmentName(parte.id, "sala_auxiliar", "ayudante");
+		const estAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
+		const ayuAud = getAssignmentName(parte.id, "auditorio_principal", "ayudante");
+
+		if (!parte.requiere_sala_auxiliar) {
+			return (
+				<tr key={parte.id}>
+					<td className="time">0:00</td>
+					<td className="bullet-part" colSpan={2}>
+						{index}. {titulo} ({dur} mins.)
+					</td>
+					<td className="val">
+						<span className="lbl">Estudiante/Ayudante:</span>
+						<br />
+						{estAud} / {ayuAud}
+					</td>
+				</tr>
+			);
+		}
+
 		return (
 			<tr key={parte.id}>
 				<td className="time">0:00</td>
@@ -246,17 +274,29 @@ export default function S140Page() {
 		startIndex: number,
 	) {
 		const rows: React.JSX.Element[] = [];
+		const hasSalaAux = secPartes.some((p) => p.requiere_sala_auxiliar);
 
 		if (secDef.key !== "vida_cristiana") {
-			rows.push(
-				<tr key={`header-${secDef.key}`} className="row-section-header">
-					<td className={`sec-header ${secDef.css}`} colSpan={2}>
-						{secDef.label}
-					</td>
-					<td className="col-sala-header">Sala auxiliar</td>
-					<td className="col-aud-header">Auditorio principal</td>
-				</tr>,
-			);
+			if (hasSalaAux) {
+				rows.push(
+					<tr key={`header-${secDef.key}`} className="row-section-header">
+						<td className={`sec-header ${secDef.css}`} colSpan={2}>
+							{secDef.label}
+						</td>
+						<td className="col-sala-header">Sala auxiliar</td>
+						<td className="col-aud-header">Auditorio principal</td>
+					</tr>,
+				);
+			} else {
+				rows.push(
+					<tr key={`header-${secDef.key}`} className="row-section-header">
+						<td className={`sec-header ${secDef.css}`} colSpan={3}>
+							{secDef.label}
+						</td>
+						<td className="col-aud-header">Auditorio principal</td>
+					</tr>,
+				);
+			}
 		}
 
 		secPartes.forEach((parte, i) => {
