@@ -162,10 +162,15 @@
   .no-print {
     display: none;
   }
+  /* Hide app chrome (navbar + breadcrumb) */
+  .min-h-screen > nav,
+  .min-h-screen > main > nav {
+    display: none;
+  }
 }
 
 /* === SCREEN ONLY INFO BAR === */
-.no-print {
+.s140-wrapper .no-print {
   background: #fff3cd;
   border: 1px solid #ffc107;
   padding: 10px;
