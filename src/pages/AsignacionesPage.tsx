@@ -292,6 +292,33 @@ export default function AsignacionesPage() {
 			);
 		}
 
+		if (needsAyudante) {
+			return (
+				<div>
+					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+					<BrotherSelector
+						tipoAsignacion={tipo}
+						rol="estudiante"
+						ambito="auditorio_principal"
+						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
+						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
+						stats={bimonthlyStats}
+					/>
+					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
+					<BrotherSelector
+						tipoAsignacion={tipo}
+						rol="ayudante"
+						ambito="auditorio_principal"
+						sexoEstudiante={getAssignmentSexo(parte.id, "auditorio_principal")}
+						estudianteId={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
+						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "ayudante" })}
+						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "ayudante", v)}
+						stats={bimonthlyStats}
+					/>
+				</div>
+			);
+		}
+
 		return (
 			<div>
 				<label className="text-xs font-semibold text-gray-600 block mb-0.5">Presentador:</label>
@@ -314,7 +341,7 @@ export default function AsignacionesPage() {
 				a.ambito === ambito &&
 				a.rol === "estudiante",
 		);
-		return found ? found.hermano_sexo : null;
+		return found?.hermano_sexo || null;
 	};
 
 	const groupedPartes = partes.reduce<Record<string, Parte[]>>((acc, p) => {
