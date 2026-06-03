@@ -86,6 +86,7 @@ pub fn list_partes(
 pub fn update_parte(
     db: State<'_, Database>,
     id: i64,
+    seccion: Option<String>,
     titulo: Option<String>,
     tipo_asignacion: Option<String>,
     duracion_minutos: Option<i32>,
@@ -94,6 +95,13 @@ pub fn update_parte(
 ) -> Result<(), String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
 
+    if let Some(val) = seccion {
+        conn.execute(
+            "UPDATE partes SET seccion = ?1 WHERE id = ?2",
+            rusqlite::params![val, id],
+        )
+        .map_err(|e| e.to_string())?;
+    }
     if let Some(val) = titulo {
         conn.execute(
             "UPDATE partes SET titulo = ?1 WHERE id = ?2",

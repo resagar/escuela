@@ -147,6 +147,7 @@ export default function SemanaFormPage() {
 					if (p.id != null) {
 						await invoke("update_parte", {
 							id: p.id,
+							seccion: p.seccion,
 							titulo: p.titulo || null,
 							tipoAsignacion: p.tipo_asignacion,
 							duracionMinutos: p.duracion_minutos,

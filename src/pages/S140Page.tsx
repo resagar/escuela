@@ -164,8 +164,8 @@ export default function S140Page() {
 		}
 
 		if (tipo === "estudio_biblico") {
-			const conductor = getAssignmentName(parte.id, "auditorio", "conductor");
-			const lector = getAssignmentName(parte.id, "auditorio", "lector");
+			const conductor = getAssignmentName(parte.id, "auditorio_principal", "conductor");
+			const lector = getAssignmentName(parte.id, "auditorio_principal", "lector");
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
@@ -183,8 +183,8 @@ export default function S140Page() {
 
 		if (tipo === "discurso_no_estudiante" || tipo === "busquemos_perlas" ||
 			tipo === "analisis_auditorio" || tipo === "necesidades_congregacion") {
-			const presentador = getAssignmentName(parte.id, "auditorio", "presentador") ||
-				getAssignmentName(parte.id, "auditorio", "conductor");
+			const presentador = getAssignmentName(parte.id, "auditorio_principal", "estudiante") ||
+				getAssignmentName(parte.id, "auditorio_principal", "estudiante");
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
@@ -198,9 +198,9 @@ export default function S140Page() {
 
 		if (tipo === "lectura_biblia" || tipo === "discurso_estudiante") {
 			const estudianteAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante") ||
-				getAssignmentName(parte.id, "sala_auxiliar", "presentador");
-			const estudianteAud = getAssignmentName(parte.id, "auditorio", "estudiante") ||
-				getAssignmentName(parte.id, "auditorio", "presentador");
+				getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
+			const estudianteAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante") ||
+				getAssignmentName(parte.id, "auditorio_principal", "estudiante");
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
@@ -217,9 +217,9 @@ export default function S140Page() {
 
 		// empiece_conversaciones, haga_revisitas, haga_discipulos, explique_creencias_escenificacion
 		const estAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
-		const ayuAux = getAssignmentName(parte.id, "sala_auxiliar", "ayudante");
-		const estAud = getAssignmentName(parte.id, "auditorio", "estudiante");
-		const ayuAud = getAssignmentName(parte.id, "auditorio", "ayudante");
+			const ayuAux = getAssignmentName(parte.id, "sala_auxiliar", "ayudante");
+			const estAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
+			const ayuAud = getAssignmentName(parte.id, "auditorio_principal", "ayudante");
 		return (
 			<tr key={parte.id}>
 				<td className="time">0:00</td>
