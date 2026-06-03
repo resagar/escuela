@@ -1,7 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import type { Semana, Parte, AsignacionDetail, Hermano } from "../types";
 import S140WeekView from "../components/S140WeekView";
+import { downloadS140AsJpeg } from "../utils/s140Export";
 import "../styles/s140.css";
 
 interface WeekData {
@@ -32,6 +33,7 @@ function groupByMonth(semanas: Semana[]): Map<string, Semana[]> {
 }
 
 export default function S140RangoPage() {
+	const previewRef = useRef<HTMLDivElement>(null);
 	const [semanas, setSemanas] = useState<Semana[]>([]);
 	const [selected, setSelected] = useState<Set<number>>(new Set());
 	const [fechaDesde, setFechaDesde] = useState("");
@@ -252,12 +254,22 @@ export default function S140RangoPage() {
 						>
 							Imprimir / Guardar PDF
 						</button>
+						<button
+							onClick={() => {
+								if (previewRef.current) {
+									downloadS140AsJpeg(previewRef.current, `S140-bimestre.jpg`);
+								}
+							}}
+							className="bg-white text-slate-700 border border-slate-300 px-4 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+						>
+							Descargar JPEG
+						</button>
 						<span className="text-xs text-gray-400">
 							{previewData.length} semanas
 						</span>
 					</div>
 
-					<div>
+					<div ref={previewRef}>
 						{previewData.map((wd, i) => (
 							<div key={wd.semana.id}>
 								{i > 0 && <hr className="week-separator" />}

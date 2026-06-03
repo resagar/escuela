@@ -56,6 +56,7 @@ pub fn run() {
             commands::asignaciones::update_semana_roles,
             commands::historial::get_brother_history,
             commands::historial::get_bimonthly_stats,
+            commands::export::write_file_bytes,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());

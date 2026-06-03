@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { Semana, Parte, AsignacionDetail, Hermano } from "../types";
 import S140WeekView from "../components/S140WeekView";
+import { downloadS140AsJpeg } from "../utils/s140Export";
 import "../styles/s140.css";
 
 export default function S140Page() {
 	const { id } = useParams();
+	const contentRef = useRef<HTMLDivElement>(null);
 	const [semana, setSemana] = useState<Semana | null>(null);
 	const [partes, setPartes] = useState<Parte[]>([]);
 	const [asignaciones, setAsignaciones] = useState<AsignacionDetail[]>([]);
@@ -86,17 +88,29 @@ export default function S140Page() {
 				{" | "}
 				<button onClick={() => window.print()}>Imprimir / Guardar PDF</button>
 				{" | "}
+				<button
+					onClick={() => {
+						if (contentRef.current) {
+							downloadS140AsJpeg(contentRef.current, `S140-${semana.fecha_inicio}.jpg`);
+						}
+					}}
+				>
+					Descargar JPEG
+				</button>
+				{" | "}
 				<Link to="/s140/rango" className="text-slate-600 hover:text-slate-800 underline text-sm">
 					Ver bimestre completo
 				</Link>
 			</div>
 
-			<S140WeekView
-				semana={semana}
-				partes={partes}
-				asignaciones={asignaciones}
-				personas={personas}
-			/>
+			<div ref={contentRef}>
+				<S140WeekView
+					semana={semana}
+					partes={partes}
+					asignaciones={asignaciones}
+					personas={personas}
+				/>
+			</div>
 		</div>
 	);
 }
