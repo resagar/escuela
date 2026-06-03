@@ -1,4 +1,4 @@
-/* === COLORS (CSS Variables — scoped, no global conflict) === */
+/* === COLORS === */
 :root {
   --color-slate: #575a5d;
   --color-gold: #be8900;
@@ -6,16 +6,17 @@
   --color-text: #000000;
   --color-border: #dfdfdf;
   --color-white: #ffffff;
+  --color-bg-header: #f2f2f2;
 }
 
-/* === PAGE SETUP (print only) === */
+/* === PAGE SETUP === */
 @media print {
   @page {
     size: letter;
-    margin: 0.5in;
+    margin: 0.5in 0.5in 0.5in 0.5in;
   }
   body {
-    font-family: "Segoe UI", Arial, sans-serif;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     color: var(--color-text);
     background: var(--color-white);
     max-width: none;
@@ -26,11 +27,12 @@
   }
 }
 
-/* === SCREEN WRAPPER (solo para impresión, no afecta el layout de la app) === */
+/* === SCREEN WRAPPER === */
 .s140-wrapper {
   max-width: 7.5in;
   margin: 0 auto;
-  font-family: "Segoe UI", Arial, sans-serif;
+  padding: 10px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -41,12 +43,27 @@
   border-collapse: collapse;
   font-size: 10pt;
   margin-bottom: 20px;
+  table-layout: fixed;
 }
 
 .s140-table td {
-  padding: 3px 6px;
+  padding: 5px 8px;
   vertical-align: middle;
-  border: 0.5px solid var(--color-border);
+  border-bottom: 0.5px solid var(--color-border);
+  border-left: none;
+  border-right: none;
+}
+
+/* Regla general de bordes verticales interiores */
+.s140-table td + td {
+  border-left: 0.5px solid var(--color-border);
+}
+
+/* Quitar bordes verticales en la fila de cabecera superior y de información administrativa */
+.s140-table .row-header td,
+.s140-table .row-info td {
+  border-left: none !important;
+  border-right: none !important;
 }
 
 /* --- Top Header Row --- */
@@ -62,9 +79,8 @@
   text-align: left;
 }
 .s140-table .main-title {
-  font-size: 14pt;
+  font-size: 16.5pt;
   font-weight: bold;
-  text-transform: uppercase;
   text-align: right;
   letter-spacing: 0.5px;
 }
@@ -79,41 +95,46 @@
   font-weight: bold;
   text-align: left;
 }
-.s140-table .pres-text {
-  text-align: right;
-  font-size: 9.5pt;
+
+/* Fila final de información: agregamos borde inferior para separar de la canción */
+.s140-table .row-info-last td {
+  border-bottom: 0.5px solid var(--color-border) !important;
+  padding-bottom: 6px;
 }
 
-/* --- Shared Font Weights & Colors (scoped to .s140-table) --- */
+/* --- Labels, Values, Time, Bullets --- */
 .s140-table .lbl {
-  font-size: 8.5pt;
+  font-size: 8.0pt;
   font-weight: bold;
   color: var(--color-slate);
+  text-align: right;
+  padding-right: 8px;
 }
 .s140-table .val {
   font-size: 10pt;
   font-weight: normal;
   color: var(--color-text);
+  text-align: left;
 }
 .s140-table .time {
-  font-size: 9pt;
+  font-size: 9.0pt;
   font-weight: bold;
   color: var(--color-slate);
-  text-align: center;
-  width: 45px;
+  text-align: left;
 }
 .s140-table .bullet-part {
   font-size: 10pt;
   font-weight: normal;
+  text-align: left;
 }
 
 /* --- Section Headers --- */
 .s140-table .sec-header {
-  font-size: 10.5pt;
+  font-size: 10.0pt;
   font-weight: bold;
   color: var(--color-white);
   text-align: left;
-  padding: 4px 8px;
+  padding: 5px 8px;
   border: none;
 }
 .s140-table .sec-tesoros {
@@ -126,21 +147,25 @@
   background-color: var(--color-maroon);
 }
 
-/* --- Columns Setup --- */
-.s140-table .col-title-header {
-  font-size: 8.5pt;
-  font-weight: bold;
-  color: var(--color-slate);
-  text-align: left;
-  background-color: transparent;
-}
+/* Títulos de sala con fondo gris claro */
 .s140-table .col-sala-header,
 .s140-table .col-aud-header {
-  font-size: 8.5pt;
+  font-size: 8.0pt;
   font-weight: bold;
   color: var(--color-slate);
   text-align: left;
-  width: 175px;
+  background-color: var(--color-bg-header);
+  padding: 5px 8px;
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+/* --- Form Code --- */
+.form-code {
+  font-size: 7.5pt;
+  font-family: Arial, sans-serif;
+  color: var(--color-slate);
+  margin-bottom: 2px;
+  text-align: left;
 }
 
 /* --- Print/Page Breaks --- */
@@ -169,7 +194,7 @@
   }
 }
 
-/* === SCREEN ONLY INFO BAR === */
+/* === SCREEN ONLY INFO BAR (S-140 only) === */
 .s140-wrapper .no-print {
   background: #fff3cd;
   border: 1px solid #ffc107;

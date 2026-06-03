@@ -71,7 +71,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
-					<td className="bullet-part" colSpan={3}>
+					<td className="bullet-part" colSpan={4}>
 						• {titulo || "Palabras de introducción"} ({dur} min.)
 					</td>
 				</tr>
@@ -82,7 +82,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
-					<td className="bullet-part" colSpan={3}>
+					<td className="bullet-part" colSpan={4}>
 						• {titulo || "Palabras de conclusión"} ({dur} min.)
 					</td>
 				</tr>
@@ -98,11 +98,8 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 					<td className="bullet-part" colSpan={2}>
 						{index}. Estudio bíblico de la congregación ({dur} mins.)
 					</td>
-					<td className="val">
-						<span className="lbl">Conductor/Lector:</span>
-						<br />
-						{conductor} / {lector}
-					</td>
+					<td className="lbl">Conductor/Lector:</td>
+					<td className="val">{conductor} / {lector}</td>
 				</tr>
 			);
 		}
@@ -113,7 +110,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
-					<td className="bullet-part" colSpan={2}>
+					<td className="bullet-part" colSpan={3}>
 						{index}. {titulo} ({dur} mins.)
 					</td>
 					<td className="val">{presentador}</td>
@@ -132,6 +129,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 						<td className="bullet-part" colSpan={2}>
 							{index}. {titulo} ({dur} mins.)
 						</td>
+						<td className="lbl">Estudiante:</td>
 						<td className="val">{estudianteAud}</td>
 					</tr>
 				);
@@ -143,9 +141,8 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 					<td className="bullet-part">
 						{index}. {titulo} ({dur} mins.)
 					</td>
-					<td className="val">
-						<span className="lbl">Estudiante:</span> {estudianteAux}
-					</td>
+					<td className="lbl">Estudiante:</td>
+					<td className="val">{estudianteAux}</td>
 					<td className="val">{estudianteAud}</td>
 				</tr>
 			);
@@ -164,11 +161,8 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 					<td className="bullet-part" colSpan={2}>
 						{index}. {titulo} ({dur} mins.)
 					</td>
-					<td className="val">
-						<span className="lbl">Estudiante/Ayudante:</span>
-						<br />
-						{estAud} / {ayuAud}
-					</td>
+					<td className="lbl">Estudiante/Ayudante:</td>
+					<td className="val">{estAud} / {ayuAud}</td>
 				</tr>
 			);
 		}
@@ -179,16 +173,9 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 				<td className="bullet-part">
 					{index}. {titulo} ({dur} mins.)
 				</td>
-				<td className="val">
-					<span className="lbl">Estudiante/Ayudante:</span>
-					<br />
-					{estAux} / {ayuAux}
-				</td>
-				<td className="val">
-					<span className="lbl">Estudiante/Ayudante:</span>
-					<br />
-					{estAud} / {ayuAud}
-				</td>
+				<td className="lbl">Estudiante/Ayudante:</td>
+				<td className="val">{estAux} / {ayuAux}</td>
+				<td className="val">{estAud} / {ayuAud}</td>
 			</tr>
 		);
 	}
@@ -201,27 +188,25 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 		const rows: React.JSX.Element[] = [];
 		const hasSalaAux = secPartes.some((p) => p.requiere_sala_auxiliar);
 
-		if (secDef.key !== "vida_cristiana") {
-			if (hasSalaAux) {
-				rows.push(
-					<tr key={`header-${secDef.key}`} className="row-section-header">
-						<td className={`sec-header ${secDef.css}`} colSpan={2}>
-							{secDef.label}
-						</td>
-						<td className="col-sala-header">Sala auxiliar</td>
-						<td className="col-aud-header">Auditorio principal</td>
-					</tr>,
-				);
-			} else {
-				rows.push(
-					<tr key={`header-${secDef.key}`} className="row-section-header">
-						<td className={`sec-header ${secDef.css}`} colSpan={3}>
-							{secDef.label}
-						</td>
-						<td className="col-aud-header">Auditorio principal</td>
-					</tr>,
-				);
-			}
+		if (hasSalaAux) {
+			rows.push(
+				<tr key={`header-${secDef.key}`}>
+					<td className={`sec-header ${secDef.css}`} colSpan={3}>
+						{secDef.label}
+					</td>
+					<td className="col-sala-header">Sala auxiliar</td>
+					<td className="col-aud-header">Auditorio principal</td>
+				</tr>,
+			);
+		} else {
+			rows.push(
+				<tr key={`header-${secDef.key}`}>
+					<td className={`sec-header ${secDef.css}`} colSpan={3}>
+						{secDef.label}
+					</td>
+					<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--color-border)" }}></td>
+				</tr>,
+			);
 		}
 
 		secPartes.forEach((parte, i) => {
@@ -239,60 +224,65 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 
 	return (
 		<div className="week-container">
+			<div className="form-code">S-140-S&nbsp;&nbsp;11/23</div>
 			<table className="s140-table">
+				<colgroup>
+					<col style={{ width: "6.2%" }} />
+					<col style={{ width: "26.6%" }} />
+					<col style={{ width: "18.9%" }} />
+					<col style={{ width: "23.7%" }} />
+					<col style={{ width: "24.6%" }} />
+				</colgroup>
 				<tbody>
 					<tr className="row-header">
-						<td colSpan={2} className="cong-name">{CONG_NAME}</td>
+						<td colSpan={3} className="cong-name">{CONG_NAME}</td>
 						<td colSpan={2} className="main-title">
-							VIDA Y MINISTERIO CRISTIANOS
+							Vida y Ministerio Cristianos
 						</td>
 					</tr>
 					<tr style={{ height: 4, border: "none" }}>
-						<td style={{ border: "none" }} colSpan={4} />
+						<td colSpan={5} style={{ border: "none", padding: 0 }} />
 					</tr>
 					<tr className="row-info">
-						<td colSpan={2} className="date-text">{fullDate}</td>
-						<td colSpan={2} className="pres-text">
-							<span className="lbl">Presidente:</span>{" "}
-							<span className="val">{getPersonaName(semana.presidente_id)}</span>
-						</td>
+						<td colSpan={3} className="date-text">{fullDate}</td>
+						<td className="lbl">Presidente:</td>
+						<td className="val">{getPersonaName(semana.presidente_id)}</td>
 					</tr>
-					<tr className="row-info">
-						<td style={{ border: "none" }} />
-						<td colSpan={2} />
-						<td className="pres-text">
-							<span className="lbl">Consejero de la sala auxiliar:</span>{" "}
-							<span className="val">{getPersonaName(semana.consejero_sala_id)}</span>
-						</td>
+					<tr className="row-info row-info-last">
+						<td colSpan={3} />
+						<td className="lbl">Consejero de la sala auxiliar:</td>
+						<td className="val">{getPersonaName(semana.consejero_sala_id)}</td>
+					</tr>
+					<tr style={{ height: 4, border: "none" }}>
+						<td colSpan={5} style={{ border: "none", padding: 0 }} />
 					</tr>
 					<tr>
 						<td className="time">0:00</td>
 						<td className="bullet-part" colSpan={2}>
 							• Canción {semana.cancion_apertura ?? ""}
 						</td>
-						<td>
-							<span className="lbl">Oración:</span>{" "}
-							<span className="val">
-								{getPersonaName(semana.orador_oracion_apertura_id)}
-							</span>
+						<td className="lbl">Oración:</td>
+						<td className="val">
+							{getPersonaName(semana.orador_oracion_apertura_id)}
 						</td>
 					</tr>
 					<tr>
 						<td className="time">0:00</td>
-						<td className="bullet-part" colSpan={3}>
+						<td className="bullet-part" colSpan={4}>
 							• Palabras de introducción (1 min.)
 						</td>
 					</tr>
 					{tesorosRows}
 					{mejoresRows}
 					<tr>
-						<td className={`sec-header sec-vida`} colSpan={4}>
+						<td className={`sec-header sec-vida`} colSpan={3}>
 							NUESTRA VIDA CRISTIANA
 						</td>
+						<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--color-border)" }}></td>
 					</tr>
 					<tr>
 						<td className="time">0:00</td>
-						<td className="bullet-part" colSpan={3}>
+						<td className="bullet-part" colSpan={4}>
 							• Canción {semana.cancion_intermedia ?? ""}
 						</td>
 					</tr>
@@ -302,11 +292,9 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 						<td className="bullet-part" colSpan={2}>
 							• Canción {semana.cancion_cierre ?? ""}
 						</td>
-						<td>
-							<span className="lbl">Oración:</span>{" "}
-							<span className="val">
-								{getPersonaName(semana.orador_oracion_cierre_id)}
-							</span>
+						<td className="lbl">Oración:</td>
+						<td className="val">
+							{getPersonaName(semana.orador_oracion_cierre_id)}
 						</td>
 					</tr>
 				</tbody>
