@@ -59,12 +59,12 @@
         border-right: none;
       }
 
-      /* Dibujar bordes verticales interiores (para todas las celdas a la derecha de la primera) */
+      /* Regla general de bordes verticales interiores para todas las columnas de la tabla (excepto la primera) */
       .s140-table td + td {
         border-left: 0.5px solid var(--color-border);
       }
 
-      /* Quitar bordes verticales en filas de cabecera y de información administrativa */
+      /* Quitar bordes verticales en la fila de cabecera superior y de información administrativa */
       .s140-table .row-header td,
       .s140-table .row-info td {
         border-left: none !important;
@@ -84,9 +84,8 @@
         text-align: left;
       }
       .s140-table .main-title {
-        font-size: 14pt;
+        font-size: 16.5pt;
         font-weight: bold;
-        text-transform: uppercase;
         text-align: right;
         letter-spacing: 0.5px;
       }
@@ -108,32 +107,9 @@
         padding-bottom: 6px;
       }
 
-      /* --- Inner Labels & Values (Stacked inside cells) --- */
-      .lbl-inner {
-        font-size: 8pt;
-        font-weight: bold;
-        color: var(--color-slate);
-        margin-bottom: 2px;
-        text-align: left;
-      }
-      .val-inner {
-        font-size: 10pt;
-        font-weight: normal;
-        color: var(--color-text);
-        text-align: left;
-      }
-
-      /* --- Inline Labels (for Song & Prayer) --- */
-      .lbl-inline {
-        font-size: 8pt;
-        font-weight: bold;
-        color: var(--color-slate);
-        margin-right: 4px;
-      }
-
-      /* --- Labels and times --- */
+      /* --- Labels Column and Values --- */
       .lbl {
-        font-size: 8pt;
+        font-size: 8.0pt;
         font-weight: bold;
         color: var(--color-slate);
         text-align: right;
@@ -146,7 +122,7 @@
         text-align: left;
       }
       .time {
-        font-size: 9pt;
+        font-size: 9.0pt;
         font-weight: bold;
         color: var(--color-slate);
         text-align: left;
@@ -159,7 +135,7 @@
 
       /* --- Section Headers --- */
       .s140-table .sec-header {
-        font-size: 10pt;
+        font-size: 10.0pt;
         font-weight: bold;
         color: var(--color-white);
         text-align: left;
@@ -179,7 +155,7 @@
       /* Títulos de sala con fondo gris claro y conservando borde inferior */
       .s140-table .col-sala-header,
       .s140-table .col-aud-header {
-        font-size: 8pt;
+        font-size: 8.0pt;
         font-weight: bold;
         color: var(--color-slate);
         text-align: left;
@@ -237,8 +213,7 @@
   </head>
   <body>
     <div class="no-print">
-      🖨️ <strong>Vista previa 1:1 del S-140</strong> — Estilos oficiales, grilla
-      matemática de 4 columnas y bordes flotantes exactos.
+      🖨️ <strong>Vista previa 1:1 del S-140 (Grilla de 5 Columnas)</strong> — Estilos oficiales, etiquetas alineadas horizontalmente y bordes unificados.
       <button
         onclick="window.print()"
         style="
@@ -259,59 +234,64 @@
     <div class="week-container">
       <div class="form-code">S-140-S&nbsp;&nbsp;11/23</div>
       <table class="s140-table">
-        <!-- Define column widths based on the official 4-column layout -->
+        <!-- Define column widths based on the official 5-column docx coordinates -->
         <colgroup>
-          <col style="width: 6.2%" />
-          <col style="width: 44.3%" />
-          <col style="width: 24.7%" />
-          <col style="width: 24.8%" />
+          <col style="width: 6.2%;" />
+          <col style="width: 26.6%;" />
+          <col style="width: 18.9%;" />
+          <col style="width: 23.7%;" />
+          <col style="width: 24.6%;" />
         </colgroup>
 
         <!-- Row 0: Congregation & Main Title -->
         <tr class="row-header">
-          <td colspan="2" class="cong-name">Cong. CASANAY</td>
+          <td colspan="3" class="cong-name">Cong. CASANAY</td>
           <td colspan="2" class="main-title">Vida y Ministerio Cristianos</td>
         </tr>
 
         <!-- Spacing -->
         <tr style="height: 4px; border: none">
-          <td colspan="4" style="border: none; padding: 0"></td>
+          <td colspan="5" style="border: none; padding: 0"></td>
         </tr>
 
         <!-- Row 2: Date & President -->
         <tr class="row-info">
-          <td colspan="2" class="date-text">23-29 DE MARZO | ISAÍAS 48, 49</td>
+          <td colspan="3" class="date-text">23-29 DE MARZO | ISAÍAS 48, 49</td>
           <td class="lbl">Presidente:</td>
           <td class="val">Héctor Gómez</td>
         </tr>
 
         <!-- Row 3: Consejero (Last info row, will have border bottom) -->
         <tr class="row-info row-info-last">
-          <td colspan="2"></td>
+          <td colspan="3"></td>
           <td class="lbl">Consejero de la sala auxiliar:</td>
           <td class="val">Miguel Bello</td>
+        </tr>
+
+        <!-- Spacing -->
+        <tr style="height: 4px; border: none">
+          <td colspan="5" style="border: none; padding: 0"></td>
         </tr>
 
         <!-- Row 4: Song & Prayer -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part" colspan="2">• Canción 89</td>
-          <td class="val">
-            <span class="lbl-inline">Oración:</span>Antonio Carrera
-          </td>
+          <td class="lbl">Oración:</td>
+          <td class="val">Antonio Carrera</td>
         </tr>
 
         <!-- Row 5: Intro -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="3">
+          <td class="bullet-part" colspan="4">
             • Palabras de introducción (1 min.)
           </td>
         </tr>
 
         <!-- TESOROS HEADER -->
         <tr>
-          <td class="sec-header sec-tesoros" colspan="2">
+          <td class="sec-header sec-tesoros" colspan="3">
             TESOROS DE LA BIBLIA
           </td>
           <td class="col-sala-header">Sala auxiliar</td>
@@ -321,7 +301,7 @@
         <!-- Part 1 (Tesoros Discourse - No Sala Aux) -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             1. Si le prestamos atención a Jehová, nos irá bien (10 mins.)
           </td>
           <td class="val">Miguel Bello</td>
@@ -330,7 +310,7 @@
         <!-- Part 2 (Perlas - No Sala Aux) -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             2. Busquemos perlas escondidas (10 mins.)
           </td>
           <td class="val">José León</td>
@@ -340,19 +320,14 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">3. Lectura de la Biblia (4 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante:</div>
-            <div class="val-inner">Carlos García</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante:</div>
-            <div class="val-inner">Alfonzo Alcántara</div>
-          </td>
+          <td class="lbl">Estudiante:</td>
+          <td class="val">Carlos García</td>
+          <td class="val">Alfonzo Alcántara</td>
         </tr>
 
         <!-- SEAMOS MEJORES HEADER -->
         <tr>
-          <td class="sec-header sec-mejores" colspan="2">
+          <td class="sec-header sec-mejores" colspan="3">
             SEAMOS MEJORES MAESTROS
           </td>
           <td class="col-sala-header">Sala auxiliar</td>
@@ -363,61 +338,47 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">4. Empiece conversaciones (3 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Rosalis de P / María de Zapata</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Rosangelis de G / Maryuris de A</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Rosalis de P / María de Zapata</td>
+          <td class="val">Rosangelis de G / Maryuris de A</td>
         </tr>
 
         <!-- Part 5 (Haga revisitas) -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">5. Haga revisitas (4 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Rosa de L / Boni Salamanca</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Daily de G / Carmen Ag</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Rosa de L / Boni Salamanca</td>
+          <td class="val">Daily de G / Carmen Ag</td>
         </tr>
 
         <!-- Part 6 (Haga revisitas) -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">6. Haga revisitas (5 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Joselin de C / Jasly A.</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Karla de G / Marisol de L</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Joselin de C / Jasly A.</td>
+          <td class="val">Karla de G / Marisol de L</td>
         </tr>
 
         <!-- VIDA CRISTIANA HEADER (No Sala Aux) -->
         <tr>
-          <td class="sec-header sec-vida" colspan="4">
+          <td class="sec-header sec-vida" colspan="3">
             NUESTRA VIDA CRISTIANA
           </td>
+          <td colspan="2" style="border: none; border-bottom: 0.5px solid var(--color-border);"></td>
         </tr>
 
         <!-- Intermediate Song -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="3">• Canción 107</td>
+          <td class="bullet-part" colspan="4">• Canción 107</td>
         </tr>
 
         <!-- Part 7 (Discurso VC) -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             7. Aproveche bien el día más importante del año (15 mins.)
           </td>
           <td class="val">Deivis López</td>
@@ -429,16 +390,14 @@
           <td class="bullet-part" colspan="2">
             8. Estudio bíblico de la congregación (30 mins.)
           </td>
-          <td class="val">
-            <div class="lbl-inner">Conductor/Lector:</div>
-            <div class="val-inner">Juan H / Leonardo Zapata</div>
-          </td>
+          <td class="lbl">Conductor/Lector:</td>
+          <td class="val">Juan H / Leonardo Zapata</td>
         </tr>
 
         <!-- Conclusion -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="3">
+          <td class="bullet-part" colspan="4">
             • Palabras de conclusión (3 min.)
           </td>
         </tr>
@@ -447,9 +406,8 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part" colspan="2">• Canción 134</td>
-          <td class="val">
-            <span class="lbl-inline">Oración:</span>Arquímedes González
-          </td>
+          <td class="lbl">Oración:</td>
+          <td class="val">Arquímedes González</td>
         </tr>
       </table>
     </div>
@@ -462,59 +420,64 @@
     <div class="week-container">
       <div class="form-code">S-140-S&nbsp;&nbsp;11/23</div>
       <table class="s140-table">
-        <!-- Define column widths based on the official 4-column layout -->
+        <!-- Define column widths based on the official 5-column docx coordinates -->
         <colgroup>
-          <col style="width: 6.2%" />
-          <col style="width: 44.3%" />
-          <col style="width: 24.7%" />
-          <col style="width: 24.8%" />
+          <col style="width: 6.2%;" />
+          <col style="width: 26.6%;" />
+          <col style="width: 18.9%;" />
+          <col style="width: 23.7%;" />
+          <col style="width: 24.6%;" />
         </colgroup>
 
         <!-- Row 0: Congregation & Main Title -->
         <tr class="row-header">
-          <td colspan="2" class="cong-name">Cong. CASANAY</td>
+          <td colspan="3" class="cong-name">Cong. CASANAY</td>
           <td colspan="2" class="main-title">Vida y Ministerio Cristianos</td>
         </tr>
 
         <!-- Spacing -->
         <tr style="height: 4px; border: none">
-          <td colspan="4" style="border: none; padding: 0"></td>
+          <td colspan="5" style="border: none; padding: 0"></td>
         </tr>
 
         <!-- Row 2: Date & President -->
         <tr class="row-info">
-          <td colspan="2" class="date-text">6-12 DE ABRIL | ISAÍAS 50, 51</td>
+          <td colspan="3" class="date-text">6-12 DE ABRIL | ISAÍAS 50, 51</td>
           <td class="lbl">Presidente:</td>
           <td class="val">Juan C. Hernández</td>
         </tr>
 
         <!-- Row 3: Consejero (Last info row, will have border bottom) -->
         <tr class="row-info row-info-last">
-          <td colspan="2"></td>
+          <td colspan="3"></td>
           <td class="lbl">Consejero de la sala auxiliar:</td>
           <td class="val">René García</td>
+        </tr>
+
+        <!-- Spacing -->
+        <tr style="height: 4px; border: none">
+          <td colspan="5" style="border: none; padding: 0"></td>
         </tr>
 
         <!-- Row 4: Song & Prayer -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part" colspan="2">• Canción 88</td>
-          <td class="val">
-            <span class="lbl-inline">Oración:</span>Carlos Carrera
-          </td>
+          <td class="lbl">Oración:</td>
+          <td class="val">Carlos Carrera</td>
         </tr>
 
         <!-- Row 5: Intro -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="3">
+          <td class="bullet-part" colspan="4">
             • Palabras de introducción (1 min.)
           </td>
         </tr>
 
         <!-- TESOROS HEADER -->
         <tr>
-          <td class="sec-header sec-tesoros" colspan="2">
+          <td class="sec-header sec-tesoros" colspan="3">
             TESOROS DE LA BIBLIA
           </td>
           <td class="col-sala-header">Sala auxiliar</td>
@@ -524,7 +487,7 @@
         <!-- Part 1 -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             1. Escuchemos al que fue instruido por Dios (10 mins.)
           </td>
           <td class="val">René García</td>
@@ -533,7 +496,7 @@
         <!-- Part 2 -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             2. Busquemos perlas escondidas (10 mins.)
           </td>
           <td class="val">Leonardo Zapata</td>
@@ -543,19 +506,14 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">3. Lectura de la Biblia (4 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante:</div>
-            <div class="val-inner">José Tineo</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante:</div>
-            <div class="val-inner">Antonio Carrera</div>
-          </td>
+          <td class="lbl">Estudiante:</td>
+          <td class="val">José Tineo</td>
+          <td class="val">Antonio Carrera</td>
         </tr>
 
         <!-- SEAMOS MEJORES HEADER -->
         <tr>
-          <td class="sec-header sec-mejores" colspan="2">
+          <td class="sec-header sec-mejores" colspan="3">
             SEAMOS MEJORES MAESTROS
           </td>
           <td class="col-sala-header">Sala auxiliar</td>
@@ -566,61 +524,47 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">4. Empiece conversaciones (3 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Rosa C / Ana Carrera</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Danais H / Josefina H.</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Rosa C / Ana Carrera</td>
+          <td class="val">Danais H / Josefina H.</td>
         </tr>
 
         <!-- Part 5 -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">5. Haga revisitas (4 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Elis de B / Rosa Placencio</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Yusmaris de M / Sabina G</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Elis de B / Rosa Placencio</td>
+          <td class="val">Yusmaris de M / Sabina G</td>
         </tr>
 
         <!-- Part 6 -->
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part">6. Explique sus creencias (5 mins.)</td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Zelandia F / Marlene Rojas</div>
-          </td>
-          <td class="val">
-            <div class="lbl-inner">Estudiante/Ayudante:</div>
-            <div class="val-inner">Luisa de J / Iris Velasquez</div>
-          </td>
+          <td class="lbl">Estudiante/Ayudante:</td>
+          <td class="val">Zelandia F / Marlene Rojas</td>
+          <td class="val">Luisa de J / Iris Velasquez</td>
         </tr>
 
         <!-- VIDA CRISTIANA HEADER -->
         <tr>
-          <td class="sec-header sec-vida" colspan="4">
+          <td class="sec-header sec-vida" colspan="3">
             NUESTRA VIDA CRISTIANA
           </td>
+          <td colspan="2" style="border: none; border-bottom: 0.5px solid var(--color-border);"></td>
         </tr>
 
         <!-- Intermediate Song -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="3">• Canción 99</td>
+          <td class="bullet-part" colspan="4">• Canción 99</td>
         </tr>
 
         <!-- Part 7 -->
         <tr>
           <td class="time">0:00</td>
-          <td class="bullet-part" colspan="2">
+          <td class="bullet-part" colspan="3">
             7. Necesidades de la congregación (15 mins.)
           </td>
           <td class="val"></td>
@@ -632,10 +576,8 @@
           <td class="bullet-part" colspan="2">
             8. Estudio bíblico de la congregación (30 mins.)
           </td>
-          <td class="val">
-            <div class="lbl-inner">Conductor/Lector:</div>
-            <div class="val-inner">Deivis L / José León</div>
-          </td>
+          <td class="lbl">Conductor/Lector:</td>
+          <td class="val">Deivis L / José León</td>
         </tr>
 
         <!-- Conclusion -->
@@ -650,9 +592,8 @@
         <tr>
           <td class="time">0:00</td>
           <td class="bullet-part" colspan="2">• Canción 13</td>
-          <td class="val">
-            <span class="lbl-inline">Oración:</span>Héctor Gómez
-          </td>
+          <td class="lbl">Oración:</td>
+          <td class="val">Héctor Gómez</td>
         </tr>
       </table>
     </div>
