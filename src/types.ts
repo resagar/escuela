@@ -142,3 +142,13 @@ export interface BrotherStats {
 	hermano_nombre: string;
 	total_participaciones: number;
 }
+
+export interface S89Card {
+	parte_id: number;
+	estudiante_nombre: string;
+	ayudante_nombre: string | null;
+	fecha_inicio: string;
+	numero_orden: number;
+	parte_titulo: string | null;
+	ambito: string;
+}

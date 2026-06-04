@@ -22,6 +22,7 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; path: string }
 		else if (seg === "importar") crumbs.push({ label: "Importar MWB", path: currentPath });
 		else if (seg === "nuevo" || seg === "editar") crumbs.push({ label: "Editar", path: currentPath });
 		else if (seg === "s140") crumbs.push({ label: "S-140", path: currentPath });
+		else if (seg === "s89") crumbs.push({ label: "S-89", path: currentPath });
 		else if (/^\d+$/.test(seg)) {
 			const prevSeg = segments[segments.indexOf(seg) - 1];
 			if (prevSeg === "semanas") crumbs.push({ label: `Semana #${seg}`, path: currentPath });

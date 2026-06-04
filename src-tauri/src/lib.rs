@@ -57,6 +57,7 @@ pub fn run() {
             commands::historial::get_brother_history,
             commands::historial::get_bimonthly_stats,
             commands::export::write_file_bytes,
+            commands::s89::get_s89_cards_for_week,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());

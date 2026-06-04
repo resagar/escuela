@@ -11,6 +11,8 @@ import FamiliasListPage from "./pages/FamiliasListPage";
 import FamiliaDetailPage from "./pages/FamiliaDetailPage";
 import S140Page from "./pages/S140Page";
 import S140RangoPage from "./pages/S140RangoPage";
+import S89Page from "./pages/S89Page";
+import S89RangoPage from "./pages/S89RangoPage";
 
 function App() {
 	return (
@@ -30,6 +32,8 @@ function App() {
 					<Route path="/familias/:id" element={<FamiliaDetailPage />} />
 					<Route path="/semanas/:id/s140" element={<S140Page />} />
 					<Route path="/s140/rango" element={<S140RangoPage />} />
+					<Route path="/semanas/:id/s89" element={<S89Page />} />
+					<Route path="/s89/rango" element={<S89RangoPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

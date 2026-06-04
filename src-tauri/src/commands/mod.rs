@@ -6,4 +6,5 @@ pub mod hermanos;
 pub mod historial;
 pub mod mwb;
 pub mod partes;
+pub mod s89;
 pub mod semanas;
