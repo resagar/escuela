@@ -28,6 +28,11 @@
   .s140-wrapper {
     padding: 0 !important;
   }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
 }
 
 /* === SCREEN WRAPPER === */
