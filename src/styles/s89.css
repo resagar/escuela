@@ -21,6 +21,10 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  .s89-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 }
 
 /* === SCREEN WRAPPER === */

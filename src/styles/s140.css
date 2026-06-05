@@ -25,6 +25,9 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  .s140-wrapper {
+    padding: 0 !important;
+  }
 }
 
 /* === SCREEN WRAPPER === */
