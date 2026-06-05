@@ -207,7 +207,7 @@ export default function S89RangoPage() {
 					</button>
 				</>
 			) : (
-				<>
+				<div className="s89-wrapper">
 					<div className="no-print mb-4 flex items-center gap-4">
 						<button
 							onClick={() => setShowPreview(false)}
@@ -243,7 +243,7 @@ export default function S89RangoPage() {
 							</div>
 						))}
 					</div>
-				</>
+				</div>
 			)}
 		</div>
 	);
