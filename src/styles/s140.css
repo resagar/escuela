@@ -180,9 +180,20 @@
 }
 
 @media print {
+  .s140-wrapper .week-container {
+    page-break-after: always;
+    break-after: page;
+    margin-bottom: 0 !important;
+  }
+  .s140-wrapper .week-container:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .s140-table {
+    margin-bottom: 0 !important;
+  }
   .s140-wrapper .week-separator {
-    border-top: 1px solid var(--color-slate);
-    margin: 15px 0;
+    display: none;
   }
   .no-print {
     display: none;

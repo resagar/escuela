@@ -32,17 +32,18 @@ pub fn get_s89_cards_for_week(
                  AND a_ayu.ambito = a.ambito
                  AND a_ayu.rol = 'ayudante'
              LEFT JOIN hermanos h_ayu ON a_ayu.hermano_id = h_ayu.id
-             WHERE a.rol = 'estudiante'
-                 AND p.semana_id = ?1
-                 AND p.tipo_asignacion IN (
-                     'lectura_biblia',
-                     'empiece_conversaciones',
-                     'haga_revisitas',
-                     'haga_discipulos',
-                     'explique_creencias_discurso',
-                     'explique_creencias_escenificacion',
-                     'discurso_estudiante'
-                 )
+              WHERE a.rol = 'estudiante'
+                  AND p.semana_id = ?1
+                  AND p.tipo_asignacion IN (
+                      'lectura_biblia',
+                      'empiece_conversaciones',
+                      'haga_revisitas',
+                      'haga_discipulos',
+                      'explique_creencias_discurso',
+                      'explique_creencias_escenificacion',
+                      'discurso_estudiante'
+                  )
+                  AND (p.requiere_sala_auxiliar = 1 OR a.ambito = 'auditorio_principal')
              ORDER BY p.numero_orden,
                CASE a.ambito
                  WHEN 'sala_auxiliar' THEN 0

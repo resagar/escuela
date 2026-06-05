@@ -227,11 +227,11 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 			<div className="form-code">S-140-S&nbsp;&nbsp;11/23</div>
 			<table className="s140-table">
 				<colgroup>
-					<col style={{ width: "6.2%" }} />
-					<col style={{ width: "26.6%" }} />
-					<col style={{ width: "18.9%" }} />
-					<col style={{ width: "23.7%" }} />
-					<col style={{ width: "24.6%" }} />
+					<col style={{ width: "45px" }} />
+					<col style={{ width: "192px" }} />
+					<col style={{ width: "136px" }} />
+					<col style={{ width: "171px" }} />
+					<col style={{ width: "176px" }} />
 				</colgroup>
 				<tbody>
 					<tr className="row-header">
