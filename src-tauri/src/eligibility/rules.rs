@@ -1,5 +1,5 @@
-use rusqlite::Connection;
 use crate::models::Hermano;
+use rusqlite::Connection;
 
 /// Returns eligible brothers for a given assignment type and role.
 ///
@@ -20,14 +20,16 @@ pub fn get_eligible_brothers(
         )
     )";
 
-    let (sql, params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) = match (tipo_asignacion, rol) {
+    let (sql, params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) = match (tipo_asignacion, rol)
+    {
         // === TESOROS: partos no-estudiante ===
         ("discurso_no_estudiante", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND rol IN ('anciano', 'siervo_ministerial')
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -36,7 +38,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND rol IN ('anciano', 'siervo_ministerial')
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -45,7 +48,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND sexo = 'masculino'
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -55,7 +59,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -83,7 +88,8 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![],
                     )
                 }
@@ -94,7 +100,8 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1 AND sexo = ?1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![Box::new(sex.to_string())],
                     )
                 } else {
@@ -103,81 +110,149 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![],
                     )
                 }
             }
-        },
+        }
 
         ("haga_revisitas", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
         ("haga_revisitas", "ayudante") => {
-            if let Some(sex) = sexo_estudiante {
-                (
-                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                            puede_ser_consejero_sala, activo, notas
-                     FROM hermanos
-                     WHERE activo = 1 AND sexo = ?1
-                     ORDER BY nombre".into(),
-                    vec![Box::new(sex.to_string())],
-                )
+            if let Some(eid) = estudiante_id {
+                if let Some(sex) = sexo_estudiante {
+                    (
+                        format!(
+                            "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                    puede_ser_consejero_sala, activo, notas
+                             FROM hermanos
+                             WHERE activo = 1
+                               AND (sexo = ?2 OR {})
+                             ORDER BY nombre",
+                            family_subquery
+                        ),
+                        vec![
+                            Box::new(eid) as Box<dyn rusqlite::types::ToSql>,
+                            Box::new(sex.to_string()),
+                        ],
+                    )
+                } else {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![],
+                    )
+                }
             } else {
-                (
-                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                            puede_ser_consejero_sala, activo, notas
-                     FROM hermanos
-                     WHERE activo = 1
-                     ORDER BY nombre".into(),
-                    vec![],
-                )
+                if let Some(sex) = sexo_estudiante {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1 AND sexo = ?1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![Box::new(sex.to_string())],
+                    )
+                } else {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![],
+                    )
+                }
             }
-        },
+        }
 
         ("haga_discipulos", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
         ("haga_discipulos", "ayudante") => {
-            if let Some(sex) = sexo_estudiante {
-                (
-                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                            puede_ser_consejero_sala, activo, notas
-                     FROM hermanos
-                     WHERE activo = 1 AND sexo = ?1
-                     ORDER BY nombre".into(),
-                    vec![Box::new(sex.to_string())],
-                )
+            if let Some(eid) = estudiante_id {
+                if let Some(sex) = sexo_estudiante {
+                    (
+                        format!(
+                            "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                    puede_ser_consejero_sala, activo, notas
+                             FROM hermanos
+                             WHERE activo = 1
+                               AND (sexo = ?2 OR {})
+                             ORDER BY nombre",
+                            family_subquery
+                        ),
+                        vec![
+                            Box::new(eid) as Box<dyn rusqlite::types::ToSql>,
+                            Box::new(sex.to_string()),
+                        ],
+                    )
+                } else {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![],
+                    )
+                }
             } else {
-                (
-                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                            puede_ser_consejero_sala, activo, notas
-                     FROM hermanos
-                     WHERE activo = 1
-                     ORDER BY nombre".into(),
-                    vec![],
-                )
+                if let Some(sex) = sexo_estudiante {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1 AND sexo = ?1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![Box::new(sex.to_string())],
+                    )
+                } else {
+                    (
+                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                                puede_ser_consejero_sala, activo, notas
+                         FROM hermanos
+                         WHERE activo = 1
+                         ORDER BY nombre"
+                            .into(),
+                        vec![],
+                    )
+                }
             }
-        },
+        }
 
         ("explique_creencias_discurso", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND sexo = 'masculino'
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -186,7 +261,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -214,7 +290,8 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![],
                     )
                 }
@@ -225,7 +302,8 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1 AND sexo = ?1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![Box::new(sex.to_string())],
                     )
                 } else {
@@ -234,19 +312,21 @@ pub fn get_eligible_brothers(
                                 puede_ser_consejero_sala, activo, notas
                          FROM hermanos
                          WHERE activo = 1
-                         ORDER BY nombre".into(),
+                         ORDER BY nombre"
+                            .into(),
                         vec![],
                     )
                 }
             }
-        },
+        }
 
         ("discurso_estudiante", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND sexo = 'masculino'
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -256,7 +336,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND rol IN ('anciano', 'siervo_ministerial')
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -265,7 +346,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND rol = 'anciano'
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -274,7 +356,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND puede_conducir_estudio = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -283,7 +366,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -293,7 +377,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND puede_presidir = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -302,7 +387,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1 AND puede_ser_consejero_sala = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -311,7 +397,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
 
@@ -321,7 +408,8 @@ pub fn get_eligible_brothers(
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
              WHERE activo = 1
-             ORDER BY nombre".into(),
+             ORDER BY nombre"
+                .into(),
             vec![],
         ),
     };

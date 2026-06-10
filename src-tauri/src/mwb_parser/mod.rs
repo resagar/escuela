@@ -20,10 +20,7 @@ const SPANISH_MONTHS: &[(&str, &str)] = &[
 ];
 
 fn extract_text_from_pdf(path: &str) -> Result<String, String> {
-    match extract_with_pdftotext(path) {
-        Ok(t) => return Ok(t),
-        Err(_) => {}
-    }
+    if let Ok(t) = extract_with_pdftotext(path) { return Ok(t) }
     extract_with_lopdf(path)
 }
 
@@ -809,11 +806,11 @@ fn classify_part_section(numero_orden: u8, title: &str, tipo: &str) -> String {
     }
 
     // Default: if it has a student assignment feel, it's mejores_maestros
-    if numero_orden >= 4 && numero_orden <= 6 {
+    if (4..=6).contains(&numero_orden) {
         return "mejores_maestros".to_string();
     }
 
-    if numero_orden >= 7 && numero_orden <= 9 {
+    if (7..=9).contains(&numero_orden) {
         return "vida_cristiana".to_string();
     }
 
@@ -904,7 +901,7 @@ fn parse_weeks_from_normalized(normalized: &str, year: i32, base_month: u32) -> 
 
     let mut weeks = Vec::new();
 
-    for (_i, (header, body)) in week_blocks.iter().enumerate() {
+    for (header, body) in week_blocks.iter() {
         match parse_week_block(header, body, year, base_month) {
             Ok(week) => {
                 weeks.push(week);
