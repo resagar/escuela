@@ -20,7 +20,9 @@ const SPANISH_MONTHS: &[(&str, &str)] = &[
 ];
 
 fn extract_text_from_pdf(path: &str) -> Result<String, String> {
-    if let Ok(t) = extract_with_pdftotext(path) { return Ok(t) }
+    if let Ok(t) = extract_with_pdftotext(path) {
+        return Ok(t);
+    }
     extract_with_lopdf(path)
 }
 
@@ -159,11 +161,7 @@ fn determine_month_for_week(
     if month_name_code == base_code {
         return (base_year, month_name_code.to_string());
     }
-    let next_month = if base_month == 12 {
-        1
-    } else {
-        base_month + 1
-    };
+    let next_month = if base_month == 12 { 1 } else { base_month + 1 };
     let next_year = if base_month == 12 {
         base_year + 1
     } else {
@@ -419,11 +417,8 @@ fn parse_week_block(
 ) -> Result<ParsedWeek, String> {
     let parsed_header = parse_week_header(header)?;
 
-    let (start_year, _) = determine_month_for_week(
-        &parsed_header.start_month_code,
-        base_year,
-        base_month,
-    );
+    let (start_year, _) =
+        determine_month_for_week(&parsed_header.start_month_code, base_year, base_month);
 
     let fecha_inicio = build_date(
         start_year,
@@ -444,9 +439,15 @@ fn parse_week_block(
 
     let libro_biblico = parsed_header.book_reference;
 
-    let has_regular_structure = Regex::new(r"(?i)TESOROS\s+DE\s+LA\s+BIBLIA").unwrap().is_match(body)
-        || Regex::new(r"(?i)SEAMOS\s+MEJORES\s+MAESTROS").unwrap().is_match(body)
-        || Regex::new(r"(?i)NUESTRA\s+VIDA\s+CRISTIANA").unwrap().is_match(body);
+    let has_regular_structure = Regex::new(r"(?i)TESOROS\s+DE\s+LA\s+BIBLIA")
+        .unwrap()
+        .is_match(body)
+        || Regex::new(r"(?i)SEAMOS\s+MEJORES\s+MAESTROS")
+            .unwrap()
+            .is_match(body)
+        || Regex::new(r"(?i)NUESTRA\s+VIDA\s+CRISTIANA")
+            .unwrap()
+            .is_match(body);
 
     let is_asamblea = body.to_uppercase().contains("ASAMBLEA");
     let is_conmemoracion = body.to_uppercase().contains("CONMEMORACIÓN")
@@ -544,7 +545,8 @@ fn parse_parts(text: &str) -> Vec<ParsedPart> {
         if intro_re.is_match(line) {
             has_intro = true;
             let minutos = line_to_u8(&intro_min_re, line, 1);
-            let (tipo, sala_aux, ayudante) = classify_part_type("Palabras de introducción", "marco");
+            let (tipo, sala_aux, ayudante) =
+                classify_part_type("Palabras de introducción", "marco");
             parts.push(ParsedPart {
                 numero_orden: 0,
                 seccion: "marco".to_string(),
@@ -600,7 +602,10 @@ fn parse_parts(text: &str) -> Vec<ParsedPart> {
                     if Regex::new(r"^\d{1,2}\.\s").unwrap().is_match(next_line) {
                         break;
                     }
-                    if Regex::new(r"(?i)^(TESOROS|SEAMOS|NUESTRA|VIDA\s+CRISTIANA)").unwrap().is_match(next_line) {
+                    if Regex::new(r"(?i)^(TESOROS|SEAMOS|NUESTRA|VIDA\s+CRISTIANA)")
+                        .unwrap()
+                        .is_match(next_line)
+                    {
                         break;
                     }
                     if next_line.to_uppercase().contains("PALABRAS DE CONCLUSI") {
@@ -712,8 +717,7 @@ fn parse_parts(text: &str) -> Vec<ParsedPart> {
 
 fn titre_min_capture(title: &str) -> Option<u8> {
     let re = Regex::new(r"\((\d+)\s*(?:min|mins?)\.?\)").unwrap();
-    re.captures(title)
-        .and_then(|c| c[1].parse::<u8>().ok())
+    re.captures(title).and_then(|c| c[1].parse::<u8>().ok())
 }
 
 fn line_to_u8(re: &Regex, line: &str, default: u8) -> u8 {
@@ -723,8 +727,7 @@ fn line_to_u8(re: &Regex, line: &str, default: u8) -> u8 {
 }
 
 fn line_to_u8_maybe(re: &Regex, line: &str) -> Option<u8> {
-    re.captures(line)
-        .and_then(|c| c[1].parse::<u8>().ok())
+    re.captures(line).and_then(|c| c[1].parse::<u8>().ok())
 }
 
 fn classify_part_title(title: &str) -> String {
@@ -839,15 +842,9 @@ fn classify_part_type(titulo: &str, seccion: &str) -> (String, bool, bool) {
         if upper.contains("DISCURSO") {
             return ("explique_creencias_discurso".to_string(), true, false);
         }
-        return (
-            "explique_creencias_escenificacion".to_string(),
-            true,
-            true,
-        );
+        return ("explique_creencias_escenificacion".to_string(), true, true);
     }
-    if upper.contains("ANÁLISIS CON EL AUDITORIO")
-        || upper.contains("ANALISIS CON EL AUDITORIO")
-    {
+    if upper.contains("ANÁLISIS CON EL AUDITORIO") || upper.contains("ANALISIS CON EL AUDITORIO") {
         return ("analisis_auditorio".to_string(), false, false);
     }
     if upper.contains("NECESIDADES DE LA CONGREGACIÓN")
@@ -892,7 +889,11 @@ pub fn test_parse_raw(normalized: &str) -> Result<Vec<ParsedWeek>, String> {
     parse_weeks_from_normalized(normalized, 2026, 3)
 }
 
-fn parse_weeks_from_normalized(normalized: &str, year: i32, base_month: u32) -> Result<Vec<ParsedWeek>, String> {
+fn parse_weeks_from_normalized(
+    normalized: &str,
+    year: i32,
+    base_month: u32,
+) -> Result<Vec<ParsedWeek>, String> {
     let week_blocks = split_into_week_blocks(normalized);
 
     if week_blocks.is_empty() {
