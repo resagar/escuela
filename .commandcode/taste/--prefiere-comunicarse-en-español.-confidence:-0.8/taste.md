@@ -1,0 +1,8 @@
+# - Prefiere comunicarse en español. Confidence: 0.8
+- Prefiere comunicarse en español. Confidence: 0.8
+- Mantiene el PRD como fuente de verdad de los requisitos y espera que se actualice cuando se clarifican o corrigen decisiones. Confidence: 0.7
+- Prefiere elaborar un plan antes de implementar una feature. Confidence: 0.7
+- Prefiere que no se hagan comprobaciones redundantes sobre cómo sale/renderiza algo cuando él ya ha especificado el comportamiento esperado (confiar en su afirmación explícita). Confidence: 0.6
+- Mantiene PDFs reales actualizados en `refs/` para validar el parser y espera que los tests se re-ejecuten y ajusten contra esos archivos vigentes cuando él los cambia (no quedarse con ejemplos sintéticos ni referencias obsoletas). Confidence: 0.5
+- Prueba la aplicación él mismo tras implementar y reporta fallos de forma concisa (p. ej. "no se detectó la primera semana... revisa qué sucede"), esperando que el asistente reproduzca el problema con datos reales, diagnostique la causa raíz y lo corrija sin pedir más detalles. Confidence: 0.5
+- Al describir un requisito de forma informal, prefiere que el asistente confirme que entendió la petición antes de implementar (suele pedir explícitamente "dime si entendiste lo que quise decir"). Confidence: 0.6

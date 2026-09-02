@@ -320,6 +320,16 @@ pub fn get_eligible_brothers(
             }
         }
 
+        ("que_dirias", "estudiante") => (
+            "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                    puede_ser_consejero_sala, activo, notas
+             FROM hermanos
+             WHERE activo = 1 AND rol IN ('anciano', 'siervo_ministerial')
+             ORDER BY nombre"
+                .into(),
+            vec![],
+        ),
+
         ("discurso_estudiante", "estudiante") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas

@@ -49,7 +49,7 @@ La reunión tiene una duración total de 1 hora 45 minutos y se divide en tres s
 **Sección 2 — Seamos Mejores Maestros**
 | # | Parte | Duración | Tipo |
 |---|-------|----------|------|
-| 4–7 | Variable (Empiece conversaciones / Haga revisitas / Haga discípulos / Explique sus creencias / Discurso) | 1–5 min c/u | Estudiante (con ayudante) |
+| 4–7 | Variable (Empiece conversaciones / Haga revisitas / Haga discípulos / Explique sus creencias / Discurso / ¿Qué dirías?) | 1–5 min c/u | Estudiante (con o sin ayudante) / Anciano o siervo ministerial |
 
 > El número de partes y sus tipos varían semana a semana según la guía de actividades.
 
@@ -92,6 +92,7 @@ Estas son las restricciones que la app debe conocer y aplicar:
 | Explique sus creencias (escenificación) | Varón o mujer | Mismo sexo o familiar |
 | Discurso | Solo varón | — |
 | Lectura de la Biblia | Solo varón | — |
+| ¿Qué dirías? | Solo anciano o siervo ministerial (o presidente) | — |
 
 **Sala auxiliar**
 - Cada asignación de estudiante se replica en la sala auxiliar con estudiantes diferentes
@@ -210,6 +211,7 @@ Cada parte tiene:
 - Explique sus creencias (discurso)
 - Explique sus creencias (escenificación)
 - Discurso (estudiante)
+- ¿Qué dirías?
 - Análisis con el auditorio
 - Necesidades de la congregación
 - Estudio bíblico de la congregación
@@ -234,6 +236,7 @@ Cada parte tiene:
 
 **Validaciones automáticas:**
 - Lectura de la Biblia, Discurso (estudiante), Explique sus creencias (discurso) → solo muestra varones
+- ¿Qué dirías? → solo muestra ancianos y siervos ministeriales (o el presidente de la reunión)
 - Haga revisitas, Haga discípulos → ayudante debe ser del mismo sexo que el estudiante
 - Necesidades de la congregación → solo muestra ancianos
 - Presidente, Conductor del estudio, Consejero de sala → solo muestra hermanos con el flag correspondiente activado
@@ -389,6 +392,7 @@ Módulo Rust (`mwb_parser`) que extrae el programa semanal desde el PDF de la gu
 | `Explique sus creencias` + `Discurso` en texto | `explique_creencias_discurso` | mejores_maestros | Sí | No |
 | `Explique sus creencias` (sin "Discurso") | `explique_creencias_escenificacion` | mejores_maestros | Sí | Sí |
 | `Discurso` (en Seamos Mejores, parte numerada) | `discurso_estudiante` | mejores_maestros | Sí | No |
+| `¿Qué dirías?` | `que_dirias` | mejores_maestros | No | No |
 | `Análisis con el auditorio` | `analisis_auditorio` | vida_cristiana | No | No |
 | `Necesidades de la congregación` | `necesidades_congregacion` | vida_cristiana | No | No |
 | `Estudio bíblico de la congregación` | `estudio_biblico` | vida_cristiana | No | No |

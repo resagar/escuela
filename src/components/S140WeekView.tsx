@@ -105,7 +105,8 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 		}
 
 		if (tipo === "discurso_no_estudiante" || tipo === "busquemos_perlas" ||
-			tipo === "analisis_auditorio" || tipo === "necesidades_congregacion") {
+			tipo === "analisis_auditorio" || tipo === "necesidades_congregacion" ||
+			tipo === "que_dirias") {
 			const presentador = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
 			return (
 				<tr key={parte.id}>

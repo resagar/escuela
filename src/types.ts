@@ -121,6 +121,7 @@ export const ASIGNACION_LABELS: Record<string, string> = {
 	explique_creencias_discurso: "Explique sus creencias (discurso)",
 	explique_creencias_escenificacion: "Explique sus creencias (escenificación)",
 	discurso_estudiante: "Discurso (estudiante)",
+	que_dirias: "¿Qué dirías?",
 	analisis_auditorio: "Análisis con el auditorio",
 	necesidades_congregacion: "Necesidades de la congregación",
 	estudio_biblico: "Estudio bíblico",

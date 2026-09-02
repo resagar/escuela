@@ -151,6 +151,7 @@ export default function AsignacionesPage() {
 			"busquemos_perlas",
 			"analisis_auditorio",
 			"necesidades_congregacion",
+			"que_dirias",
 		].includes(tipo);
 
 		if (isEstudioBiblico) {

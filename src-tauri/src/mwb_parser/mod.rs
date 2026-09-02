@@ -228,13 +228,31 @@ fn parse_week_header(header: &str) -> Result<ParsedHeader, String> {
 
     let mut pos = 0;
 
-    // Parse start day
-    let start_day: u32 = tokens[pos]
-        .parse()
-        .map_err(|_| format!("Día inicial inválido: {}", tokens[pos]))?;
+    // Parse start day (may include an attached day range like "7-13" or "7–13")
+    let start_token = tokens[pos];
+    let mut end_day: u32;
+
+    let (start_day, end_day_opt) = if let Some(sep_idx) =
+        start_token.find(['-', '–'])
+    {
+        let (s, e) = start_token.split_at(sep_idx);
+        let e = &e[1..];
+        let start = s
+            .parse::<u32>()
+            .map_err(|_| format!("Día inicial inválido: {}", start_token))?;
+        let end = e
+            .parse::<u32>()
+            .map_err(|_| format!("Día final inválido: {}", start_token))?;
+        (start, Some(end))
+    } else {
+        let start = start_token
+            .parse::<u32>()
+            .map_err(|_| format!("Día inicial inválido: {}", start_token))?;
+        (start, None)
+    };
     pos += 1;
 
-    let mut end_day = start_day;
+    end_day = end_day_opt.unwrap_or(start_day);
 
     // Check for dash (date range)
     if pos < tokens.len() {
@@ -504,25 +522,67 @@ fn detect_songs(text: &str) -> (u8, u8, u8) {
     let apertura = song_positions.first().map(|n| n.0).unwrap_or(0);
     let cierre = song_positions.last().map(|n| n.0).unwrap_or(0);
 
-    // Find "NUESTRA VIDA CRISTIANA" section (handles line breaks with \s+)
-    let vc_re = Regex::new(r"(?i)NUESTRA\s+VIDA\s+CRISTIANA").unwrap();
-    let intermedia = if let Some(vc_match) = vc_re.find(text) {
-        let vc_pos = vc_match.start();
-        // First song AFTER the Vida Cristiana heading
-        song_positions
+    // The "VIDA CRISTIANA" header is fragmented in the extracted text with the
+    // song icon interleaved (e.g. "NUESTRA\n\n[SONG]\nVIDA CRISTIANA"), so a
+    // plain `NUESTRA\s+VIDA\s+CRISTIANA` regex never matches, and a long
+    // separator line after the header makes byte-distance windows unreliable.
+    // Locate the standalone header line and take the first song on a following
+    // line.
+    let lines: Vec<&str> = text.lines().collect();
+    let intermedia = match find_vida_cristiana_line(&lines) {
+        Some(header_idx) => lines
             .iter()
-            .find(|(_, pos)| *pos > vc_pos)
-            .map(|n| n.0)
-            .unwrap_or(0)
-    } else {
-        0
+            .enumerate()
+            .skip(header_idx + 1)
+            .find_map(|(_, line)| {
+                song_re
+                    .captures(line)
+                    .and_then(|c| c[1].parse::<u8>().ok())
+            })
+            .unwrap_or(0),
+        None => 0,
     };
 
     (apertura, intermedia, cierre)
 }
 
+/// Locates the "NUESTRA VIDA CRISTIANA" section header inside a week's lines.
+///
+/// The header appears in the PDF text in a fragmented way (e.g.
+/// "NUESTRA\n\n[SONG]\nVIDA CRISTIANA") and the 2-column layout interleaves
+/// lines, so header words can come in any relative order. Instead of matching
+/// the whole phrase, we look for the standalone "VIDA CRISTIANA" line, or the
+/// full phrase when extraction kept it on a single line. Returns the line index
+/// of the header, or `None` when it is not present.
+fn find_vida_cristiana_line(lines: &[&str]) -> Option<usize> {
+    lines.iter().position(|l| {
+        let t = compact_spaces(l).to_uppercase();
+        t == "VIDA CRISTIANA" || t.ends_with("NUESTRA VIDA CRISTIANA")
+    })
+}
+
+/// Finds the `numero_orden` that starts "NUESTRA VIDA CRISTIANA" for the week.
+///
+/// Looks up the header line and then finds the first numbered part that follows
+/// it in the line flow. That number is the real boundary between "Seamos
+/// mejores maestros" and "Nuestra vida cristiana", regardless of the
+/// positional heuristic.
+fn vida_cristiana_start_orden(lines: &[&str]) -> Option<u8> {
+    let header_idx = find_vida_cristiana_line(lines)?;
+    let part_re = Regex::new(r"^(\d{1,2})\.\s").unwrap();
+    for line in lines.iter().skip(header_idx).skip(1) {
+        if let Some(caps) = part_re.captures(line) {
+            if let Ok(n) = caps[1].parse::<u8>() {
+                return Some(n);
+            }
+        }
+    }
+    None
+}
+
 fn parse_parts(text: &str) -> Vec<ParsedPart> {
     let lines: Vec<&str> = text.lines().collect();
+    let vida_start = vida_cristiana_start_orden(&lines);
     let mut parts: Vec<ParsedPart> = Vec::new();
 
     // ── Find introduction ──
@@ -652,7 +712,16 @@ fn parse_parts(text: &str) -> Vec<ParsedPart> {
             }
 
             let tipo_str = classify_part_title(&clean_title);
-            let seccion = classify_part_section(numero_orden, &clean_title, &tipo_str);
+            let seccion = match vida_start {
+                // Sections follow the real S-140 structure: parts 1-3 are
+                // Tesoros, the numbered part that begins after "NUESTRA VIDA
+                // CRISTIANA" starts Vida Cristiana, everything between is
+                // Seamos Mejores Maestros.
+                Some(_) if numero_orden <= 3 => "tesoros".to_string(),
+                Some(start) if numero_orden >= start => "vida_cristiana".to_string(),
+                Some(_) => "mejores_maestros".to_string(),
+                None => classify_part_section(numero_orden, &clean_title, &tipo_str),
+            };
 
             let (tipo, sala_aux, ayudante) = classify_part_type(&clean_title, &seccion);
 
@@ -756,6 +825,8 @@ fn classify_part_title(title: &str) -> String {
         "hazte_amigo".to_string()
     } else if upper.contains("LOGROS DE LA ORGANIZACIÓN") {
         "logros_organizacion".to_string()
+    } else if is_que_dirias(&upper) {
+        "que_dirias".to_string()
     } else if upper.contains("DISCURSO") {
         "discurso".to_string()
     } else {
@@ -779,6 +850,7 @@ fn classify_part_section(numero_orden: u8, title: &str, tipo: &str) -> String {
         || tipo == "haga_revisitas"
         || tipo == "haga_discipulos"
         || tipo == "explique_creencias"
+        || tipo == "que_dirias"
     {
         return "mejores_maestros".to_string();
     }
@@ -818,6 +890,17 @@ fn classify_part_section(numero_orden: u8, title: &str, tipo: &str) -> String {
     }
 
     "tesoros".to_string()
+}
+
+/// True when the title is the "¿Qué diría(s)?" part (without the
+/// "Análisis con el auditorio" suffix, which maps to analisis_auditorio).
+fn is_que_dirias(upper: &str) -> bool {
+    if upper.contains("ANÁLISIS CON EL AUDITORIO")
+        || upper.contains("ANALISIS CON EL AUDITORIO")
+    {
+        return false;
+    }
+    upper.contains("QUÉ DIRÍA") || upper.contains("QUE DIRÍA")
 }
 
 fn classify_part_type(titulo: &str, seccion: &str) -> (String, bool, bool) {
@@ -860,6 +943,10 @@ fn classify_part_type(titulo: &str, seccion: &str) -> (String, bool, bool) {
     }
     if upper.contains("PALABRAS DE CONCLUSI") {
         return ("conclusion".to_string(), false, false);
+    }
+
+    if is_que_dirias(&upper) {
+        return ("que_dirias".to_string(), false, false);
     }
 
     if upper.contains("DISCURSO") {

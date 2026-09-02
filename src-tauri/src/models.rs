@@ -12,6 +12,7 @@ pub enum TipoAsignacion {
     ExpliqueCreenciasDiscurso,
     ExpliqueCreenciasEscenificacion,
     DiscursoEstudiante,
+    QueDirias,
     AnalisisAuditorio,
     NecesidadesCongregacion,
     EstudioBiblico,
@@ -27,7 +28,7 @@ impl TipoAsignacion {
             Self::DiscursoNoEstudiante | Self::BusquemosPerlas | Self::LecturaBiblia => "tesoros",
             Self::EmpieceConversaciones | Self::HagaRevisitas | Self::HagaDiscipulos
             | Self::ExpliqueCreenciasDiscurso | Self::ExpliqueCreenciasEscenificacion
-            | Self::DiscursoEstudiante => "mejores_maestros",
+            | Self::DiscursoEstudiante | Self::QueDirias => "mejores_maestros",
             Self::AnalisisAuditorio | Self::NecesidadesCongregacion | Self::EstudioBiblico => "vida_cristiana",
             Self::Oracion | Self::Cancion | Self::Introduccion | Self::Conclusion => "marco",
         }
@@ -71,6 +72,7 @@ impl TipoAsignacion {
                 | Self::AnalisisAuditorio
                 | Self::NecesidadesCongregacion
                 | Self::EstudioBiblico
+                | Self::QueDirias
         )
     }
 }
