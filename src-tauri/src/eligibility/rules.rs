@@ -371,11 +371,12 @@ pub fn get_eligible_brothers(
             vec![],
         ),
 
+        // Congregation book study reader must be a baptized male publisher
         ("estudio_biblico", "lector") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
-             WHERE activo = 1
+             WHERE activo = 1 AND sexo = 'masculino' AND rol != 'estudiante_biblia'
              ORDER BY nombre"
                 .into(),
             vec![],
@@ -402,11 +403,12 @@ pub fn get_eligible_brothers(
             vec![],
         ),
 
+        // Prayers are assigned to baptized male publishers only
         (_, "oracion") => (
             "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
                     puede_ser_consejero_sala, activo, notas
              FROM hermanos
-             WHERE activo = 1
+             WHERE activo = 1 AND sexo = 'masculino' AND rol != 'estudiante_biblia'
              ORDER BY nombre"
                 .into(),
             vec![],
