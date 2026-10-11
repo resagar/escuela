@@ -175,6 +175,12 @@ pub struct AssignmentHistory {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BrotherWithHistory {
+    pub hermano: Hermano,
+    pub historial: Vec<AssignmentHistory>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BrotherStats {
     pub hermano_id: i64,
     pub hermano_nombre: String,

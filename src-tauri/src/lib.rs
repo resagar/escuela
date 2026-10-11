@@ -50,6 +50,7 @@ pub fn run() {
             commands::familias::remove_familia_member,
             commands::familias::list_familias_with_count,
             commands::eligibility::get_eligible_brothers,
+            commands::eligibility::get_eligible_brothers_with_history,
             commands::asignaciones::assign_brother,
             commands::asignaciones::remove_assignment,
             commands::asignaciones::get_assignments_for_week,

@@ -1,29 +1,95 @@
 use crate::db::Database;
 use crate::models::{AssignmentHistory, BrotherStats};
 
-#[tauri::command]
-pub fn get_brother_history(db: tauri::State<'_, Database>, hermano_id: i64) -> Result<Vec<AssignmentHistory>, String> {
-    let conn = db.conn.lock().map_err(|e| e.to_string())?;
-    let mut stmt = conn
-        .prepare(
-            "SELECT 
-                s.fecha_inicio,
-                s.fecha_fin,
-                COALESCE(p.titulo, p.tipo_asignacion) as parte_titulo,
-                p.tipo_asignacion as parte_tipo,
-                a.ambito,
-                a.rol
-             FROM asignaciones a
-             JOIN partes p ON a.parte_id = p.id
-             JOIN semanas s ON p.semana_id = s.id
-             WHERE a.hermano_id = ?1
-             ORDER BY s.fecha_inicio DESC
-             LIMIT 10",
-        )
-        .map_err(|e| e.to_string())?;
+/// Participation history of one brother within a date window.
+///
+/// Combines part assignments (`asignaciones` -> `partes` -> `semanas`) with the
+/// general-framework roles stored directly in `semanas` (president, auxiliary
+/// counselor, prayers) via UNION ALL. Rows from `semanas` are normalized to the
+/// `AssignmentHistory` shape with fixed titles and `parte_tipo` "marco".
+const HISTORY_SQL: &str = "
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        COALESCE(p.titulo, p.tipo_asignacion) as parte_titulo,
+        p.tipo_asignacion as parte_tipo,
+        a.ambito,
+        a.rol
+    FROM asignaciones a
+    JOIN partes p ON a.parte_id = p.id
+    JOIN semanas s ON p.semana_id = s.id
+    WHERE a.hermano_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    UNION ALL
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        'Presidente de la reunión',
+        'marco',
+        'auditorio_principal',
+        'presidente'
+    FROM semanas s
+    WHERE s.presidente_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    UNION ALL
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        'Consejero de sala auxiliar',
+        'marco',
+        'sala_auxiliar',
+        'consejero_sala'
+    FROM semanas s
+    WHERE s.consejero_sala_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    UNION ALL
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        'Oración de apertura',
+        'marco',
+        'auditorio_principal',
+        'oracion'
+    FROM semanas s
+    WHERE s.orador_oracion_apertura_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    UNION ALL
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        'Oración intermedia',
+        'marco',
+        'auditorio_principal',
+        'oracion'
+    FROM semanas s
+    WHERE s.orador_oracion_intermedia_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    UNION ALL
+    SELECT
+        s.fecha_inicio,
+        s.fecha_fin,
+        'Oración de cierre',
+        'marco',
+        'auditorio_principal',
+        'oracion'
+    FROM semanas s
+    WHERE s.orador_oracion_cierre_id = ?1
+      AND s.fecha_inicio >= date('now', ?2)
+    ORDER BY 1 DESC
+";
+
+/// Shared history query used by `get_brother_history` and the bulk
+/// eligibility-with-history command. `date_modifier` is a SQLite date
+/// modifier string, e.g. "-4 months".
+pub fn fetch_history(
+    conn: &rusqlite::Connection,
+    hermano_id: i64,
+    date_modifier: &str,
+) -> Result<Vec<AssignmentHistory>, String> {
+    let mut stmt = conn.prepare(HISTORY_SQL).map_err(|e| e.to_string())?;
 
     let rows = stmt
-        .query_map(rusqlite::params![hermano_id], |row| {
+        .query_map(rusqlite::params![hermano_id, date_modifier], |row| {
             Ok(AssignmentHistory {
                 semana_fecha_inicio: row.get(0)?,
                 semana_fecha_fin: row.get(1)?,
@@ -43,11 +109,23 @@ pub fn get_brother_history(db: tauri::State<'_, Database>, hermano_id: i64) -> R
 }
 
 #[tauri::command]
+pub fn get_brother_history(
+    db: tauri::State<'_, Database>,
+    hermano_id: i64,
+    months: Option<i64>,
+) -> Result<Vec<AssignmentHistory>, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+    let months = months.unwrap_or(4).max(1);
+    let date_modifier = format!("-{} months", months);
+    fetch_history(&conn, hermano_id, &date_modifier)
+}
+
+#[tauri::command]
 pub fn get_bimonthly_stats(db: tauri::State<'_, Database>) -> Result<Vec<BrotherStats>, String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare(
-            "SELECT 
+            "SELECT
                 a.hermano_id,
                 h.nombre as hermano_nombre,
                 COUNT(*) as total_participaciones

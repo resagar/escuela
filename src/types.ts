@@ -144,6 +144,11 @@ export interface BrotherStats {
 	total_participaciones: number;
 }
 
+export interface BrotherWithHistory {
+	hermano: Hermano;
+	historial: AssignmentHistory[];
+}
+
 export interface S89Card {
 	parte_id: number;
 	estudiante_nombre: string;
