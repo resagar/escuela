@@ -1,6 +1,9 @@
 # PRD — App de Asignaciones: Reunión Vida y Ministerio Cristianos
-**Versión:** 1.2 (MVP)
-**Fecha:** Junio 2026
+**Versión:** 1.3 (MVP)
+**Fecha:** Octubre 2026
+
+**Cambios v1.3 (2026-10):** refleja el drift entre el PRD original y lo implementado: módulo Familias, módulo S-89 con exportación PDF/JPEG, vistas de rango multi-semana, reglas de elegibilidad refinadas (oración y lector = varón bautizado publicado; ayudante = mismo sexo o familiar como regla local) y la regla de visita del superintendente de circuito sin clases auxiliares. Las reglas consultables viven en **`.docs/requirements.md`** (referenciada desde `AGENTS.md`).
+
 **Autor:** René García
 
 ---
@@ -100,7 +103,13 @@ Estas son las restricciones que la app debe conocer y aplicar:
 
 **Estudio bíblico de la congregación**
 - Conductor: anciano competente (siervos ministeriales solo si hay pocos ancianos)
-- Lector: hermano diferente cada semana si es posible
+- Lector: varón bautizado publicado, hermano diferente cada semana si es posible (lo mismo aplica al conductor)
+
+**Reglas adicionales implementadas (v1.3):**
+- **Oración** (apertura, intermedia y cierre): varón bautizado publicado (sexo masculino, rol ≠ `estudiante_biblia`)
+- **Lector del estudio bíblico**: varón bautizado publicado (sexo masculino, rol ≠ `estudiante_biblia`)
+- **Nota sobre el ayudante**: "mismo sexo **o familiar**" aplica solo a "Empiece conversaciones" (§7) y "Explique sus creencias (escenificación)" (§11). En "Haga revisitas" (§8) y "Haga discípulos" (§10) el ayudante es **solo del mismo sexo**. El código actual (`eligibility/rules.rs`) permite familiares también en estos dos últimos — drift pendiente de corrección, requiere autorización para tocar código
+- El texto oficial no especifica elegibilidad para oración ni para el lector del estudio bíblico — esas reglas son decisión local implementada (commit a753338)
 
 ### 2.3 El Formulario S-140
 
@@ -220,7 +229,7 @@ Cada parte tiene:
 **Consideraciones de implementación:**
 - Las semanas de asamblea no tienen reunión (se puede marcar como "semana sin reunión")
 - La semana de la Conmemoración cancela la reunión Vida y Ministerio si cae entre semana
-- Durante la visita del superintendente de circuito, el "Estudio bíblico" se reemplaza por su discurso de servicio (flag especial en la semana)
+- Durante la visita del superintendente de circuito, el "Estudio bíblico" se reemplaza por su discurso de servicio de 30 minutos (flag especial en la semana) **y no hay clases auxiliares**: todas las partes se asignan solo en el auditorio principal
 - El parser debe manejar variaciones menores en el formato del PDF entre distintas ediciones del mwb
 
 ### 4.3 Módulo: Asignaciones
@@ -237,8 +246,10 @@ Cada parte tiene:
 **Validaciones automáticas:**
 - Lectura de la Biblia, Discurso (estudiante), Explique sus creencias (discurso) → solo muestra varones
 - ¿Qué dirías? → solo muestra ancianos y siervos ministeriales (o el presidente de la reunión)
-- Haga revisitas, Haga discípulos → ayudante debe ser del mismo sexo que el estudiante
+- Haga revisitas, Haga discípulos → ayudante debe ser del mismo sexo que el estudiante (oficial §8, §10; el código actual permite familiares también — drift pendiente)
+- Empiece conversaciones, Explique sus creencias (escenificación) → ayudante del mismo sexo o familiar
 - Necesidades de la congregación → solo muestra ancianos
+- Oración y Lector del estudio bíblico → solo varones bautizados publicados (rol ≠ `estudiante_biblia`)
 - Presidente, Conductor del estudio, Consejero de sala → solo muestra hermanos con el flag correspondiente activado
 - Hermanos desactivados no aparecen en los selectores
 
@@ -268,6 +279,25 @@ Además de las partes del programa, se asignan:
 **Navegación entre semanas:**
 - Vista de bimestre completo con indicador de progreso (cuántas semanas están completas)
 - Acceso rápido a semana anterior / siguiente
+
+### 4.5 Módulo: Familias (añadido en v1.3)
+
+**Descripción:** Agrupaciones familiares de la congregación. Necesario para la regla de elegibilidad "ayudante: mismo sexo **o familiar**".
+
+**Funcionalidades:**
+- Listado de familias y detalle con sus miembros
+- Un hermano pertenece a una familia (`familia_miembros`)
+- La elegibilidad de ayudantes consulta la familia del estudiante asignado
+
+### 4.6 Módulo: S-89 y Exportación (añadido en v1.3)
+
+**Descripción:** El formulario oficial "Asignación para la reunión Vida y Ministerio Cristianos" (S-89) es el documento que el superintendente entrega a los estudiantes con ≥3 semanas de anticipación (instrucciones oficiales §24).
+
+**Funcionalidades:**
+- `S89Page` (`/semanas/:id/s89`): S-89 de una semana
+- `S89RangoPage` (`/s89/rango`): S-89 de un rango de semanas
+- Exportación a PDF y JPEG (`src-tauri/src/commands/export.rs`)
+- `S140RangoPage` (`/s140/rango`): S-140 de varias semanas
 
 ---
 
@@ -355,6 +385,20 @@ Implementado como tablas SQLite con structs Rust correspondientes (serde `Serial
 
 > **Nota:** `presentador` fue removido del enum de roles — las partes no-estudiante son presentadas por el mismo hermano asignado como estudiante. Las partes de oración y presidencia se asignan directamente en la tabla `semanas`.
 
+**Tabla `familias`**
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| id | INTEGER PK | |
+| nombre | TEXT | |
+
+**Tabla `familia_miembros`**
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| familia_id | INTEGER | FK → familias.id |
+| hermano_id | INTEGER | FK → hermanos.id |
+
+> La regla de ayudante "mismo sexo o familiar" (aplica solo a `empiece_conversaciones` y `explique_creencias_escenificacion`) resuelve el parentesco consultando `familia_miembros`: hermanos que comparten familia con el estudiante asignado.
+
 ### 5.3 Lógica de Elegibilidad
 
 Se implementa como un módulo Rust (`elegibility`) expuesto al frontend mediante un comando Tauri:
@@ -362,13 +406,15 @@ Se implementa como un módulo Rust (`elegibility`) expuesto al frontend mediante
 ```rust
 #[tauri::command]
 fn get_eligible_brothers(
-    tipo_asignacion: TipoAsignacion,
-    rol: RolAsignacion,
-    ambito: Ambito,
+    tipo_asignacion: String,
+    rol: String,
+    ambito: String,
+    sexo_estudiante: Option<String>,
+    estudiante_id: Option<i64>,
 ) -> Vec<Hermano> { ... }
 ```
 
-El módulo recibe `tipo_asignacion`, `rol` y `ambito` y retorna los hermanos elegibles consultando SQLite con los filtros correspondientes. Esta lógica es la fuente de verdad única para filtrar los selectores en la UI.
+El módulo recibe `tipo_asignacion`, `rol`, `ambito`, `sexo_estudiante` y `estudiante_id` (estos dos últimos para la regla de ayudante: mismo sexo o familiar, resuelta vía `familia_miembros`). Retorna los hermanos elegibles consultando SQLite con los filtros correspondientes. Esta lógica es la fuente de verdad única para filtrar los selectores en la UI. La matriz completa de reglas está en **`.docs/requirements.md`**.
 
 El frontend React consume este comando vía `invoke("get_eligible_brothers", { ... })` desde los componentes de asignación.
 
@@ -436,6 +482,11 @@ La navegación se maneja con React Router. Cada vista es un componente React.
 | `/semanas/importar` | `ImportarMwbPage` | Subir PDF del mwb, vista previa del parseo, confirmar |
 | `/semanas/:id` | `AsignacionesPage` | Vista de asignaciones de la semana |
 | `/semanas/:id/s140` | `S140Page` | Vista S-140 imprimible |
+| `/familias` | `FamiliasListPage` | Listado de familias |
+| `/familias/:id` | `FamiliaDetailPage` | Detalle de familia con sus miembros |
+| `/s140/rango` | `S140RangoPage` | S-140 de un rango de semanas |
+| `/semanas/:id/s89` | `S89Page` | Formulario S-89 de una semana |
+| `/s89/rango` | `S89RangoPage` | S-89 de un rango de semanas |
 
 ### 6.2 Principios de UI
 
@@ -455,7 +506,6 @@ Las siguientes funcionalidades quedan explícitamente fuera del MVP pero se docu
 - Múltiples congregaciones
 - Autenticación / multi-usuario
 - Historial de más de un bimestre en la vista de rotación
-- Exportación al formato exacto del S-140 de la Watch Tower (replicar el formato oficial)
 - Integración con JW Library o jw.org
 
 ---

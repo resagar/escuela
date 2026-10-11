@@ -7,9 +7,10 @@ Bienvenido a la documentación de desarrollo de la aplicación de escritorio par
 Para entender el proyecto y su diseño, lee los siguientes documentos en orden:
 
 1. **[Contexto del Proyecto](project-context.md)**: El propósito de la aplicación, público objetivo y alcance del MVP.
-2. **[Guía de Diseño y UI: S-140](ux-guidelines.md)**: Especificación exacta de colores, fuentes, negritas y grilla matemática para generar el S-140 idéntico al oficial. (Implementación de referencia en `s140-mockup.html`).
-3. **[Arquitectura y Modelo de Datos](architecture.md)**: Diagrama de componentes, base de datos SQLite y flujo del parser del mwb PDF.
-4. **[Plan Maestro del MVP](master-plan.md)**: Plan detallado de 6 sprints con tareas, archivos, dependencias y criterios de aceptación.
+2. **[Requerimientos y Reglas](requirements.md)**: Matriz de elegibilidad, semanas especiales, catálogo de tipos de asignación y modelo de datos. **Léelo antes de crear o modificar una feature de asignaciones.**
+3. **[Guía de Diseño y UI: S-140](ux-guidelines.md)**: Especificación exacta de colores, fuentes, negritas y grilla matemática para generar el S-140 idéntico al oficial. (Implementación de referencia en `s140-mockup.html`).
+4. **[Arquitectura y Modelo de Datos](architecture.md)**: Diagrama de componentes, base de datos SQLite y flujo del parser del mwb PDF.
+5. **[Plan Maestro del MVP](master-plan.md)**: Plan detallado de 6 sprints con tareas, archivos, dependencias y criterios de aceptación.
 
 ---
 

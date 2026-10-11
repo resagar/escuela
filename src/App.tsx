@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
-import DashboardPage from "./pages/DashboardPage";
-import HermanosListPage from "./pages/HermanosListPage";
-import HermanoFormPage from "./pages/HermanoFormPage";
-import SemanasListPage from "./pages/SemanasListPage";
-import ImportarMwbPage from "./pages/ImportarMwbPage";
-import SemanaFormPage from "./pages/SemanaFormPage";
 import AsignacionesPage from "./pages/AsignacionesPage";
-import FamiliasListPage from "./pages/FamiliasListPage";
+import DashboardPage from "./pages/DashboardPage";
 import FamiliaDetailPage from "./pages/FamiliaDetailPage";
-import S140Page from "./pages/S140Page";
-import S140RangoPage from "./pages/S140RangoPage";
+import FamiliasListPage from "./pages/FamiliasListPage";
+import HermanoFormPage from "./pages/HermanoFormPage";
+import HermanosListPage from "./pages/HermanosListPage";
+import ImportarMwbPage from "./pages/ImportarMwbPage";
 import S89Page from "./pages/S89Page";
 import S89RangoPage from "./pages/S89RangoPage";
+import S140Page from "./pages/S140Page";
+import S140RangoPage from "./pages/S140RangoPage";
+import SemanaFormPage from "./pages/SemanaFormPage";
+import SemanasListPage from "./pages/SemanasListPage";
 
 function App() {
 	return (
