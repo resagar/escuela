@@ -35,6 +35,7 @@ pub fn run() {
             commands::semanas::create_semana,
             commands::semanas::list_semanas,
             commands::semanas::get_semana,
+            commands::semanas::get_adjacent_weeks,
             commands::semanas::update_semana,
             commands::semanas::delete_semana,
             commands::semanas::import_parsed_weeks,
@@ -56,7 +57,6 @@ pub fn run() {
             commands::asignaciones::get_assignments_for_week,
             commands::asignaciones::update_semana_roles,
             commands::historial::get_brother_history,
-            commands::historial::get_bimonthly_stats,
             commands::export::write_file_bytes,
             commands::s89::get_s89_cards_for_week,
         ])

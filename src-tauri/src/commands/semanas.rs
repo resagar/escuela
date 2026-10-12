@@ -1,6 +1,7 @@
 use crate::db::Database;
-use crate::models::Semana;
+use crate::models::{AdjacentWeeks, Semana};
 use crate::mwb_parser;
+use rusqlite::OptionalExtension;
 use tauri::State;
 
 #[tauri::command]
@@ -118,6 +119,65 @@ pub fn get_semana(db: State<'_, Database>, id: i64) -> Result<Semana, String> {
         },
     )
     .map_err(|e| e.to_string())
+}
+
+fn semana_from_row(row: &rusqlite::Row) -> Result<Semana, rusqlite::Error> {
+    Ok(Semana {
+        id: row.get(0)?,
+        fecha_inicio: row.get(1)?,
+        fecha_fin: row.get(2)?,
+        libro_biblico: row.get(3)?,
+        cancion_apertura: row.get(4)?,
+        cancion_intermedia: row.get(5)?,
+        cancion_cierre: row.get(6)?,
+        tipo_especial: row.get(7)?,
+        presidente_id: row.get(8)?,
+        consejero_sala_id: row.get(9)?,
+        orador_oracion_apertura_id: row.get(10)?,
+        orador_oracion_intermedia_id: row.get(11)?,
+        orador_oracion_cierre_id: row.get(12)?,
+    })
+}
+
+#[tauri::command]
+pub fn get_adjacent_weeks(
+    db: State<'_, Database>,
+    semana_id: i64,
+) -> Result<AdjacentWeeks, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+    let anterior = conn
+        .query_row(
+            "SELECT id, fecha_inicio, fecha_fin, libro_biblico,
+             cancion_apertura, cancion_intermedia, cancion_cierre,
+             tipo_especial, presidente_id, consejero_sala_id,
+             orador_oracion_apertura_id, orador_oracion_intermedia_id,
+             orador_oracion_cierre_id
+             FROM semanas
+             WHERE fecha_inicio < (SELECT fecha_inicio FROM semanas WHERE id = ?1)
+             ORDER BY fecha_inicio DESC
+             LIMIT 1",
+            rusqlite::params![semana_id],
+            semana_from_row,
+        )
+        .optional()
+        .map_err(|e| e.to_string())?;
+    let siguiente = conn
+        .query_row(
+            "SELECT id, fecha_inicio, fecha_fin, libro_biblico,
+             cancion_apertura, cancion_intermedia, cancion_cierre,
+             tipo_especial, presidente_id, consejero_sala_id,
+             orador_oracion_apertura_id, orador_oracion_intermedia_id,
+             orador_oracion_cierre_id
+             FROM semanas
+             WHERE fecha_inicio > (SELECT fecha_inicio FROM semanas WHERE id = ?1)
+             ORDER BY fecha_inicio ASC
+             LIMIT 1",
+            rusqlite::params![semana_id],
+            semana_from_row,
+        )
+        .optional()
+        .map_err(|e| e.to_string())?;
+    Ok(AdjacentWeeks { anterior, siguiente })
 }
 
 #[tauri::command]

@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::models::{AssignmentHistory, BrotherStats};
+use crate::models::AssignmentHistory;
 
 /// Participation history of one brother within a date window.
 ///
@@ -128,40 +128,4 @@ pub fn get_brother_history(
     let months = months.unwrap_or(4).max(1);
     let date_modifier = format!("-{} months", months);
     fetch_history(&conn, hermano_id, &date_modifier, &fecha_referencia)
-}
-
-#[tauri::command]
-pub fn get_bimonthly_stats(db: tauri::State<'_, Database>) -> Result<Vec<BrotherStats>, String> {
-    let conn = db.conn.lock().map_err(|e| e.to_string())?;
-    let mut stmt = conn
-        .prepare(
-            "SELECT
-                a.hermano_id,
-                h.nombre as hermano_nombre,
-                COUNT(*) as total_participaciones
-             FROM asignaciones a
-             JOIN hermanos h ON a.hermano_id = h.id
-             JOIN partes p ON a.parte_id = p.id
-             JOIN semanas s ON p.semana_id = s.id
-             WHERE s.fecha_inicio >= date('now', '-2 months')
-             GROUP BY a.hermano_id, h.nombre
-             ORDER BY total_participaciones DESC",
-        )
-        .map_err(|e| e.to_string())?;
-
-    let rows = stmt
-        .query_map([], |row| {
-            Ok(BrotherStats {
-                hermano_id: row.get(0)?,
-                hermano_nombre: row.get(1)?,
-                total_participaciones: row.get(2)?,
-            })
-        })
-        .map_err(|e| e.to_string())?;
-
-    let mut results = Vec::new();
-    for row in rows {
-        results.push(row.map_err(|e| e.to_string())?);
-    }
-    Ok(results)
 }

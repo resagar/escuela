@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { AssignmentHistory, BrotherWithHistory } from "../types";
 import Modal from "./Modal";
 
@@ -22,6 +22,13 @@ function formatDate(iso: string): string {
 	return `${d}/${m}/${y}`;
 }
 
+function normalize(text: string): string {
+	return text
+		.normalize("NFD")
+		.replace(/\p{Diacritic}/gu, "")
+		.toLowerCase();
+}
+
 interface BrotherPickerModalProps {
 	open: boolean;
 	onClose: () => void;
@@ -42,9 +49,31 @@ export default function BrotherPickerModal({
 	onSelect,
 }: BrotherPickerModalProps) {
 	const [expandedId, setExpandedId] = useState<number | null>(null);
+	const [query, setQuery] = useState("");
+
+	const filteredBrothers = useMemo(() => {
+		const q = normalize(query.trim());
+		if (!q) return brothers;
+		return brothers.filter(({ hermano }) =>
+			normalize(hermano.nombre).includes(q),
+		);
+	}, [brothers, query]);
+
+	const searching = query.trim() !== "";
 
 	return (
 		<Modal open={open} onClose={onClose} title={title}>
+			<div className="sticky top-0 z-10 bg-white pb-2">
+				<input
+					type="text"
+					autoFocus
+					value={query}
+					onChange={(e) => setQuery(e.target.value)}
+					placeholder="Buscar hermano(a)..."
+					aria-label="Buscar hermano(a)"
+					className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+				/>
+			</div>
 			{loading && (
 				<p className="text-gray-500 text-sm py-4 text-center">Cargando...</p>
 			)}
@@ -56,6 +85,11 @@ export default function BrotherPickerModal({
 					No hay hermanos elegibles para esta asignación.
 				</p>
 			)}
+			{!loading && !error && searching && brothers.length > 0 && filteredBrothers.length === 0 && (
+				<p className="text-gray-500 text-sm py-4 text-center">
+					Sin resultados.
+				</p>
+			)}
 			<div className="space-y-2">
 				<button
 					type="button"
@@ -64,7 +98,7 @@ export default function BrotherPickerModal({
 				>
 					-- Sin asignar --
 				</button>
-				{brothers.map(({ hermano, historial }) => {
+				{filteredBrothers.map(({ hermano, historial }) => {
 					const expanded = expandedId === hermano.id;
 					const ultima = historial[0];
 					return (

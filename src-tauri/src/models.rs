@@ -181,8 +181,7 @@ pub struct BrotherWithHistory {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BrotherStats {
-    pub hermano_id: i64,
-    pub hermano_nombre: String,
-    pub total_participaciones: i64,
+pub struct AdjacentWeeks {
+    pub anterior: Option<Semana>,
+    pub siguiente: Option<Semana>,
 }

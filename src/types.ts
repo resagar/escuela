@@ -45,6 +45,11 @@ export interface Semana {
 	orador_oracion_cierre_id: number | null;
 }
 
+export interface AdjacentWeeks {
+	anterior: Semana | null;
+	siguiente: Semana | null;
+}
+
 export interface Parte {
 	id: number;
 	semana_id: number;
@@ -136,12 +141,6 @@ export interface AssignmentHistory {
 	parte_tipo: string;
 	ambito: string;
 	rol: string;
-}
-
-export interface BrotherStats {
-	hermano_id: number;
-	hermano_nombre: string;
-	total_participaciones: number;
 }
 
 export interface BrotherWithHistory {

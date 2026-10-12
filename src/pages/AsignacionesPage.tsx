@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import type { Semana, Parte, AsignacionDetail, BrotherStats } from "../types";
+import type { AdjacentWeeks, Semana, Parte, AsignacionDetail } from "../types";
 import { ASIGNACION_LABELS } from "../types";
 import BrotherSelector from "../components/BrotherSelector";
 
@@ -35,12 +35,13 @@ interface AssignmentKey {
 
 export default function AsignacionesPage() {
 	const { id } = useParams();
+	const navigate = useNavigate();
 	const semanaId = Number(id);
 
 	const [semana, setSemana] = useState<Semana | null>(null);
 	const [partes, setPartes] = useState<Parte[]>([]);
 	const [assignments, setAssignments] = useState<AsignacionDetail[]>([]);
-	const [bimonthlyStats, setBimonthlyStats] = useState<Map<number, number>>(new Map());
+	const [adjacent, setAdjacent] = useState<AdjacentWeeks | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
@@ -49,20 +50,16 @@ export default function AsignacionesPage() {
 		try {
 			setLoading(true);
 			setError(null);
-			const [sem, pts, asgs, stats] = await Promise.all([
+			const [sem, pts, asgs, adj] = await Promise.all([
 				invoke<Semana>("get_semana", { id: semanaId }),
 				invoke<Parte[]>("list_partes", { semanaId }),
 				invoke<AsignacionDetail[]>("get_assignments_for_week", { semanaId }),
-				invoke<BrotherStats[]>("get_bimonthly_stats"),
+				invoke<AdjacentWeeks>("get_adjacent_weeks", { semanaId }),
 			]);
 			setSemana(sem);
 			setPartes(pts);
 			setAssignments(asgs);
-			const statsMap = new Map<number, number>();
-			for (const s of stats) {
-				statsMap.set(s.hermano_id, s.total_participaciones);
-			}
-			setBimonthlyStats(statsMap);
+			setAdjacent(adj);
 		} catch (err) {
 			setError(String(err));
 		} finally {
@@ -165,7 +162,6 @@ export default function AsignacionesPage() {
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "conductor" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "conductor", v)}
-						stats={bimonthlyStats}
 					/>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Lector:</label>
 					<BrotherSelector
@@ -175,7 +171,6 @@ export default function AsignacionesPage() {
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "lector" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "lector", v)}
-						stats={bimonthlyStats}
 					/>
 				</div>
 			);
@@ -192,7 +187,6 @@ export default function AsignacionesPage() {
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
-						stats={bimonthlyStats}
 					/>
 				</div>
 			);
@@ -210,7 +204,6 @@ export default function AsignacionesPage() {
 							ambito="auditorio_principal"
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
-							stats={bimonthlyStats}
 						/>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
@@ -222,7 +215,6 @@ export default function AsignacionesPage() {
 							estudianteId={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "ayudante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "ayudante", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 					<div>
@@ -234,7 +226,6 @@ export default function AsignacionesPage() {
 							ambito="sala_auxiliar"
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "sala_auxiliar", "estudiante", v)}
-							stats={bimonthlyStats}
 						/>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
@@ -246,7 +237,6 @@ export default function AsignacionesPage() {
 							estudianteId={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "ayudante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "sala_auxiliar", "ayudante", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 				</div>
@@ -265,7 +255,6 @@ export default function AsignacionesPage() {
 							ambito="auditorio_principal"
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 					<div>
@@ -277,7 +266,6 @@ export default function AsignacionesPage() {
 							ambito="sala_auxiliar"
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "sala_auxiliar", "estudiante", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 				</div>
@@ -295,7 +283,6 @@ export default function AsignacionesPage() {
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
-						stats={bimonthlyStats}
 					/>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 					<BrotherSelector
@@ -307,7 +294,6 @@ export default function AsignacionesPage() {
 						estudianteId={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "ayudante" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "ayudante", v)}
-						stats={bimonthlyStats}
 					/>
 				</div>
 			);
@@ -323,7 +309,6 @@ export default function AsignacionesPage() {
 					ambito="auditorio_principal"
 					value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 					onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
-					stats={bimonthlyStats}
 				/>
 			</div>
 		);
@@ -389,6 +374,28 @@ export default function AsignacionesPage() {
 					</div>
 				</div>
 			<div className="flex gap-2">
+				<button
+					type="button"
+					disabled={!adjacent?.anterior}
+					onClick={() => {
+						const prev = adjacent?.anterior;
+						if (prev) navigate(`/semanas/${prev.id}`);
+					}}
+					className="text-slate-600 hover:text-slate-800 underline text-sm disabled:opacity-40 disabled:no-underline"
+				>
+					← Anterior
+				</button>
+				<button
+					type="button"
+					disabled={!adjacent?.siguiente}
+					onClick={() => {
+						const next = adjacent?.siguiente;
+						if (next) navigate(`/semanas/${next.id}`);
+					}}
+					className="text-slate-600 hover:text-slate-800 underline text-sm disabled:opacity-40 disabled:no-underline"
+				>
+					Siguiente →
+				</button>
 				<Link to={`/semanas/${semana.id}/s140`} className="text-slate-600 hover:text-slate-800 underline text-sm">
 					Ver S-140
 				</Link>
@@ -413,7 +420,6 @@ export default function AsignacionesPage() {
 							ambito="auditorio_principal"
 							value={semana.presidente_id}
 							onChange={(v) => handleRoleChange("presidente_id", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 					<div>
@@ -425,7 +431,6 @@ export default function AsignacionesPage() {
 							ambito="sala_auxiliar"
 							value={semana.consejero_sala_id}
 							onChange={(v) => handleRoleChange("consejero_sala_id", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 					<div>
@@ -437,7 +442,6 @@ export default function AsignacionesPage() {
 							ambito="auditorio_principal"
 							value={semana.orador_oracion_apertura_id}
 							onChange={(v) => handleRoleChange("orador_oracion_apertura_id", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 					<div>
@@ -449,7 +453,6 @@ export default function AsignacionesPage() {
 							ambito="auditorio_principal"
 							value={semana.orador_oracion_cierre_id}
 							onChange={(v) => handleRoleChange("orador_oracion_cierre_id", v)}
-							stats={bimonthlyStats}
 						/>
 					</div>
 				</div>

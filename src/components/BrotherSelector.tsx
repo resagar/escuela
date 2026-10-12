@@ -36,7 +36,6 @@ interface BrotherSelectorProps {
 	estudianteId?: number | null;
 	value: number | null;
 	onChange: (id: number | null) => void;
-	stats?: Map<number, number>;
 }
 
 export default function BrotherSelector({
@@ -48,7 +47,6 @@ export default function BrotherSelector({
 	estudianteId,
 	value,
 	onChange,
-	stats,
 }: BrotherSelectorProps) {
 	const [brothers, setBrothers] = useState<BrotherWithHistory[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -100,7 +98,6 @@ export default function BrotherSelector({
 
 	const selected =
 		value != null ? brothers.find((b) => b.hermano.id === value) : undefined;
-	const count = value != null ? stats?.get(value) : undefined;
 	const displayName = selected
 		? `${selected.hermano.nombre} (${
 				ROL_ABBREV[selected.hermano.rol] ?? selected.hermano.rol
@@ -123,7 +120,6 @@ export default function BrotherSelector({
 			>
 				<span className="truncate">
 					{label}
-					{count !== undefined && count > 0 ? ` [${count}x]` : ""}
 				</span>
 				<span className="text-gray-400 text-[10px] shrink-0">▾</span>
 			</button>
