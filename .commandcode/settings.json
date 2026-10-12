@@ -5,7 +5,8 @@
       "Shell(grep:*)",
       "Shell(sqlite3:*)",
       "mcp__inkdrop__*",
-      "mcp__context7__*"
+      "mcp__context7__*",
+      "Shell(pnpm:*)"
     ],
     "deny": [],
     "defaultMode": "default"

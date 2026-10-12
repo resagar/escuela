@@ -6,19 +6,20 @@ Este repositorio contiene la aplicación de escritorio **Escuela**, una herramie
 
 Toda la documentación detallada del proyecto está organizada en la carpeta `.docs/`. **No agregues explicaciones extensas a este archivo.**
 
-* **Punto de Entrada**: Lee **`.docs/README.md`** para navegar por los documentos de diseño, arquitectura y base de datos.
-* **Reglas y Requerimientos**: Lee **`.docs/requirements.md`** antes de crear o modificar cualquier feature de asignaciones. Es la referencia única de la matriz de elegibilidad, semanas especiales, catálogo de tipos y modelo de datos.
-* **Guía Visual del S-140**: Lee **`.docs/ux-guidelines.md`** antes de modificar cualquier vista de impresión. La plantilla de referencia exacta está en **`s140-mockup.html`**.
+- **Punto de Entrada**: Lee **`.docs/README.md`** para navegar por los documentos de diseño, arquitectura y base de datos.
+- **Reglas y Requerimientos**: Lee **`.docs/requirements.md`** antes de crear o modificar cualquier feature de asignaciones. Es la referencia única de la matriz de elegibilidad, semanas especiales, catálogo de tipos y modelo de datos.
+- **Guía Visual del S-140**: Lee **`.docs/ux-guidelines.md`** antes de modificar cualquier vista de impresión. La plantilla de referencia exacta está en **`s140-mockup.html`**.
 
 ## 🛠️ Stack y Comandos de Desarrollo
 
-* **Stack**: Tauri 2 (Rust) + React 19 + TypeScript + Vite 7 + SQLite.
-* **Gestor de Paquetes**: `pnpm`
+- **Stack**: Tauri 2 (Rust) + React 19 + TypeScript + Vite 7 + SQLite.
+- **Gestor de Paquetes**: `pnpm`
 
 ### Comandos frecuentes:
-* `pnpm install` - Instalar dependencias del frontend.
-* `pnpm tauri dev` - Iniciar la aplicación en modo desarrollo (inicia Vite + ventana Tauri).
-* `pnpm tauri build` - Compilar el instalador nativo de escritorio.
+
+- `pnpm install` - Instalar dependencias del frontend.
+- `pnpm tauri dev` - Iniciar la aplicación en modo desarrollo (inicia Vite + ventana Tauri).
+- `pnpm tauri build` - Compilar el instalador nativo de escritorio.
 
 ## ⚠️ Reglas No Negociables de Operación
 
@@ -30,4 +31,8 @@ Toda la documentación detallada del proyecto está organizada en la carpeta `.d
 
 Todas la notas relacionadas con este proyecto se leeran, actualizara, crearan nuevas en el siguiente book de inkdrop
 
-**Book:** book:NTMPyBG4 
+**Book:** book:NTMPyBG4
+
+- Siempre trabajaremos con una spec(esta tarea tendra un tag llamado spec) y un implementation plan (tendra una tag llamada plan), cuando termines una implementation plan, debes marcar como terminadas la fases del implementation plan las tareas que esta en la spec.
+
+ 

@@ -141,7 +141,7 @@ export default function AsignacionesPage() {
 		}
 	};
 
-	const renderSelectorsForPart = (parte: Parte) => {
+	const renderSelectorsForPart = (parte: Parte, fechaReferencia: string) => {
 		const tipo = parte.tipo_asignacion;
 		const needsSalaAux = parte.requiere_sala_auxiliar;
 		const needsAyudante = parte.requiere_ayudante;
@@ -159,6 +159,7 @@ export default function AsignacionesPage() {
 				<div>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Conductor:</label>
 					<BrotherSelector
+						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
 						rol="conductor"
 						ambito="auditorio_principal"
@@ -168,6 +169,7 @@ export default function AsignacionesPage() {
 					/>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Lector:</label>
 					<BrotherSelector
+						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
 						rol="lector"
 						ambito="auditorio_principal"
@@ -184,6 +186,7 @@ export default function AsignacionesPage() {
 				<div>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Presentador:</label>
 					<BrotherSelector
+						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
 						rol="estudiante"
 						ambito="auditorio_principal"
@@ -201,6 +204,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="estudiante"
 							ambito="auditorio_principal"
@@ -210,6 +214,7 @@ export default function AsignacionesPage() {
 						/>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="ayudante"
 							ambito="auditorio_principal"
@@ -223,6 +228,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="estudiante"
 							ambito="sala_auxiliar"
@@ -232,6 +238,7 @@ export default function AsignacionesPage() {
 						/>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="ayudante"
 							ambito="sala_auxiliar"
@@ -252,6 +259,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="estudiante"
 							ambito="auditorio_principal"
@@ -263,6 +271,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
 						<BrotherSelector
+							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
 							rol="estudiante"
 							ambito="sala_auxiliar"
@@ -280,6 +289,7 @@ export default function AsignacionesPage() {
 				<div>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
 					<BrotherSelector
+						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
 						rol="estudiante"
 						ambito="auditorio_principal"
@@ -289,6 +299,7 @@ export default function AsignacionesPage() {
 					/>
 					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
 					<BrotherSelector
+						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
 						rol="ayudante"
 						ambito="auditorio_principal"
@@ -306,6 +317,7 @@ export default function AsignacionesPage() {
 			<div>
 				<label className="text-xs font-semibold text-gray-600 block mb-0.5">Presentador:</label>
 				<BrotherSelector
+					fechaReferencia={fechaReferencia}
 					tipoAsignacion={tipo}
 					rol="estudiante"
 					ambito="auditorio_principal"
@@ -395,6 +407,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="block text-xs text-gray-500 mb-1">Presidente</label>
 						<BrotherSelector
+							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="normal"
 							rol="presidente"
 							ambito="auditorio_principal"
@@ -406,6 +419,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="block text-xs text-gray-500 mb-1">Consejero sala auxiliar</label>
 						<BrotherSelector
+							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="normal"
 							rol="consejero_sala"
 							ambito="sala_auxiliar"
@@ -417,6 +431,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="block text-xs text-gray-500 mb-1">Oración apertura</label>
 						<BrotherSelector
+							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="oracion"
 							rol="oracion"
 							ambito="auditorio_principal"
@@ -428,6 +443,7 @@ export default function AsignacionesPage() {
 					<div>
 						<label className="block text-xs text-gray-500 mb-1">Oración cierre</label>
 						<BrotherSelector
+							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="oracion"
 							rol="oracion"
 							ambito="auditorio_principal"
@@ -463,7 +479,7 @@ export default function AsignacionesPage() {
 													<span className="text-xs text-gray-400">({p.duracion_minutos} min)</span>
 												)}
 											</div>
-											{renderSelectorsForPart(p)}
+											{renderSelectorsForPart(p, semana.fecha_inicio)}
 										</div>
 									</div>
 								</div>

@@ -19,7 +19,8 @@ const HISTORY_SQL: &str = "
     JOIN partes p ON a.parte_id = p.id
     JOIN semanas s ON p.semana_id = s.id
     WHERE a.hermano_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     UNION ALL
     SELECT
         s.fecha_inicio,
@@ -30,7 +31,8 @@ const HISTORY_SQL: &str = "
         'presidente'
     FROM semanas s
     WHERE s.presidente_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     UNION ALL
     SELECT
         s.fecha_inicio,
@@ -41,7 +43,8 @@ const HISTORY_SQL: &str = "
         'consejero_sala'
     FROM semanas s
     WHERE s.consejero_sala_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     UNION ALL
     SELECT
         s.fecha_inicio,
@@ -52,7 +55,8 @@ const HISTORY_SQL: &str = "
         'oracion'
     FROM semanas s
     WHERE s.orador_oracion_apertura_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     UNION ALL
     SELECT
         s.fecha_inicio,
@@ -63,7 +67,8 @@ const HISTORY_SQL: &str = "
         'oracion'
     FROM semanas s
     WHERE s.orador_oracion_intermedia_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     UNION ALL
     SELECT
         s.fecha_inicio,
@@ -74,22 +79,26 @@ const HISTORY_SQL: &str = "
         'oracion'
     FROM semanas s
     WHERE s.orador_oracion_cierre_id = ?1
-      AND s.fecha_inicio >= date('now', ?2)
+      AND s.fecha_inicio >= date(?3, ?2)
+      AND s.fecha_inicio < ?3
     ORDER BY 1 DESC
 ";
 
 /// Shared history query used by `get_brother_history` and the bulk
 /// eligibility-with-history command. `date_modifier` is a SQLite date
-/// modifier string, e.g. "-4 months".
+/// modifier string, e.g. "-4 months". `fecha_referencia` is the ISO
+/// date of the week being assigned; only participations before it
+/// count as previous.
 pub fn fetch_history(
     conn: &rusqlite::Connection,
     hermano_id: i64,
     date_modifier: &str,
+    fecha_referencia: &str,
 ) -> Result<Vec<AssignmentHistory>, String> {
     let mut stmt = conn.prepare(HISTORY_SQL).map_err(|e| e.to_string())?;
 
     let rows = stmt
-        .query_map(rusqlite::params![hermano_id, date_modifier], |row| {
+        .query_map(rusqlite::params![hermano_id, date_modifier, fecha_referencia], |row| {
             Ok(AssignmentHistory {
                 semana_fecha_inicio: row.get(0)?,
                 semana_fecha_fin: row.get(1)?,
@@ -113,11 +122,12 @@ pub fn get_brother_history(
     db: tauri::State<'_, Database>,
     hermano_id: i64,
     months: Option<i64>,
+    fecha_referencia: String,
 ) -> Result<Vec<AssignmentHistory>, String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
     let months = months.unwrap_or(4).max(1);
     let date_modifier = format!("-{} months", months);
-    fetch_history(&conn, hermano_id, &date_modifier)
+    fetch_history(&conn, hermano_id, &date_modifier, &fecha_referencia)
 }
 
 #[tauri::command]

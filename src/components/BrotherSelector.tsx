@@ -31,6 +31,7 @@ interface BrotherSelectorProps {
 	tipoAsignacion: string;
 	rol: string;
 	ambito: string;
+	fechaReferencia: string;
 	sexoEstudiante?: string | null;
 	estudianteId?: number | null;
 	value: number | null;
@@ -42,6 +43,7 @@ export default function BrotherSelector({
 	tipoAsignacion,
 	rol,
 	ambito,
+	fechaReferencia,
 	sexoEstudiante,
 	estudianteId,
 	value,
@@ -56,7 +58,7 @@ export default function BrotherSelector({
 
 	useEffect(() => {
 		loadEligible();
-	}, [tipoAsignacion, rol, ambito, sexoEstudiante, estudianteId]);
+	}, [tipoAsignacion, rol, ambito, sexoEstudiante, estudianteId, fechaReferencia]);
 
 	const loadEligible = async () => {
 		try {
@@ -71,6 +73,7 @@ export default function BrotherSelector({
 					sexoEstudiante: sexoEstudiante ?? null,
 					estudianteId: estudianteId ?? null,
 					months: HISTORY_MONTHS,
+					fechaReferencia,
 				},
 			);
 			setBrothers(data);

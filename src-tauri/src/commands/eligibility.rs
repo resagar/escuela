@@ -25,8 +25,9 @@ pub fn get_eligible_brothers(
 }
 
 /// Eligible brothers for a given assignment, each one with their participation
-/// history for the last `months` months (default 4). One round-trip for the
-/// frontend: avoids N+1 queries when opening the picker modal.
+/// history for the `months` months before `fecha_referencia` (default 4).
+/// One round-trip for the frontend: avoids N+1 queries when opening the
+/// picker modal.
 #[tauri::command]
 pub fn get_eligible_brothers_with_history(
     db: State<'_, Database>,
@@ -36,6 +37,7 @@ pub fn get_eligible_brothers_with_history(
     sexo_estudiante: Option<String>,
     estudiante_id: Option<i64>,
     months: Option<i64>,
+    fecha_referencia: String,
 ) -> Result<Vec<BrotherWithHistory>, String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
     let hermanos = rules::get_eligible_brothers(
@@ -50,7 +52,7 @@ pub fn get_eligible_brothers_with_history(
     let date_modifier = format!("-{} months", months);
     let mut result = Vec::with_capacity(hermanos.len());
     for hermano in hermanos {
-        let historial = fetch_history(&conn, hermano.id, &date_modifier)?;
+        let historial = fetch_history(&conn, hermano.id, &date_modifier, &fecha_referencia)?;
         result.push(BrotherWithHistory {
             hermano,
             historial,
