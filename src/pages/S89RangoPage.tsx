@@ -237,11 +237,7 @@ export default function S89RangoPage() {
 					</div>
 
 					<div ref={previewRef}>
-						{previewData.map((wd) => (
-							<div key={wd.semana.id}>
-								{renderS89Pages(wd.cards)}
-							</div>
-						))}
+						{renderS89Pages(previewData.flatMap((wd) => wd.cards))}
 					</div>
 				</div>
 			)}
