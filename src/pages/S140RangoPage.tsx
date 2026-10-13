@@ -271,7 +271,7 @@ export default function S140RangoPage() {
 
 					<div ref={previewRef} className="s140-wrapper">
 						{previewData.map((wd, i) => (
-							<div key={wd.semana.id}>
+							<div key={wd.semana.id} className="week-page">
 								{i > 0 && <hr className="week-separator" />}
 								<S140WeekView
 									semana={wd.semana}

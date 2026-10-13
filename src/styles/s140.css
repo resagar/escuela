@@ -188,14 +188,16 @@
 }
 
 @media print {
-  .s140-wrapper .week-container {
+  .s140-wrapper .week-page {
     page-break-after: always;
     break-after: page;
-    margin-bottom: 0 !important;
   }
-  .s140-wrapper .week-container:last-child {
+  .s140-wrapper .week-page:last-child {
     page-break-after: avoid;
     break-after: avoid;
+  }
+  .s140-wrapper .week-container {
+    margin-bottom: 0 !important;
   }
   .s140-table {
     margin-bottom: 0 !important;
