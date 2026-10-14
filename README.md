@@ -18,4 +18,4 @@ pnpm tauri dev
 
 ## Documentación
 
-Toda la documentación del proyecto está en [.docs/](.docs/).
+Toda la documentación del proyecto está en [docs/user/](docs/user/).

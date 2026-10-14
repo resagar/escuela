@@ -129,56 +129,28 @@ pub fn get_eligible_brothers(
         ),
 
         ("haga_revisitas", "ayudante") => {
-            if let Some(eid) = estudiante_id {
-                if let Some(sex) = sexo_estudiante {
-                    (
-                        format!(
-                            "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                    puede_ser_consejero_sala, activo, notas
-                             FROM hermanos
-                             WHERE activo = 1
-                               AND (sexo = ?2 OR {})
-                             ORDER BY nombre",
-                            family_subquery
-                        ),
-                        vec![
-                            Box::new(eid) as Box<dyn rusqlite::types::ToSql>,
-                            Box::new(sex.to_string()),
-                        ],
-                    )
-                } else {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![],
-                    )
-                }
+            // §8: the assistant is someone of the same sex as the student —
+            // "or a family member" only applies to §7 and §11
+            if let Some(sex) = sexo_estudiante {
+                (
+                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                            puede_ser_consejero_sala, activo, notas
+                     FROM hermanos
+                     WHERE activo = 1 AND sexo = ?1
+                     ORDER BY nombre"
+                        .into(),
+                    vec![Box::new(sex.to_string())],
+                )
             } else {
-                if let Some(sex) = sexo_estudiante {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1 AND sexo = ?1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![Box::new(sex.to_string())],
-                    )
-                } else {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![],
-                    )
-                }
+                (
+                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                            puede_ser_consejero_sala, activo, notas
+                     FROM hermanos
+                     WHERE activo = 1
+                     ORDER BY nombre"
+                        .into(),
+                    vec![],
+                )
             }
         }
 
@@ -193,56 +165,27 @@ pub fn get_eligible_brothers(
         ),
 
         ("haga_discipulos", "ayudante") => {
-            if let Some(eid) = estudiante_id {
-                if let Some(sex) = sexo_estudiante {
-                    (
-                        format!(
-                            "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                    puede_ser_consejero_sala, activo, notas
-                             FROM hermanos
-                             WHERE activo = 1
-                               AND (sexo = ?2 OR {})
-                             ORDER BY nombre",
-                            family_subquery
-                        ),
-                        vec![
-                            Box::new(eid) as Box<dyn rusqlite::types::ToSql>,
-                            Box::new(sex.to_string()),
-                        ],
-                    )
-                } else {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![],
-                    )
-                }
+            // §10: same rule as §8 — same sex only, no family allowance
+            if let Some(sex) = sexo_estudiante {
+                (
+                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                            puede_ser_consejero_sala, activo, notas
+                     FROM hermanos
+                     WHERE activo = 1 AND sexo = ?1
+                     ORDER BY nombre"
+                        .into(),
+                    vec![Box::new(sex.to_string())],
+                )
             } else {
-                if let Some(sex) = sexo_estudiante {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1 AND sexo = ?1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![Box::new(sex.to_string())],
-                    )
-                } else {
-                    (
-                        "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
-                                puede_ser_consejero_sala, activo, notas
-                         FROM hermanos
-                         WHERE activo = 1
-                         ORDER BY nombre"
-                            .into(),
-                        vec![],
-                    )
-                }
+                (
+                    "SELECT id, nombre, sexo, rol, puede_presidir, puede_conducir_estudio,
+                            puede_ser_consejero_sala, activo, notas
+                     FROM hermanos
+                     WHERE activo = 1
+                     ORDER BY nombre"
+                        .into(),
+                    vec![],
+                )
             }
         }
 
@@ -449,4 +392,104 @@ pub fn get_eligible_brothers(
         .map_err(|e| e.to_string())?;
 
     Ok(hermanos)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// DB in-memory con una familia tipo Colmenares: una estudiante (19) con
+    /// tres hermanas (20, 23, 24) y un hermano varón (14), más una mujer
+    /// ajena a la familia (17) y un varón ajeno (1).
+    fn setup() -> Connection {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "CREATE TABLE hermanos (
+                id INTEGER PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                sexo TEXT NOT NULL,
+                rol TEXT NOT NULL,
+                puede_presidir INTEGER NOT NULL DEFAULT 0,
+                puede_conducir_estudio INTEGER NOT NULL DEFAULT 0,
+                puede_ser_consejero_sala INTEGER NOT NULL DEFAULT 0,
+                activo INTEGER NOT NULL DEFAULT 1,
+                notas TEXT
+            );
+            CREATE TABLE familias (
+                id INTEGER PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                notas TEXT
+            );
+            CREATE TABLE familia_miembros (
+                familia_id INTEGER NOT NULL,
+                hermano_id INTEGER NOT NULL,
+                PRIMARY KEY (familia_id, hermano_id)
+            );
+            INSERT INTO hermanos (id, nombre, sexo, rol) VALUES
+                (19, 'Alianyelis Colmenares', 'femenino', 'publicador'),
+                (20, 'Aislin Colmenares', 'femenino', 'publicador'),
+                (23, 'Audelis Colmenares', 'femenino', 'publicador'),
+                (24, 'Mayerlin Colmenares', 'femenino', 'publicador'),
+                (14, 'Ali Colmenares', 'masculino', 'publicador'),
+                (17, 'Aida Sandoval', 'femenino', 'publicador'),
+                (1, 'Rene Garcia', 'masculino', 'anciano');
+            INSERT INTO familias (id, nombre) VALUES (1, 'Colmenares');
+            INSERT INTO familia_miembros (familia_id, hermano_id) VALUES
+                (1, 19), (1, 20), (1, 23), (1, 24), (1, 14);",
+        )
+        .unwrap();
+        conn
+    }
+
+    fn elegibles(tipo: &str, conn: &Connection, estudiante_id: Option<i64>) -> Vec<i64> {
+        get_eligible_brothers(
+            conn,
+            tipo,
+            "ayudante",
+            "auditorio_principal",
+            Some("femenino"),
+            estudiante_id,
+        )
+        .unwrap()
+        .into_iter()
+        .map(|h| h.id)
+        .collect()
+    }
+
+    #[test]
+    fn ayudante_haga_revisitas_solo_mismo_sexo() {
+        let conn = setup();
+        let ids = elegibles("haga_revisitas", &conn, Some(19));
+        assert!(
+            !ids.contains(&14),
+            "el hermano varón de la estudiante no es elegible (§8: solo mismo sexo)"
+        );
+        assert!(ids.contains(&17), "una mujer ajena a la familia sí es elegible");
+        assert!(ids.contains(&20), "una hermana (mismo sexo) sí es elegible — fix (a)");
+    }
+
+    #[test]
+    fn ayudante_haga_discipulos_solo_mismo_sexo() {
+        let conn = setup();
+        let ids = elegibles("haga_discipulos", &conn, Some(19));
+        assert!(
+            !ids.contains(&14),
+            "el hermano varón no es elegible (§10: solo mismo sexo)"
+        );
+        assert!(ids.contains(&17));
+        assert!(ids.contains(&20));
+    }
+
+    #[test]
+    fn ayudante_haga_revisitas_y_discipulos_ignoran_estudiante_id() {
+        let conn = setup();
+        assert_eq!(
+            elegibles("haga_revisitas", &conn, Some(19)),
+            elegibles("haga_revisitas", &conn, None)
+        );
+        assert_eq!(
+            elegibles("haga_discipulos", &conn, Some(19)),
+            elegibles("haga_discipulos", &conn, None)
+        );
+    }
 }

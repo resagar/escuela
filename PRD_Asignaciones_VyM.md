@@ -2,7 +2,7 @@
 **Versión:** 1.3 (MVP)
 **Fecha:** Octubre 2026
 
-**Cambios v1.3 (2026-10):** refleja el drift entre el PRD original y lo implementado: módulo Familias, módulo S-89 con exportación PDF/JPEG, vistas de rango multi-semana, reglas de elegibilidad refinadas (oración y lector = varón bautizado publicado; ayudante = mismo sexo o familiar como regla local) y la regla de visita del superintendente de circuito sin clases auxiliares. Las reglas consultables viven en **`.docs/requirements.md`** (referenciada desde `AGENTS.md`).
+**Cambios v1.3 (2026-10):** refleja el drift entre el PRD original y lo implementado: módulo Familias, módulo S-89 con exportación PDF/JPEG, vistas de rango multi-semana, reglas de elegibilidad refinadas (oración y lector = varón bautizado publicado; ayudante = mismo sexo o familiar como regla local) y la regla de visita del superintendente de circuito sin clases auxiliares. Las reglas consultables viven en **`docs/user/requirements.md`** (referenciada desde `AGENTS.md`).
 
 **Autor:** René García
 
@@ -414,7 +414,7 @@ fn get_eligible_brothers(
 ) -> Vec<Hermano> { ... }
 ```
 
-El módulo recibe `tipo_asignacion`, `rol`, `ambito`, `sexo_estudiante` y `estudiante_id` (estos dos últimos para la regla de ayudante: mismo sexo o familiar, resuelta vía `familia_miembros`). Retorna los hermanos elegibles consultando SQLite con los filtros correspondientes. Esta lógica es la fuente de verdad única para filtrar los selectores en la UI. La matriz completa de reglas está en **`.docs/requirements.md`**.
+El módulo recibe `tipo_asignacion`, `rol`, `ambito`, `sexo_estudiante` y `estudiante_id` (estos dos últimos para la regla de ayudante: mismo sexo o familiar, resuelta vía `familia_miembros`). Retorna los hermanos elegibles consultando SQLite con los filtros correspondientes. Esta lógica es la fuente de verdad única para filtrar los selectores en la UI. La matriz completa de reglas está en **`docs/user/requirements.md`**.
 
 El frontend React consume este comando vía `invoke("get_eligible_brothers", { ... })` desde los componentes de asignación.
 

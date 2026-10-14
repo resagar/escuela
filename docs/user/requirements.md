@@ -1,6 +1,7 @@
 # Requerimientos y Reglas — Escuela (Asignaciones VyM)
 
-**Versión:** 1.3 (2026-10)
+**Versión:** 1.4 (2026-10)
+**Cambios v1.4 (2026-10):** documentadas en §5 dos reglas implícitas del código: integridad de sala auxiliar al editar una parte, y degeneración de ayudantes cuando faltan datos del estudiante.
 **Fuentes:** PRD_Asignaciones_VyM.md v1.2, instrucciones oficiales de la Reunión Vida y Ministerio Cristianos (S-38), código implementado.
 **Propósito de este documento:** referencia única y consultable de las reglas del dominio. Antes de crear o modificar una feature de asignaciones, leer este archivo. El PRD sigue siendo la fuente de verdad del alcance; este archivo destila las **reglas** que la app debe aplicar.
 
@@ -50,7 +51,7 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 
 > **Familia:** "familiar" se resuelve por la tabla `familia_miembros` (hermanos que comparten familia). Solo aplica a los ayudantes de `empiece_conversaciones` (§7) y `explique_creencias_escenificacion` (§11) — los únicos tipos donde el texto oficial dice "mismo sexo o un familiar".
 >
-> **Drift pendiente (código):** `src-tauri/src/eligibility/rules.rs` actualmente permite familiares también en `haga_revisitas` y `haga_discipulos`, que según el texto oficial (§8, §10) son **solo mismo sexo**. Corrección de código pendiente de autorización.
+> **Resuelto (fix (a) — solo mismo sexo):** los ayudantes de `haga_revisitas` y `haga_discipulos` se filtran por `sexo = sexo_estudiante` únicamente; un familiar del mismo sexo sigue siendo elegible (es mismo sexo). Fix aplicado con tests en `src-tauri/src/eligibility/rules.rs`; ticket en `.scratch/fix-ayudantes-haga-revisitas-discipulos/issues/01-ayudante-solo-mismo-sexo.md`.
 
 ## 4. Reglas de semana especial (`tipo_especial` en tabla `semanas`)
 
@@ -64,6 +65,8 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 ## 5. Reglas de negocio
 
 - **Soft delete obligatorio**: los hermanos se desactivan (`activo = 0`), nunca se eliminan, para preservar historial. Los desactivados no aparecen en selectores pero sus asignaciones existentes se mantienen.
+- **Integridad de sala auxiliar**: editar una parte a `requiere_sala_auxiliar = 0` borra automáticamente sus asignaciones de `sala_auxiliar` existentes (`update_parte`, `src-tauri/src/commands/partes.rs:132-138`).
+- **Ayudantes sin datos del estudiante**: si faltan `estudiante_id` o `sexo_estudiante`, los ayudantes degeneran a "solo sexo" o "todos los activos" (`src-tauri/src/eligibility/rules.rs:85-118`); la UI siempre envía ambos, así que solo afecta a llamadas directas al comando.
 - **Rotación del estudio bíblico** (§17): si es posible, conductor **y** lector diferentes cada semana. Informativo, no bloqueante.
 - **Historial de participación**: se muestra el conteo de participaciones del bimestre (`[Nx]`) en los selectores. **Nunca bloquea** una asignación — solo informa.
 - **Antelación**: las asignaciones se entregan con ≥3 semanas de anticipación (proceso humano, no validación de app).
@@ -94,7 +97,7 @@ Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana`), 
 
 `/` Dashboard · `/hermanos`, `/hermanos/nuevo`, `/hermanos/:id/editar` · `/semanas`, `/semanas/importar`, `/semanas/nuevo`, `/semanas/:id/editar`, `/semanas/:id` (Asignaciones) · `/familias`, `/familias/:id` · `/semanas/:id/s140`, `/s140/rango` · `/semanas/:id/s89`, `/s89/rango`
 
-**Fidelidad S-140**: visual/impresión del S-140 debe ser idéntico al oficial — ver `.docs/ux-guidelines.md` y `s140-mockup.html` antes de tocar cualquier vista de impresión.
+**Fidelidad S-140**: visual/impresión del S-140 debe ser idéntico al oficial — ver `docs/user/ux-guidelines.md` y `s140-mockup.html` antes de tocar cualquier vista de impresión.
 
 ## 10. Fuera de alcance
 

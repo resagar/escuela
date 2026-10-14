@@ -45,7 +45,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 - ✅ `pnpm tauri dev` compila y arranca sin errores
 - ✅ `index.html` muestra título correcto y `lang="es"`
 - ✅ `tsc --noEmit` y `cargo check` limpios
-- ✅ `.docs/architecture.md` y `.docs/project-context.md` existen y están completos
+- ✅ `docs/user/architecture.md` y `docs/user/project-context.md` existen y están completos
 - ✅ CRUD de hermanos (individual + batch) funciona igual que antes
 
 ### ~~Tarea 1.1~~ ✅ Arreglar index.html y README.md
@@ -92,12 +92,12 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 - ✅ **Dependencias**: Ninguna
 - ✅ **Criterios de aceptación**: `cargo check` limpio. Cada variante mapea correctamente
 
-### ~~Tarea 1.5~~ ✅ Documentación de arquitectura (.docs)
-- ✅ **Archivos**: `.docs/project-context.md` (NUEVO), `.docs/architecture.md` (NUEVO), `.docs/README.md`
+### ~~Tarea 1.5~~ ✅ Documentación de arquitectura (docs/user)
+- ✅ **Archivos**: `docs/user/project-context.md` (NUEVO), `docs/user/architecture.md` (NUEVO), `docs/user/README.md`
 - ✅ **Descripción**:
   - `project-context.md`: Propósito, usuario, dominio, alcance MVP (basado en PRD §1-3)
   - `architecture.md`: Stack, componentes, flujo del parser, modelo de datos (4 tablas), lista de comandos Tauri
-  - Actualizar `.docs/README.md`: links a archivos existentes
+  - Actualizar `docs/user/README.md`: links a archivos existentes
 - ✅ **Dependencias**: Ninguna
 - ✅ **Criterios de aceptación**: Archivos existen y cubren los temas. Índice sin links rotos
 
@@ -117,7 +117,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 - ✅ [ ] Crear, listar, editar, desactivar hermanos funciona
 - ✅ [ ] Batch mode: crear 3+ hermanos a la vez funciona
 - ✅ [ ] `get_hermano` carga datos de edición eficientemente
-- ✅ [ ] `.docs/` tiene los 3 archivos con contenido real
+- ✅ [ ] `docs/user/` tiene los 3 archivos con contenido real
 
 ---
 
@@ -493,7 +493,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
     - Colores: `#575A5D`, `#BE8900`, `#7E0024`, `#DFDFDF`, `#000000`, `#FFFFFF`
     - Reglas `@media print`: `@page { size: letter; margin: 0.5in; }`, `print-color-adjust: exact`
   - NO modificar ningún valor. Esto es una migración 1:1.
-- ✅ **Dependencias**: `s140-mockup.html` (referencia), `.docs/ux-guidelines.md` (especificación)
+- ✅ **Dependencias**: `s140-mockup.html` (referencia), `docs/user/ux-guidelines.md` (especificación)
 - ✅ **Criterios de aceptación**: El CSS es idéntico al del mockup. No hay desviaciones.
 
 ### Tarea 5.5: S140Page — Componente React de visualización
@@ -619,7 +619,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 
 | Sprint | Archivos Nuevos |
 |--------|----------------|
-| 1 | `src/types.ts`, `.docs/project-context.md`, `.docs/architecture.md` |
+| 1 | `src/types.ts`, `docs/user/project-context.md`, `docs/user/architecture.md` |
 | 2 | `src-tauri/src/mwb_parser/mod.rs`, `src-tauri/src/mwb_parser/types.rs`, `src-tauri/src/commands/mwb.rs`, `src-tauri/src/commands/semanas.rs`, `src-tauri/src/commands/partes.rs`, `src/pages/SemanasListPage.tsx`, `src/pages/ImportarMwbPage.tsx`, `src/pages/SemanaFormPage.tsx` |
 | 3 | `src/pages/SemanaDetailPage.tsx` (actualizaciones a `SemanaFormPage.tsx`) |
 | 4 | `src-tauri/src/eligibility/mod.rs`, `src-tauri/src/eligibility/rules.rs`, `src-tauri/src/commands/eligibility.rs` |
@@ -640,7 +640,7 @@ Este plan cubre todo el trabajo restante del MVP, desde completar la Fase 1 (cat
 | `index.html` | 1 |
 | `README.md` | 1 |
 | `src-tauri/tauri.conf.json` | 1, 6 |
-| `.docs/README.md` | 1 |
+| `docs/user/README.md` | 1 |
 
 ---
 

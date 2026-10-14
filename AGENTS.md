@@ -4,11 +4,11 @@ Este repositorio contiene la aplicación de escritorio **Escuela**, una herramie
 
 ## 🧭 Documentación Progresiva
 
-Toda la documentación detallada del proyecto está organizada en la carpeta `.docs/`. **No agregues explicaciones extensas a este archivo.**
+Toda la documentación detallada del proyecto está organizada en la carpeta `docs/user/`. **No agregues explicaciones extensas a este archivo.**
 
-- **Punto de Entrada**: Lee **`.docs/README.md`** para navegar por los documentos de diseño, arquitectura y base de datos.
-- **Reglas y Requerimientos**: Lee **`.docs/requirements.md`** antes de crear o modificar cualquier feature de asignaciones. Es la referencia única de la matriz de elegibilidad, semanas especiales, catálogo de tipos y modelo de datos.
-- **Guía Visual del S-140**: Lee **`.docs/ux-guidelines.md`** antes de modificar cualquier vista de impresión. La plantilla de referencia exacta está en **`s140-mockup.html`**.
+- **Punto de Entrada**: Lee **`docs/user/README.md`** para navegar por los documentos de diseño, arquitectura y base de datos.
+- **Reglas y Requerimientos**: Lee **`docs/user/requirements.md`** antes de crear o modificar cualquier feature de asignaciones. Es la referencia única de la matriz de elegibilidad, semanas especiales, catálogo de tipos y modelo de datos.
+- **Guía Visual del S-140**: Lee **`docs/user/ux-guidelines.md`** antes de modificar cualquier vista de impresión. La plantilla de referencia exacta está en **`s140-mockup.html`**.
 
 ## 🛠️ Stack y Comandos de Desarrollo
 
@@ -25,14 +25,19 @@ Toda la documentación detallada del proyecto está organizada en la carpeta `.d
 
 1. **Idioma de Comunicación**: Toda la comunicación (planes, discusiones, explicaciones, respuestas) debe ser en **Español**.
 2. **Idioma del Código**: Todo lo relacionado con el código (nombres de variables, comentarios, commits, tablas, endpoints) debe escribirse en **Inglés**.
-3. **Diseño Visual S-140**: La fidelidad visual del formulario S-140 generado debe ser idéntica al oficial. Cualquier cambio en los componentes de visualización o impresión del S-140 debe cumplir estrictamente con **`.docs/ux-guidelines.md`**.
+3. **Diseño Visual S-140**: La fidelidad visual del formulario S-140 generado debe ser idéntica al oficial. Cualquier cambio en los componentes de visualización o impresión del S-140 debe cumplir estrictamente con **`docs/user/ux-guidelines.md`**.
 
-## Inkdrop
+## Agent skills
 
-Todas la notas relacionadas con este proyecto se leeran, actualizara, crearan nuevas en el siguiente book de inkdrop
+### Issue tracker
 
-**Book:** book:NTMPyBG4
+Publishing or fetching tickets: `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
 
-- Siempre trabajaremos con una spec(esta tarea tendra un tag llamado spec) y un implementation plan (tendra una tag llamada plan), cuando termines una implementation plan, debes marcar como terminadas la fases del implementation plan las tareas que esta en la spec.
+### Domain docs
+
+Before exploring the codebase, naming domain concepts, or flagging ADR conflicts: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
+
+
+
 
  

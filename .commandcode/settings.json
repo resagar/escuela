@@ -6,7 +6,8 @@
       "Shell(sqlite3:*)",
       "mcp__inkdrop__*",
       "mcp__context7__*",
-      "Shell(pnpm:*)"
+      "Shell(pnpm:*)",
+      "Shell(git:*)"
     ],
     "deny": [],
     "defaultMode": "default"

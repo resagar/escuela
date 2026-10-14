@@ -32,7 +32,7 @@ Marco general fijo: Presidente, Consejero de sala auxiliar, Canciones + Oracione
 
 ### Formulario S-140
 
-El output final es una tabla con 4 columnas (Hora, Título, Sala Auxiliar, Auditorio Principal) que se imprime y coloca en el tablero de anuncios. Ver `.docs/ux-guidelines.md` para especificación visual exacta.
+El output final es una tabla con 4 columnas (Hora, Título, Sala Auxiliar, Auditorio Principal) que se imprime y coloca en el tablero de anuncios. Ver `docs/user/ux-guidelines.md` para especificación visual exacta.
 
 ## Alcance del MVP
 
