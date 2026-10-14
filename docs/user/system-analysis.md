@@ -150,6 +150,8 @@ Rotación automática de hermanos, notificaciones, múltiples congregaciones, au
 
 ### 4.2 Afirmaciones de docs contradichas por el código
 
+> **Estado (2026-10-14):** los ítems #2–4, #7–15 y #17–21 (la parte documental) están **resueltos** — los docs de `docs/user/` se corrigieron contra el código en el batch `.scratch/docs-drift-batch/issues/01-correcciones-documentales.md`. Pendientes: #5 y #6 (drift de código en `mwb_parser`) y #16 (variante muerta `TipoEspecial::SinReunion`).
+
 2. **Presidente — filtro de rol.** `docs/user/master-plan.md:393` (Tarea 4.2) exige `puede_presidir = 1 AND rol IN ('anciano')`; el código solo filtra `puede_presidir = 1` sin restricción de rol (`rules.rs:386-394`). `requirements.md:47` (la referencia actual) sí coincide con el código → el master-plan está desfasado.
 3. **Oración.** `docs/user/master-plan.md:395` dice "Todos activos"; el código filtra `sexo = 'masculino' AND rol != 'estudiante_biblia'` (`rules.rs:407-415`), regla introducida en el commit `a753338` ("fix: se resolvio el bug que hacia que mostraba a las hermanas en los selects de oracion y lectura del libro", verificado en `git log`). `requirements.md:49` sí coincide con el código.
 4. **`estudio_biblico` lector.** `docs/user/master-plan.md:390` dice "Todos activos"; el código exige varón bautizado publicado (`rules.rs:375-383`). `requirements.md:46` sí coincide.
