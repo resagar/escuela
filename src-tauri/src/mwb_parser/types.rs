@@ -29,5 +29,4 @@ pub enum TipoEspecial {
     Asamblea,
     Conmemoracion,
     VisitaSuperintendente,
-    SinReunion,
 }
