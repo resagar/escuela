@@ -1,6 +1,6 @@
 # Ticket 01 — Conmemoración: solo "sin reunión" si cae entre semana
 
-**Status:** abierto — **bloqueado**: requiere un mwb real de semana de Conmemoración en `refs/`
+**Status:** cerrado — **no-aplica** (el mwb no marca semanas de Conmemoración; no hay input mecanizado)
 **Tipo:** bug — el código implementa un proxy, no la regla documentada
 **Regla:** `docs/user/requirements.md:61` — "Sin reunión **si cae entre semana** (§23)"
 **Drift:** `docs/user/system-analysis.md` §4.2 #5
@@ -29,3 +29,7 @@ Un mwb real con semana de Conmemoración en `refs/` — idealmente dos: uno con 
 ## Verification
 
 Con el sample real: importar y verificar `tipo_especial` y el nº de partes resultante contra la regla (`requirements.md:61`).
+
+## Cierre (2026-10-13)
+
+**No-aplica.** Verificado en `escuela.db`: las 13 semanas importadas son todas `normal`; el parser solo pondría `Conmemoracion` al encontrar la keyword "CONMEMORACIÓN" en el cuerpo del mwb (`mwb_parser/mod.rs:471-474`), que **no aparece** en los mwb reales (`refs/mwb_S_202609 (1).pdf`). La única vía actual sería marcarlo manualmente desde `SemanaForm.tsx:319-321`, pero se decidió no manejar conmemoraciones en esta app. La regla §23 (weekday) queda pendiente de una decisión UX si se admite el marcaje manual. Drift `docs/user/system-analysis.md` §4.2 #5 → `no-aplica`.

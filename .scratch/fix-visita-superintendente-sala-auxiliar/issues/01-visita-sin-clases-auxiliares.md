@@ -1,6 +1,6 @@
 # Ticket 01 — Visita del Superintendente: no hay clases auxiliares
 
-**Status:** abierto — **bloqueado**: requiere un mwb real de semana de Visita en `refs/`
+**Status:** cerrado — **no-aplica** (el mwb no marca semanas de visita; no hay input mecanizado)
 **Tipo:** bug — la regla detectada no se implementa
 **Regla:** `docs/user/requirements.md:62` — "El 'Estudio bíblico' se reemplaza por el **discurso de servicio de 30 min** del superintendente de circuito. **No hay clases auxiliares** (§21): todas las partes son solo auditorio principal"
 **Drift:** `docs/user/system-analysis.md` §4.2 #6
@@ -39,3 +39,9 @@ Un mwb real de semana de Visita del Superintendente en `refs/` para confirmar: (
 ## Verification
 
 Con el sample real: importar; verificar por SQL que todas las partes de la semana tienen `requiere_sala_auxiliar = 0` y que el S-140 (`/semanas/:id/s140`) muestra todo en el auditorio principal.
+
+## Cierre (2026-10-13)
+
+**No-aplica.** El parser solo pondría `VisitaSuperintendente` al detectar "VISITA DEL SUPERINTENDENTE" en el mwb (`mwb_parser/mod.rs:474,482-483`), keyword que **no aparece** en los mwb reales (verificado: 13/13 semanas `normal` en `escuela.db`). Marcarlo a mano és posible (`SemanaForm.tsx:321`) pero se decidió no implementar el manejo de visitas. Drift `docs/user/system-analysis.md` §4.2 #6 → `no-aplica`.
+
+**Si se revierte:** limpiar `requiere_sala_auxiliar` al persistir una semana `visita_superintendente` (`commands/semanas.rs:296-314`), añadir `visita_superintendente` a los skips de `DashboardPage:64` y `S140WeekView:47`, y sintetizar el discurso de servicio (30 min, `discurso_no_estudiante`) reemplazando al `estudio_biblico`.
