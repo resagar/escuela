@@ -8,7 +8,7 @@
 | Frontend | React 19 + TypeScript + Tailwind CSS v4 + React Router v7 |
 | Backend | Rust (Tauri commands) |
 | Base de datos | SQLite (rusqlite bundled, WAL mode) |
-| Parser PDF | lopdf (Rust nativo) |
+| Parser PDF | `pdftotext` (binario externo, primario) + `lopdf` (fallback) |
 
 ## Diagrama de Componentes
 
@@ -38,7 +38,7 @@
 
 ## Base de Datos
 
-4 tablas SQLite con foreign keys y WAL mode.
+6 tablas SQLite con foreign keys y WAL mode: `hermanos`, `semanas`, `partes`, `asignaciones`, `familias`, `familia_miembros` (`src-tauri/src/db.rs:31-96`).
 
 ### `hermanos`
 Catálogo de miembros de la congregación.
@@ -82,7 +82,7 @@ Partes del programa de cada semana.
 | id | INTEGER PK | |
 | semana_id | FK→semanas (CASCADE) | |
 | numero_orden | INTEGER | Orden dentro de la semana |
-| seccion | TEXT | "tesoros" / "mejores_maestros" / "vida_cristiana" |
+| seccion | TEXT | "tesoros" / "mejores_maestros" / "vida_cristiana" / "marco" |
 | tipo_asignacion | TEXT | Ver catálogo `TipoAsignacion` |
 | titulo | TEXT | |
 | duracion_minutos | INTEGER | |
@@ -102,49 +102,55 @@ Asignación de hermanos a partes.
 
 ## Comandos Tauri
 
-### Implementados
+Todos implementados y registrados en `src-tauri/src/lib.rs:26-62`:
 
 | Comando | Descripción |
 |---------|------------|
 | `list_hermanos` | Lista hermanos, opcionalmente solo activos |
 | `get_hermano` | Obtiene un hermano por ID |
 | `create_hermano` | Crea un hermano individual |
+| `create_hermanos_batch` | Creación por lotes con transacción |
 | `update_hermano` | Actualiza campos de un hermano |
 | `deactivate_hermano` | Soft delete (activo=0) |
-| `create_hermanos_batch` | Creación por lotes con transacción |
+| `parse_mwb_pdf` | Parsea un PDF de guía de actividades (mwb) |
+| `pick_mwb_file` | Abre el diálogo nativo de selección de PDF |
+| `create_semana`, `update_semana`, `list_semanas`, `get_semana`, `delete_semana` | CRUD de semanas (delete en cascade) |
+| `get_adjacent_weeks` | Semanas adyacentes (navegación previa/siguiente) |
+| `import_parsed_weeks` | Importación transaccional de semanas parseadas |
+| `create_parte`, `update_parte`, `list_partes`, `delete_parte` | CRUD de partes (delete en cascade) |
+| `get_eligible_brothers` | Hermanos elegibles según tipo de asignación, rol y ámbito |
+| `get_eligible_brothers_with_history` | Elegibles con historial de participaciones (bulk) |
+| `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` | Asignaciones (UPSERT) y roles de la semana |
+| `get_brother_history` | Historial de participaciones de un hermano (ventana configurable, default 4 meses) |
+| `create_familia`, `list_familias`, `get_familia`, `delete_familia` | CRUD de familias |
+| `add_familia_member`, `remove_familia_member`, `list_familias_with_count` | Miembros de familia y listado con conteo |
+| `write_file_bytes` | Escritura de bytes exportados (PDF/JPEG) |
+| `get_s89_cards_for_week` | Tarjetas S-89 de una semana |
 
-### Planeados
-
-| Comando | Sprint |
-|---------|--------|
-| `parse_mwb_pdf` | 2 |
-| `pick_mwb_file` | 2 |
-| `create_semana`, `update_semana`, `list_semanas`, `get_semana`, `delete_semana` | 2 |
-| `create_parte`, `update_parte`, `list_partes`, `delete_parte` | 2 |
-| `import_parsed_weeks` | 2 |
-| `get_eligible_brothers` | 4 |
-| `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` | 5 |
-| `get_brother_history`, `get_bimonthly_stats` | 6 |
+> `get_bimonthly_stats` no existe: el dashboard calcula el progreso del bimestre client-side (`src/pages/DashboardPage.tsx:53-86`).
 
 ## Flujo del Parser MWB
 
 ```
-PDF (mwb_S_202603.pdf)
+PDF (mwb_S_YYYYMM.pdf)
   │
   ▼
-lopdf::Document::load() → extract_text(&page_numbers)
-  │
+extract_text_from_pdf(): pdftotext (binario externo, primario)
+  │  └─ fallback: lopdf::Document::load() → extract_text()
   ▼
 Texto plano del PDF
   │
   ▼
-split_into_weeks() — regex detecta encabezados de semana
+normalize_text() (unifica saltos de línea, marcadores [SONG], etc.)
   │
   ▼
-Vec<String> (texto por semana)
+split_into_week_blocks() — detecta encabezados de semana (is_week_header_line + parse_week_header, parsing tokenizado)
   │
   ▼
-parse_week() para cada semana:
+Vec<(header, body)> (bloque por semana)
+  │
+  ▼
+parse_week_block() para cada bloque:
   ├── extraer libro bíblico
   ├── parsear fechas (ISO 8601)
   ├── detectar canciones

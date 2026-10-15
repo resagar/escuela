@@ -68,7 +68,7 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 - **Integridad de sala auxiliar**: editar una parte a `requiere_sala_auxiliar = 0` borra automáticamente sus asignaciones de `sala_auxiliar` existentes (`update_parte`, `src-tauri/src/commands/partes.rs:132-138`).
 - **Ayudantes sin datos del estudiante**: si faltan `estudiante_id` o `sexo_estudiante`, los ayudantes degeneran a "solo sexo" o "todos los activos" (`src-tauri/src/eligibility/rules.rs:85-118`); la UI siempre envía ambos, así que solo afecta a llamadas directas al comando.
 - **Rotación del estudio bíblico** (§17): si es posible, conductor **y** lector diferentes cada semana. Informativo, no bloqueante.
-- **Historial de participación**: se muestra el conteo de participaciones del bimestre (`[Nx]`) en los selectores. **Nunca bloquea** una asignación — solo informa.
+- **Historial de participación**: al abrir un selector se muestra un modal por hermano con "N participaciones · última: fecha (rol)" sobre una ventana de **4 meses** (`src/components/BrotherPickerModal.tsx:118-125`, `src/components/BrotherSelector.tsx:20`, `src-tauri/src/commands/historial.rs:128`; commit `3a2f668`). **Nunca bloquea** una asignación — solo informa.
 - **Antelación**: las asignaciones se entregan con ≥3 semanas de anticipación (proceso humano, no validación de app).
 - **S-89**: las asignaciones de estudiante se formalizan en el formulario oficial S-89 (módulo implementado: `S89Page`, `S89RangoPage`, export a PDF/JPEG).
 - **Tiempo total**: la reunión dura 1h45 incluyendo canciones y oraciones (§20). Validación de suma de duraciones: pendiente/futuro.
@@ -79,7 +79,7 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 
 `discurso_no_estudiante`, `busquemos_perlas`, `lectura_biblia`, `empiece_conversaciones`, `haga_revisitas`, `haga_discipulos`, `explique_creencias_discurso`, `explique_creencias_escenificacion`, `discurso_estudiante`, `que_dirias`, `analisis_auditorio`, `necesidades_congregacion`, `estudio_biblico`, `oracion`, `cancion`, `introduccion`, `conclusion`.
 
-Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana`), `requiere_sala_auxiliar`, `requiere_ayudante`. Enum Rust en `src-tauri/src/models.rs`.
+Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana` / `marco`), `requiere_sala_auxiliar`, `requiere_ayudante`. Enum Rust en `src-tauri/src/models.rs:33` (`marco` = `oracion`/`cancion`/`introduccion`/`conclusion`).
 
 ## 7. Modelo de datos (SQLite, resumen)
 
@@ -91,7 +91,7 @@ Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana`), 
 
 ## 8. Comandos Tauri (resumen)
 
-`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_brother_history`, `get_bimonthly_stats` · exportación S-140/S-89 (PDF/JPEG).
+`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_brother_history` · exportación S-140/S-89 (PDF/JPEG).
 
 ## 9. Rutas de la UI
 

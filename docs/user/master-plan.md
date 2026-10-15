@@ -1,5 +1,7 @@
 # Plan Maestro: Escuela — Asignaciones VyM (MVP Completo)
 
+> **Nota (2026-10-14):** Documento histórico del plan de 2026-06-01. La referencia vigente de reglas es `requirements.md`; las reglas de presidente/oración/lector, el flujo del parser y los mensajes de UI (p. ej. semanas sin reunión) descritos aquí están desfasados.
+
 **Generado**: 2026-06-01
 **Complejidad Estimada**: Alta
 **Enfoque**: Robusto por módulo — cada módulo se completa y se valida antes de pasar al siguiente

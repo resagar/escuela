@@ -23,7 +23,7 @@ Marco general fijo: Presidente, Consejero de sala auxiliar, Canciones + Oracione
 ### Reglas de Elegibilidad (S-38)
 
 - Partes no-estudiante: ancianos o siervos ministeriales
-- Partes de estudiante: cualquier publicador
+- Partes de estudiante: todos los activos (incluidos ancianos/siervos)
 - Lectura de la Biblia, Discurso estudiante, Explique creencias (discurso): solo varones
 - Ayudante de mismo sexo que el estudiante (empiece conversaciones, haga revisitas, haga discípulos, explique creencias escenificación)
 - Necesidades de la congregación: solo ancianos

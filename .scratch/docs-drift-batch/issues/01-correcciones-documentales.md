@@ -1,6 +1,6 @@
 # Ticket 01 — Batch de correcciones documentales (drift doc-only)
 
-**Status:** abierto — **no requiere worktree**: ediciones directas de documentación
+**Status:** resuelto (2026-10-14) — **no requiere worktree**: ediciones directas de documentación
 **Tipo:** docs — el código es correcto (verificado contra fuentes primarias); los documentos están desfasados
 **Drift:** `docs/user/system-analysis.md` §4.2 #2-4, #7-15, #17-21 (la parte documental de cada ítem)
 
