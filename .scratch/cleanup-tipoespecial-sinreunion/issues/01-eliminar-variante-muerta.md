@@ -1,6 +1,6 @@
 # Ticket 01 — Eliminar `TipoEspecial::SinReunion` (variante muerta)
 
-**Status:** abierto — sin bloqueos, trabajo pequeño (cabe en un worktree de cleanup)
+**Status:** resuelto (2026-10-14) — variante y brazo de match eliminados; drift #16 de `system-analysis.md` cerrado (lista renumerada 17–21 → 16–20, ref §3.2 actualizada #20→#19)
 **Tipo:** cleanup — dead code
 **Drift:** `docs/user/system-analysis.md` §4.2 #16
 

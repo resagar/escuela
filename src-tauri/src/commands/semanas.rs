@@ -272,7 +272,6 @@ pub fn import_parsed_weeks(
                 mwb_parser::TipoEspecial::Asamblea => "asamblea",
                 mwb_parser::TipoEspecial::Conmemoracion => "conmemoracion",
                 mwb_parser::TipoEspecial::VisitaSuperintendente => "visita_superintendente",
-                mwb_parser::TipoEspecial::SinReunion => "asamblea",
             };
 
             conn.execute(
