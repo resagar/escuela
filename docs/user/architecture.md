@@ -102,7 +102,7 @@ Asignación de hermanos a partes.
 
 ## Comandos Tauri
 
-Todos implementados y registrados en `src-tauri/src/lib.rs:26-62`:
+Todos implementados y registrados en `src-tauri/src/lib.rs:26-63`:
 
 | Comando | Descripción |
 |---------|------------|
@@ -112,6 +112,7 @@ Todos implementados y registrados en `src-tauri/src/lib.rs:26-62`:
 | `create_hermanos_batch` | Creación por lotes con transacción |
 | `update_hermano` | Actualiza campos de un hermano |
 | `deactivate_hermano` | Soft delete (activo=0) |
+| `reactivate_hermano` | Revierte el soft delete (activo=1) |
 | `parse_mwb_pdf` | Parsea un PDF de guía de actividades (mwb) |
 | `pick_mwb_file` | Abre el diálogo nativo de selección de PDF |
 | `create_semana`, `update_semana`, `list_semanas`, `get_semana`, `delete_semana` | CRUD de semanas (delete en cascade) |
