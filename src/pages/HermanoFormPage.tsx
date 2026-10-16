@@ -89,6 +89,10 @@ export default function HermanoFormPage() {
 					puedeSerConsejeroSala: single.puede_ser_consejero_sala,
 					notas: single.notas,
 				});
+				// Keep the list filter so an edited inactive brother stays visible
+				navigate("/hermanos", {
+					state: { statusFilter: single.activo ? "active" : "inactive" },
+				});
 			} else {
 				await invoke("create_hermano", {
 					nombre: single.nombre,
@@ -98,8 +102,8 @@ export default function HermanoFormPage() {
 					puedeConducirEstudio: single.puede_conducir_estudio,
 					puedeSerConsejeroSala: single.puede_ser_consejero_sala,
 				});
+				navigate("/hermanos");
 			}
-			navigate("/hermanos");
 		} catch (err) {
 			console.error("Error saving hermano:", err);
 			alert("Error al guardar: " + err);
