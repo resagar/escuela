@@ -64,7 +64,7 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 
 ## 5. Reglas de negocio
 
-- **Soft delete obligatorio**: los hermanos se desactivan (`activo = 0`), nunca se eliminan, para preservar historial. Los desactivados no aparecen en selectores pero sus asignaciones existentes se mantienen.
+- **Soft delete obligatorio**: los hermanos se desactivan (`activo = 0`), nunca se eliminan, para preservar historial. Los desactivados no aparecen en selectores pero sus asignaciones existentes se mantienen. La reactivación (`reactivate_hermano`) es la transición inversa: pone `activo = 1` sin tocar otros campos y restaura la elegibilidad en los selectores. La pantalla Hermanos lista y reactiva a los inactivos, y el detalle de familia los sigue mostrando (decisión Q7).
 - **Integridad de sala auxiliar**: editar una parte a `requiere_sala_auxiliar = 0` borra automáticamente sus asignaciones de `sala_auxiliar` existentes (`update_parte`, `src-tauri/src/commands/partes.rs:132-138`).
 - **Ayudantes sin datos del estudiante**: si faltan `estudiante_id` o `sexo_estudiante`, los ayudantes degeneran a "solo sexo" o "todos los activos" (`src-tauri/src/eligibility/rules.rs:85-118`); la UI siempre envía ambos, así que solo afecta a llamadas directas al comando.
 - **Rotación del estudio bíblico** (§17): si es posible, conductor **y** lector diferentes cada semana. Informativo, no bloqueante.
@@ -91,7 +91,7 @@ Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana` / 
 
 ## 8. Comandos Tauri (resumen)
 
-`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_brother_history` · exportación S-140/S-89 (PDF/JPEG).
+`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate/reactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_brother_history` · exportación S-140/S-89 (PDF/JPEG).
 
 ## 9. Rutas de la UI
 

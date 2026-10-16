@@ -4,6 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { BatchHermanoInput, Hermano } from "../types";
 
 type FormMode = "single" | "batch";
+type SingleFormState = BatchHermanoInput & {
+	notas: string | null;
+	activo: boolean;
+};
 
 const makeEmptyRow = (): BatchHermanoInput => ({
 	nombre: "",
@@ -20,7 +24,13 @@ export default function HermanoFormPage() {
 	const isEditing = !!id;
 
 	// --- single mode state ---
-	const [single, setSingle] = useState(makeEmptyRow());
+	// Notes and activo are not editable here: they are loaded only to be
+	// sent back unchanged on save
+	const [single, setSingle] = useState<SingleFormState>({
+		...makeEmptyRow(),
+		notas: null,
+		activo: true,
+	});
 	// --- batch mode state ---
 	const [mode, setMode] = useState<FormMode>("single");
 	const [batch, setBatch] = useState<BatchHermanoInput[]>([makeEmptyRow()]);
@@ -43,6 +53,8 @@ export default function HermanoFormPage() {
 				puede_presidir: found.puede_presidir,
 				puede_conducir_estudio: found.puede_conducir_estudio,
 				puede_ser_consejero_sala: found.puede_ser_consejero_sala,
+				notas: found.notas,
+				activo: found.activo,
 			});
 		} catch (err) {
 			console.error("Error loading hermano:", err);
@@ -75,7 +87,11 @@ export default function HermanoFormPage() {
 					puedePresidir: single.puede_presidir,
 					puedeConducirEstudio: single.puede_conducir_estudio,
 					puedeSerConsejeroSala: single.puede_ser_consejero_sala,
-					notas: null,
+					notas: single.notas,
+				});
+				// Keep the list filter so an edited inactive brother stays visible
+				navigate("/hermanos", {
+					state: { statusFilter: single.activo ? "active" : "inactive" },
 				});
 			} else {
 				await invoke("create_hermano", {
@@ -86,8 +102,8 @@ export default function HermanoFormPage() {
 					puedeConducirEstudio: single.puede_conducir_estudio,
 					puedeSerConsejeroSala: single.puede_ser_consejero_sala,
 				});
+				navigate("/hermanos");
 			}
-			navigate("/hermanos");
 		} catch (err) {
 			console.error("Error saving hermano:", err);
 			alert("Error al guardar: " + err);
