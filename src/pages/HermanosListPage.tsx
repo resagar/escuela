@@ -38,6 +38,16 @@ export default function HermanosListPage() {
 		}
 	};
 
+	const handleReactivate = async (id: number, nombre: string) => {
+		if (!confirm(`¿Reactivar a ${nombre}?`)) return;
+		try {
+			await invoke("reactivate_hermano", { id });
+			loadHermanos();
+		} catch (err) {
+			console.error("Error reactivating hermano:", err);
+		}
+	};
+
 	if (loading) {
 		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
 	}
@@ -127,12 +137,19 @@ export default function HermanosListPage() {
 										>
 											Editar
 										</Link>
-										{h.activo && (
+										{h.activo ? (
 											<button
 												onClick={() => handleDeactivate(h.id, h.nombre)}
 												className="text-red-500 hover:text-red-700 underline text-xs"
 											>
 												Desactivar
+											</button>
+										) : (
+											<button
+												onClick={() => handleReactivate(h.id, h.nombre)}
+												className="text-emerald-600 hover:text-emerald-800 underline text-xs"
+											>
+												Reactivar
 											</button>
 										)}
 									</td>

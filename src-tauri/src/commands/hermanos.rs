@@ -1,5 +1,6 @@
 use crate::db::Database;
 use crate::models::Hermano;
+use rusqlite::Connection;
 use serde::Deserialize;
 use tauri::State;
 
@@ -129,17 +130,31 @@ pub fn update_hermano(
     Ok(())
 }
 
-#[tauri::command]
-pub fn deactivate_hermano(db: State<'_, Database>, id: i64) -> Result<(), String> {
-    let conn = db.conn.lock().map_err(|e| e.to_string())?;
-
+/// Sets the `activo` flag of a brother. Shared by deactivation and
+/// reactivation; unknown ids are a safe no-op because the UPDATE simply
+/// affects no rows.
+fn set_hermano_activo(conn: &Connection, id: i64, activo: bool) -> Result<(), String> {
     conn.execute(
-        "UPDATE hermanos SET activo=0 WHERE id=?1",
-        rusqlite::params![id],
+        "UPDATE hermanos SET activo=?1 WHERE id=?2",
+        rusqlite::params![activo as i32, id],
     )
     .map_err(|e| e.to_string())?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn deactivate_hermano(db: State<'_, Database>, id: i64) -> Result<(), String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+
+    set_hermano_activo(&conn, id, false)
+}
+
+#[tauri::command]
+pub fn reactivate_hermano(db: State<'_, Database>, id: i64) -> Result<(), String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+
+    set_hermano_activo(&conn, id, true)
 }
 
 #[tauri::command]
@@ -227,4 +242,99 @@ pub fn get_hermano(
         },
     )
     .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// In-memory DB with only the `hermanos` table, replicating the production
+    /// DDL in `db.rs`, plus one active brother with notes.
+    fn setup() -> Connection {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "CREATE TABLE hermanos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                sexo TEXT NOT NULL CHECK(sexo IN ('masculino', 'femenino')),
+                rol TEXT NOT NULL CHECK(rol IN ('anciano', 'siervo_ministerial',
+                    'publicador', 'estudiante_biblia')),
+                puede_presidir INTEGER NOT NULL DEFAULT 0,
+                puede_conducir_estudio INTEGER NOT NULL DEFAULT 0,
+                puede_ser_consejero_sala INTEGER NOT NULL DEFAULT 0,
+                activo INTEGER NOT NULL DEFAULT 1,
+                notas TEXT
+            );
+            INSERT INTO hermanos (id, nombre, sexo, rol, notas)
+            VALUES (1, 'Rene Garcia', 'masculino', 'anciano', 'circunstancias especiales');",
+        )
+        .unwrap();
+        conn
+    }
+
+    fn activo(conn: &Connection, id: i64) -> bool {
+        conn.query_row("SELECT activo FROM hermanos WHERE id = ?1", [id], |row| {
+            row.get::<_, i32>(0)
+        })
+        .map(|value| value != 0)
+        .unwrap()
+    }
+
+    fn nombre(conn: &Connection, id: i64) -> String {
+        conn.query_row("SELECT nombre FROM hermanos WHERE id = ?1", [id], |row| {
+            row.get(0)
+        })
+        .unwrap()
+    }
+
+    fn notas(conn: &Connection, id: i64) -> Option<String> {
+        conn.query_row("SELECT notas FROM hermanos WHERE id = ?1", [id], |row| {
+            row.get(0)
+        })
+        .unwrap()
+    }
+
+    fn row_count(conn: &Connection) -> i64 {
+        conn.query_row("SELECT COUNT(*) FROM hermanos", [], |row| row.get(0))
+            .unwrap()
+    }
+
+    #[test]
+    fn deactivate_then_reactivate_sets_activo_and_preserves_other_fields() {
+        let conn = setup();
+
+        set_hermano_activo(&conn, 1, false).unwrap();
+        assert!(!activo(&conn, 1), "deactivation must set activo = 0");
+
+        set_hermano_activo(&conn, 1, true).unwrap();
+        assert!(activo(&conn, 1), "reactivation must set activo = 1");
+        assert_eq!(nombre(&conn, 1), "Rene Garcia");
+        assert_eq!(
+            notas(&conn, 1).as_deref(),
+            Some("circunstancias especiales")
+        );
+    }
+
+    #[test]
+    fn reactivating_an_already_active_brother_is_a_safe_noop() {
+        let conn = setup();
+
+        set_hermano_activo(&conn, 1, true).unwrap();
+
+        assert!(
+            activo(&conn, 1),
+            "reactivating an active brother must leave it active"
+        );
+        assert_eq!(row_count(&conn), 1);
+    }
+
+    #[test]
+    fn changing_state_of_an_unknown_id_is_a_safe_noop() {
+        let conn = setup();
+
+        set_hermano_activo(&conn, 999, false).unwrap();
+        set_hermano_activo(&conn, 999, true).unwrap();
+
+        assert_eq!(row_count(&conn), 1, "unknown ids must not insert or delete rows");
+    }
 }

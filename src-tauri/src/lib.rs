@@ -30,6 +30,7 @@ pub fn run() {
             commands::hermanos::create_hermanos_batch,
             commands::hermanos::update_hermano,
             commands::hermanos::deactivate_hermano,
+            commands::hermanos::reactivate_hermano,
             commands::mwb::parse_mwb_pdf,
             commands::mwb::pick_mwb_file,
             commands::semanas::create_semana,
