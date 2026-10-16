@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { ParsedWeek, ParsedPart } from "../types";
 import { ASIGNACION_LABELS } from "../types";
+import AuxiliaryRoomCheckbox from "../components/AuxiliaryRoomCheckbox";
+import AuxiliaryRoomLockNotice from "../components/AuxiliaryRoomLockNotice";
+import { buildImportData } from "../utils/importParts";
 
 type Step = "idle" | "file_selected" | "parsing" | "preview" | "saving" | "error";
 
@@ -120,39 +123,14 @@ export default function ImportarMwbPage() {
 		}));
 	};
 
-	const buildImportData = (): ParsedWeek[] => {
-		return Array.from(selectedIndices)
-			.sort()
-			.map((weekIdx) => {
-				const original = parsedWeeks[weekIdx];
-				const partes = original.partes.map((p, pIdx) => {
-					const key = `${weekIdx}-${pIdx}`;
-					const edits = editingParts[key] || {};
-					return {
-						...p,
-						...(edits.titulo !== undefined && { titulo: edits.titulo }),
-						...(edits.tipo_asignacion !== undefined && {
-							tipo_asignacion: edits.tipo_asignacion,
-						}),
-						...(edits.duracion_minutos !== undefined && {
-							duracion_minutos: Number(edits.duracion_minutos),
-						}),
-						...(edits.requiere_sala_auxiliar !== undefined && {
-							requiere_sala_auxiliar: Boolean(edits.requiere_sala_auxiliar),
-						}),
-						...(edits.requiere_ayudante !== undefined && {
-							requiere_ayudante: Boolean(edits.requiere_ayudante),
-						}),
-					};
-				});
-				return { ...original, partes };
-			});
-	};
-
 	const handleImport = async () => {
 		try {
 			setStep("saving");
-			const importData = buildImportData();
+			const importData = buildImportData(
+				parsedWeeks,
+				selectedIndices,
+				editingParts,
+			);
 			await invoke("import_parsed_weeks", { parsedWeeks: importData });
 			navigate("/semanas");
 		} catch (err) {
@@ -233,6 +211,8 @@ export default function ImportarMwbPage() {
 					{parsedWeeks.length} semanas detectadas
 				</div>
 
+				<AuxiliaryRoomLockNotice className="mb-4" />
+
 				<div className="mb-4">
 					<label className="text-sm text-gray-600 mr-2">
 						A partir de fecha:
@@ -301,6 +281,9 @@ export default function ImportarMwbPage() {
 													<th className="px-2 py-1 text-left">Título</th>
 													<th className="px-2 py-1 text-left">Tipo</th>
 													<th className="px-2 py-1 text-center">Dur.</th>
+													<th className="px-2 py-1 text-center">
+														Sala aux.
+													</th>
 												</tr>
 											</thead>
 											<tbody className="divide-y divide-gray-200">
@@ -404,6 +387,25 @@ export default function ImportarMwbPage() {
 																	className="w-12 border border-gray-300 rounded px-1 py-0.5 text-center"
 																	min={0}
 																/>
+															</td>
+															{/* Locked without auxiliary room; the parsed mark is persisted as is. */}
+															<td className="px-2 py-1">
+																<div className="flex justify-center">
+																	<AuxiliaryRoomCheckbox
+																		checked={
+																			edits.requiere_sala_auxiliar ??
+																			part.requiere_sala_auxiliar
+																		}
+																		onChange={(checked) =>
+																			handlePartEdit(
+																				i,
+																				pIdx,
+																				"requiere_sala_auxiliar",
+																				checked,
+																			)
+																		}
+																	/>
+																</div>
 															</td>
 														</tr>
 													);
