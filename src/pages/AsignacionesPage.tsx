@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { AdjacentWeeks, Semana, Parte, AsignacionDetail } from "../types";
-import { ASIGNACION_LABELS } from "../types";
+import { ASIGNACION_LABELS, TIPO_ESPECIAL_LABELS } from "../types";
 import BrotherSelector from "../components/BrotherSelector";
 
 const SECCION_COLORS: Record<string, string> = {
@@ -10,13 +10,6 @@ const SECCION_COLORS: Record<string, string> = {
 	mejores_maestros: "bg-yellow-600",
 	vida_cristiana: "bg-red-800",
 	marco: "bg-gray-600",
-};
-
-const TIPO_ESPECIAL_LABELS: Record<string, string> = {
-	normal: "Normal",
-	asamblea: "Asamblea",
-	conmemoracion: "Conmemoración",
-	visita_superintendente: "Visita del Superintendente",
 };
 
 function formatDateRange(inicio: string, fin: string) {

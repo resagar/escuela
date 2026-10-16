@@ -28,6 +28,20 @@ export const ROL_LABELS: Record<string, string> = {
 
 export type Sexo = "masculino" | "femenino";
 export type Rol = "anciano" | "siervo_ministerial" | "publicador" | "estudiante_biblia";
+export type WeekType = "Normal" | "Asamblea" | "Conmemoracion" | "VisitaSuperintendente";
+
+export const TIPO_ESPECIAL_LABELS: Record<string, string> = {
+	normal: "Normal",
+	asamblea: "Asamblea",
+	conmemoracion: "Conmemoración",
+	visita_superintendente: "Visita del Superintendente",
+};
+
+export const WEEK_TYPE_OPTIONS: Array<{ value: WeekType; label: string }> = [
+	{ value: "Normal", label: "Normal" },
+	{ value: "Asamblea", label: "Asamblea" },
+	{ value: "Conmemoracion", label: "Conmemoración" },
+];
 
 export interface Semana {
 	id: number;

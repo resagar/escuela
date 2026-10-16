@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ParsedPart, ParsedWeek } from "../types";
-import { buildImportPayload } from "./importPlanner";
+import { buildImportPayload, normalizeWeekType } from "./importPlanner";
 
 function makePart(overrides: Partial<ParsedPart> = {}): ParsedPart {
 	return {
@@ -15,7 +15,11 @@ function makePart(overrides: Partial<ParsedPart> = {}): ParsedPart {
 	};
 }
 
-function makeWeek(index: number, parteOverrides: Partial<ParsedPart> = {}): ParsedWeek {
+function makeWeek(
+	index: number,
+	parteOverrides: Partial<ParsedPart> = {},
+	weekOverrides: Partial<ParsedWeek> = {},
+): ParsedWeek {
 	return {
 		fecha_inicio: `2026-03-${String(index + 1).padStart(2, "0")}`,
 		fecha_fin: `2026-03-${String(index + 7).padStart(2, "0")}`,
@@ -24,6 +28,7 @@ function makeWeek(index: number, parteOverrides: Partial<ParsedPart> = {}): Pars
 		cancion_intermedia: 2,
 		cancion_cierre: 3,
 		tipo_especial: "Normal",
+		...weekOverrides,
 		partes: [makePart(parteOverrides)],
 	};
 }
@@ -114,5 +119,69 @@ describe("buildImportPayload", () => {
 		buildImportPayload(weeks, new Set([0]), { "0-0": { titulo: "Editado" } });
 
 		expect(JSON.stringify(weeks)).toBe(before);
+	});
+});
+
+describe("buildImportPayload with week type edits", () => {
+	it("excludes the weeks marked as Asamblea or Conmemoracion", () => {
+		const weeks = [makeWeek(0), makeWeek(1), makeWeek(2)];
+
+		const payload = buildImportPayload(
+			weeks,
+			new Set([0, 1, 2]),
+			{},
+			{ 1: "Asamblea", 2: "Conmemoracion" },
+		);
+
+		expect(payload.map((w) => w.libro_biblico)).toEqual(["LIBRO 1"]);
+	});
+
+	it("imports a week again when it is marked back as Normal", () => {
+		const weeks = [makeWeek(0)];
+
+		const payload = buildImportPayload(weeks, new Set([0]), {}, { 0: "Normal" });
+
+		expect(payload).toHaveLength(1);
+		expect(payload[0].tipo_especial).toBe("Normal");
+	});
+
+	it("excludes a week that the parser already detected as special", () => {
+		const weeks = [makeWeek(0, {}, { tipo_especial: "Conmemoracion" })];
+
+		const payload = buildImportPayload(weeks, new Set([0]), {}, {});
+
+		expect(payload).toHaveLength(0);
+	});
+
+	it("sends the week type in the enum format the backend expects", () => {
+		const weeks = [makeWeek(0)];
+
+		const payload = buildImportPayload(weeks, new Set([0]), {}, {});
+
+		expect(payload[0].tipo_especial).toBe("Normal");
+	});
+
+	it("normalizes a stored week type back to the parser enum", () => {
+		const weeks = [makeWeek(0, {}, { tipo_especial: "normal" })];
+
+		const payload = buildImportPayload(weeks, new Set([0]), {}, {});
+
+		expect(payload[0].tipo_especial).toBe("Normal");
+	});
+});
+
+describe("normalizeWeekType", () => {
+	it.each([
+		["Normal", "Normal"],
+		["normal", "Normal"],
+		["Asamblea", "Asamblea"],
+		["asamblea", "Asamblea"],
+		["Conmemoracion", "Conmemoracion"],
+		["conmemoracion", "Conmemoracion"],
+		["Conmemoración", "Conmemoracion"],
+		["VisitaSuperintendente", "VisitaSuperintendente"],
+		["visita_superintendente", "VisitaSuperintendente"],
+	] as const)("normalizes %s to %s", (raw, expected) => {
+		expect(normalizeWeekType(raw)).toBe(expected);
 	});
 });

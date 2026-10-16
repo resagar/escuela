@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
+import { TIPO_ESPECIAL_LABELS } from "../types";
 import type { Semana } from "../types";
-
-const TIPO_ESPECIAL_LABELS: Record<string, string> = {
-	normal: "Normal",
-	asamblea: "Asamblea",
-	conmemoracion: "Conmemoración",
-	visita_superintendente: "Visita del Superintendente",
-};
 
 const TIPO_ESPECIAL_COLORS: Record<string, string> = {
 	normal: "bg-gray-100 text-gray-700",
