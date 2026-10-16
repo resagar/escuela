@@ -21,6 +21,8 @@ export default function HermanoFormPage() {
 
 	// --- single mode state ---
 	const [single, setSingle] = useState(makeEmptyRow());
+	// Notes are not editable here: they are loaded only to be sent back on save
+	const [singleNotas, setSingleNotas] = useState<string | null>(null);
 	// --- batch mode state ---
 	const [mode, setMode] = useState<FormMode>("single");
 	const [batch, setBatch] = useState<BatchHermanoInput[]>([makeEmptyRow()]);
@@ -44,6 +46,7 @@ export default function HermanoFormPage() {
 				puede_conducir_estudio: found.puede_conducir_estudio,
 				puede_ser_consejero_sala: found.puede_ser_consejero_sala,
 			});
+			setSingleNotas(found.notas);
 		} catch (err) {
 			console.error("Error loading hermano:", err);
 			navigate("/hermanos");
@@ -75,7 +78,7 @@ export default function HermanoFormPage() {
 					puedePresidir: single.puede_presidir,
 					puedeConducirEstudio: single.puede_conducir_estudio,
 					puedeSerConsejeroSala: single.puede_ser_consejero_sala,
-					notas: null,
+					notas: singleNotas,
 				});
 			} else {
 				await invoke("create_hermano", {
