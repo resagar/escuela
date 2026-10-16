@@ -142,6 +142,11 @@ pub struct AsignacionDetail {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CongregationSettings {
+    pub has_auxiliary_room: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Familia {
     pub id: i64,
     pub nombre: String,
