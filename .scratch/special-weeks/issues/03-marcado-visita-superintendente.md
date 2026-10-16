@@ -4,11 +4,15 @@
 
 **Blocked by:** 02 — Marcar asamblea y conmemoración en la vista previa
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — opción en el selector + `applyVisitaAdjustments` en el payload (commit `74d331c`)
 
-- [ ] El selector de tipo incluye Visita del Superintendente.
-- [ ] Al marcar la visita, el payload de esa semana aplica: todas las partes con sala auxiliar desactivada y sin la parte de estudio bíblico.
-- [ ] La semana guardada no tiene partes con sala auxiliar ni estudio bíblico (verificable en asignación y S-140).
-- [ ] El tipo "visita" se persiste correctamente (round-trip del enum frontend ↔ base), cubierto por tests.
-- [ ] La utilidad de ajuste de visita es reutilizable por la pantalla de edición de semana (la usa el ticket 04).
+- [x] El selector de tipo incluye Visita del Superintendente.
+- [x] Al marcar la visita, el payload de esa semana aplica: todas las partes con sala auxiliar desactivada y sin la parte de estudio bíblico.
+- [x] La semana guardada no tiene partes con sala auxiliar ni estudio bíblico (verificable en asignación y S-140).
+- [x] El tipo "visita" se persiste correctamente (round-trip del enum frontend ↔ base), cubierto por tests.
+- [x] La utilidad de ajuste de visita es reutilizable por la pantalla de edición de semana (la usa el ticket 04).
 - [ ] Verificación manual: importar un mwb real con una semana marcada como visita; revisar lista de semanas, pantalla de asignación (badge) y S-140.
+
+## Comments
+
+Implementado en `74d331c`. Verificación manual pendiente (flujo GUI no ejecutable en este entorno): importar un mwb real con una semana marcada como visita; revisar lista de semanas (badge del tipo), pantalla de asignación y S-140.

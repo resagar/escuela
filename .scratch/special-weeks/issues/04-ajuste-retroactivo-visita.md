@@ -4,10 +4,14 @@
 
 **Blocked by:** 03 — Marcar visita del superintendente en la vista previa
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — `SemanaFormPage` ajusta las partes al guardar como visita (commit `7f40c2a`)
 
-- [ ] Al guardar una edición de semana con tipo visita, sus partes se ajustan (sala auxiliar desactivada, estudio bíblico eliminado).
-- [ ] Las asignaciones de sala auxiliar existentes de esa semana no quedan huérfanas.
-- [ ] Cambiar el tipo a visita no altera otros campos ni otras semanas.
-- [ ] La edición de semana sigue disponible para corregir el tipo de semanas ya guardadas.
+- [x] Al guardar una edición de semana con tipo visita, sus partes se ajustan (sala auxiliar desactivada, estudio bíblico eliminado).
+- [x] Las asignaciones de sala auxiliar existentes de esa semana no quedan huérfanas.
+- [x] Cambiar el tipo a visita no altera otros campos ni otras semanas.
+- [x] La edición de semana sigue disponible para corregir el tipo de semanas ya guardadas.
 - [ ] Verificación manual: semana normal con estudio y sala auxiliar → cambiar a visita → verificar partes y asignaciones.
+
+## Comments
+
+Implementado en `7f40c2a`. El ajuste reutiliza `applyVisitaAdjustments` antes del re-guardado (update/delete de partes). Las asignaciones no quedan huérfanas por dos vías ya existentes: `update_parte` borra las de sala al anular el flag (`partes.rs:132-138`) y el borrado del estudio cascadea por FK (`db.rs:75`, `PRAGMA foreign_keys=ON`). Verificación manual pendiente (flujo GUI no ejecutable en este entorno).

@@ -1,6 +1,7 @@
 # Requerimientos y Reglas — Escuela (Asignaciones VyM)
 
-**Versión:** 1.4 (2026-10)
+**Versión:** 1.5 (2026-10)
+**Cambios v1.5 (2026-10):** §4 actualizado al comportamiento implementado: el tipo de semana especial se marca manualmente en la vista previa de importación (asamblea y conmemoración **no se guardan**) y la visita del superintendente ajusta las partes — sin estudio bíblico y sin sala auxiliar — al importar y al cambiar el tipo de una semana guardada.
 **Cambios v1.4 (2026-10):** documentadas en §5 dos reglas implícitas del código: integridad de sala auxiliar al editar una parte, y degeneración de ayudantes cuando faltan datos del estudiante.
 **Fuentes:** PRD_Asignaciones_VyM.md v1.2, instrucciones oficiales de la Reunión Vida y Ministerio Cristianos (S-38), código implementado.
 **Propósito de este documento:** referencia única y consultable de las reglas del dominio. Antes de crear o modificar una feature de asignaciones, leer este archivo. El PRD sigue siendo la fuente de verdad del alcance; este archivo destila las **reglas** que la app debe aplicar.
@@ -58,9 +59,11 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 | Tipo | Comportamiento |
 |---|---|
 | `normal` | Programa completo con sala auxiliar según partes |
-| `asamblea` | **Sin reunión** (§22). Se importa sin partes; no requiere asignaciones |
-| `conmemoracion` | **Sin reunión** si cae entre semana (§23) |
-| `visita_superintendente` | El "Estudio bíblico" se reemplaza por el **discurso de servicio de 30 min** del superintendente de circuito. **No hay clases auxiliares** (§21): todas las partes son solo auditorio principal |
+| `asamblea` | **Sin reunión** (§22). No requiere partes ni asignaciones; al marcarla en la vista previa de importación, la semana **no se guarda** |
+| `conmemoracion` | **Sin reunión** si el superintendente lo decide (§23); la app **no valida el día**. La decisión es manual, caso a caso; al marcarla en la vista previa de importación, la semana **no se guarda** |
+| `visita_superintendente` | **No hay clases auxiliares** (§21): todas las partes son solo auditorio principal y el **estudio bíblico se elimina**. El "discurso de servicio de 30 min" del superintendente de circuito no se representa en la app |
+
+**Marcado del tipo:** se fija al importar (vista previa de importación, semana a semana) o al crear/editar una semana (formulario). Al guardar una semana como visita — al importarla o al cambiar su tipo en el formulario — sus partes se ajustan retroactivamente (se elimina el estudio bíblico y `requiere_sala_auxiliar` queda en `false`; las asignaciones de sala auxiliar existentes se borran). Pasar una semana de visita a normal **no** revierte el ajuste.
 
 ## 5. Reglas de negocio
 

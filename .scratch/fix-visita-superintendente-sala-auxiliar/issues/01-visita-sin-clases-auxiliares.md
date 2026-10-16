@@ -45,3 +45,12 @@ Con el sample real: importar; verificar por SQL que todas las partes de la seman
 **No-aplica.** El parser solo pondría `VisitaSuperintendente` al detectar "VISITA DEL SUPERINTENDENTE" en el mwb (`mwb_parser/mod.rs:474,482-483`), keyword que **no aparece** en los mwb reales (verificado: 13/13 semanas `normal` en `escuela.db`). Marcarlo a mano és posible (`SemanaForm.tsx:321`) pero se decidió no implementar el manejo de visitas. Drift `docs/user/system-analysis.md` §4.2 #6 → `no-aplica`.
 
 **Si se revierte:** limpiar `requiere_sala_auxiliar` al persistir una semana `visita_superintendente` (`commands/semanas.rs:296-314`), añadir `visita_superintendente` a los skips de `DashboardPage:64` y `S140WeekView:47`, y sintetizar el discurso de servicio (30 min, `discurso_no_estudiante`) reemplazando al `estudio_biblico`.
+
+## Reversión (2026-10-16)
+
+Reabierto por el feature de semanas especiales (`.scratch/special-weeks/spec.md`, tickets 01–05). Lo implementado difiere del plan de reversión original:
+- El ajuste vive en el **frontend**, no en `commands/semanas.rs`: `applyVisitaAdjustments` (`src/lib/importPlanner.ts`) elimina el estudio bíblico y anula `requiere_sala_auxiliar` en la vista previa de importación y al guardar una semana como visita.
+- Las asignaciones no quedan huérfanas: `update_parte` borra las de sala al anular el flag (`partes.rs:132-138`) y el borrado del estudio cascadea por FK (`db.rs:75` con `PRAGMA foreign_keys=ON`).
+- **No** se sintetiza el discurso de servicio (30 min): decisión del usuario — basta el badge de tipo en la pantalla de asignación. Los skips de `DashboardPage`/`S140WeekView` no se tocaron (fuera del alcance). Esto hace innecesario el input pendiente (un mwb real de visita): las partes del workbook se ajustan tal cual se importen.
+
+`requirements.md` §4 quedó actualizada (el estudio se elimina; el discurso de servicio no se representa); el drift §4.2 #6 pasa a **resuelto**.

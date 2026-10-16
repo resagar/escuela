@@ -4,9 +4,9 @@
 
 **Blocked by:** Ninguno (puede empezar de inmediato)
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — módulo puro `src/lib/importPlanner.ts` + vitest (`pnpm test`, 29 tests); `pnpm build` verde (commit `cbcf8db`)
 
-- [ ] La construcción del payload vive en un módulo puro, sin estado de React ni llamadas a Tauri.
-- [ ] El comportamiento actual queda caracterizado por tests (selección de semanas y ediciones de título, tipo de asignación, duración, sala auxiliar y ayudante).
-- [ ] `pnpm test` ejecuta los tests del módulo y `pnpm build` (tsc + vite) pasa sin errores.
-- [ ] El flujo manual de importación no cambia (mismas semanas, mismas partes editadas).
+- [x] La construcción del payload vive en un módulo puro, sin estado de React ni llamadas a Tauri.
+- [x] El comportamiento actual queda caracterizado por tests (selección de semanas y ediciones de título, tipo de asignación, duración, sala auxiliar y ayudante).
+- [x] `pnpm test` ejecuta los tests del módulo y `pnpm build` (tsc + vite) pasa sin errores.
+- [x] El flujo manual de importación no cambia (mismas semanas, mismas partes editadas).

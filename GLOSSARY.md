@@ -67,4 +67,4 @@ _Avoid_: predicador, expositor
 
 **Tipo de asignación**: Clasificación de una parte (17 valores) que determina elegibilidad, sala auxiliar y ayudante. Catálogo en requirements.md §6.
 
-**Semana especial**: Semana de tipo asamblea, conmemoración o visita del superintendente; reglas en requirements.md §4.
+**Semana especial**: Semana de tipo asamblea, conmemoración o visita del superintendente; se marca al importar o al editar la semana; reglas en requirements.md §4.
