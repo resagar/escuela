@@ -12,6 +12,11 @@ interface PartWithClassroomFlags {
 	requiere_sala_auxiliar: boolean;
 }
 
+/** True when the week has no meeting (assembly or memorial). */
+export function isNoMeeting(weekType: WeekType): boolean {
+	return weekType === "Asamblea" || weekType === "Conmemoracion";
+}
+
 /**
  * Applies the circuit overseer visit rules to a list of parts: the bible
  * study is removed and no part requires the auxiliary classroom. Shared by
@@ -64,7 +69,7 @@ export function buildImportPayload(
 		const week = weeks[weekIdx];
 		const tipo = normalizeWeekType(weekTypeEdits[weekIdx] ?? week.tipo_especial);
 
-		if (tipo === "Asamblea" || tipo === "Conmemoracion") {
+		if (isNoMeeting(tipo)) {
 			continue;
 		}
 
@@ -88,10 +93,10 @@ export function buildImportPayload(
 			};
 		});
 
-		const partesFinales =
+		const adjustedPartes =
 			tipo === "VisitaSuperintendente" ? applyVisitaAdjustments(partes) : partes;
 
-		payload.push({ ...week, tipo_especial: tipo, partes: partesFinales });
+		payload.push({ ...week, tipo_especial: tipo, partes: adjustedPartes });
 	}
 
 	return payload;

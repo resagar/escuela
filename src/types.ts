@@ -30,19 +30,34 @@ export type Sexo = "masculino" | "femenino";
 export type Rol = "anciano" | "siervo_ministerial" | "publicador" | "estudiante_biblia";
 export type WeekType = "Normal" | "Asamblea" | "Conmemoracion" | "VisitaSuperintendente";
 
-export const TIPO_ESPECIAL_LABELS: Record<string, string> = {
-	normal: "Normal",
-	asamblea: "Asamblea",
-	conmemoracion: "Conmemoración",
-	visita_superintendente: "Visita del Superintendente",
-};
-
-export const WEEK_TYPE_OPTIONS: Array<{ value: WeekType; label: string }> = [
-	{ value: "Normal", label: "Normal" },
-	{ value: "Asamblea", label: "Asamblea" },
-	{ value: "Conmemoracion", label: "Conmemoración" },
-	{ value: "VisitaSuperintendente", label: "Visita del Superintendente" },
+/** Single source of the week types: parser enum value, stored value and label. */
+const WEEK_TYPES: Array<{ value: WeekType; stored: string; label: string }> = [
+	{ value: "Normal", stored: "normal", label: "Normal" },
+	{ value: "Asamblea", stored: "asamblea", label: "Asamblea" },
+	{ value: "Conmemoracion", stored: "conmemoracion", label: "Conmemoración" },
+	{
+		value: "VisitaSuperintendente",
+		stored: "visita_superintendente",
+		label: "Visita del Superintendente",
+	},
 ];
+
+/** Options for selectors that work with the parser enum (import preview). */
+export const WEEK_TYPE_OPTIONS: Array<{ value: WeekType; label: string }> =
+	WEEK_TYPES.map(({ value, label }) => ({ value, label }));
+
+/** Labels keyed by the value stored in the database, for week lists and badges. */
+export const TIPO_ESPECIAL_LABELS: Record<string, string> = Object.fromEntries(
+	WEEK_TYPES.map(({ stored, label }) => [stored, label]),
+);
+
+/** Badge colors keyed by the value stored in the database. */
+export const TIPO_ESPECIAL_COLORS: Record<string, string> = {
+	normal: "bg-gray-100 text-gray-700",
+	asamblea: "bg-red-100 text-red-700",
+	conmemoracion: "bg-purple-100 text-purple-700",
+	visita_superintendente: "bg-yellow-100 text-yellow-700",
+};
 
 export interface Semana {
 	id: number;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { ASIGNACION_LABELS } from "../types";
+import { ASIGNACION_LABELS, TIPO_ESPECIAL_LABELS } from "../types";
 import type { Semana } from "../types";
 import { applyVisitaAdjustments, normalizeWeekType } from "../lib/importPlanner";
 
@@ -62,6 +62,8 @@ export default function SemanaFormPage() {
 	const [partes, setPartes] = useState<PartForm[]>([]);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const isVisita = normalizeWeekType(tipoEspecial) === "VisitaSuperintendente";
 
 	useEffect(() => {
 		if (!id) return;
@@ -127,12 +129,9 @@ export default function SemanaFormPage() {
 
 			// Saving a week as a circuit overseer visit applies the visit rules
 			// to its parts: no bible study, no auxiliary classroom.
-			const partesFinales =
-				normalizeWeekType(tipoEspecial) === "VisitaSuperintendente"
-					? applyVisitaAdjustments(partes)
-					: partes;
-			if (partesFinales !== partes) {
-				setPartes(partesFinales);
+			const adjustedPartes = isVisita ? applyVisitaAdjustments(partes) : partes;
+			if (isVisita) {
+				setPartes(adjustedPartes);
 			}
 
 			if (isEditing && id) {
@@ -151,10 +150,10 @@ export default function SemanaFormPage() {
 					(await invoke<Parte[]>("list_partes", { semanaId: Number(id) })).map((p) => p.id),
 				);
 				const currentIds = new Set(
-					partesFinales.filter((p) => p.id != null).map((p) => p.id!),
+					adjustedPartes.filter((p) => p.id != null).map((p) => p.id!),
 				);
 
-				for (const p of partesFinales) {
+				for (const p of adjustedPartes) {
 					if (p.id != null) {
 						await invoke("update_parte", {
 							id: p.id,
@@ -195,7 +194,7 @@ export default function SemanaFormPage() {
 					tipoEspecial,
 				});
 
-				for (const p of partesFinales) {
+				for (const p of adjustedPartes) {
 					await invoke("create_parte", {
 						semanaId: (semana as { id: number }).id,
 						numeroOrden: p.numero_orden,
@@ -326,14 +325,13 @@ export default function SemanaFormPage() {
 						onChange={(e) => setTipoEspecial(e.target.value)}
 						className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
 					>
-						<option value="normal">Normal</option>
-						<option value="asamblea">Asamblea</option>
-						<option value="conmemoracion">Conmemoración</option>
-						<option value="visita_superintendente">
-							Visita del Superintendente
-						</option>
+						{Object.entries(TIPO_ESPECIAL_LABELS).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
 					</select>
-					{normalizeWeekType(tipoEspecial) === "VisitaSuperintendente" && (
+					{isVisita && (
 						<p className="text-xs text-amber-700 mt-1">
 							Al guardar se elimina el estudio bíblico y se desactiva la
 							sala auxiliar en las partes de esta semana.

@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { TIPO_ESPECIAL_LABELS } from "../types";
+import { TIPO_ESPECIAL_COLORS, TIPO_ESPECIAL_LABELS } from "../types";
 import type { Semana } from "../types";
-
-const TIPO_ESPECIAL_COLORS: Record<string, string> = {
-	normal: "bg-gray-100 text-gray-700",
-	asamblea: "bg-red-100 text-red-700",
-	conmemoracion: "bg-purple-100 text-purple-700",
-	visita_superintendente: "bg-yellow-100 text-yellow-700",
-};
 
 function formatDateRange(inicio: string, fin: string) {
 	const fmt = (d: string) => {

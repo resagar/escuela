@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { ParsedWeek, ParsedPart, WeekType } from "../types";
 import { ASIGNACION_LABELS, WEEK_TYPE_OPTIONS } from "../types";
-import { buildImportPayload, normalizeWeekType } from "../lib/importPlanner";
+import { buildImportPayload, isNoMeeting, normalizeWeekType } from "../lib/importPlanner";
 import type { WeekTypeEdits } from "../lib/importPlanner";
 
 type Step = "idle" | "file_selected" | "parsing" | "preview" | "saving" | "error";
@@ -244,9 +244,7 @@ export default function ImportarMwbPage() {
 					{parsedWeeks.map((week, i) => {
 						const isSelected = selectedIndices.has(i);
 						const effectiveType = effectiveWeekType(i);
-						const isNoMeeting =
-							effectiveType === "Asamblea" ||
-							effectiveType === "Conmemoracion";
+						const noMeeting = isNoMeeting(effectiveType);
 						return (
 							<div
 								key={i}
@@ -288,14 +286,14 @@ export default function ImportarMwbPage() {
 											</option>
 										))}
 									</select>
-									{isNoMeeting && (
+									{noMeeting && (
 										<span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
 											Sin reunión
 										</span>
 									)}
 								</div>
 
-								{expandedWeek === i && !isNoMeeting && (
+								{expandedWeek === i && !noMeeting && (
 									<div className="p-3 border-t border-gray-200">
 										{effectiveType === "VisitaSuperintendente" && (
 											<div className="mb-2 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded px-2 py-1">
@@ -430,7 +428,7 @@ export default function ImportarMwbPage() {
 									</div>
 								)}
 
-								{expandedWeek === i && isNoMeeting && (
+								{expandedWeek === i && noMeeting && (
 									<div className="p-3 border-t border-gray-200 text-sm text-gray-500">
 										Esta semana no hay reunión. No se guardará al
 										importar.
