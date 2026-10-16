@@ -93,7 +93,15 @@ impl Database {
                 familia_id INTEGER NOT NULL REFERENCES familias(id) ON DELETE CASCADE,
                 hermano_id INTEGER NOT NULL REFERENCES hermanos(id) ON DELETE CASCADE,
                 PRIMARY KEY (familia_id, hermano_id)
-            );",
+            );
+
+            CREATE TABLE IF NOT EXISTS congregation_settings (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                has_auxiliary_room INTEGER NOT NULL DEFAULT 1
+            );
+
+            INSERT OR IGNORE INTO congregation_settings (id, has_auxiliary_room)
+                VALUES (1, 1);",
         )?;
 
         Ok(())

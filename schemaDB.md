@@ -3,7 +3,7 @@
 - **Motor**: SQLite (archivo local, gestionado por Tauri)
 - **Definicion**: `src-tauri/src/db.rs` (migrations en `run_migrations`)
 - **PRAGMAs**: `journal_mode=WAL`, `foreign_keys=ON`
-- **Tablas**: 6 · **Indices**: 1 unico · **Triggers**: ninguno
+- **Tablas**: 7 · **Indices**: 1 unico · **Triggers**: ninguno
 - **Convencion**: booleans son `INTEGER` (0/1); fechas son `TEXT` ISO 8601 `YYYY-MM-DD`
 
 ## Diagramas ER (Mermaid)
@@ -55,6 +55,10 @@ erDiagram
         text ambito
         text rol
         integer hermano_id FK
+    }
+    congregation_settings {
+        integer id PK
+        integer has_auxiliary_room
     }
     hermanos ||--o{ semanas : "preside"
     hermanos ||--o{ semanas : "conseja"
@@ -152,6 +156,15 @@ Quien cumple cada rol en cada parte.
 | rol | TEXT | NO | — | CHECK: `estudiante`, `ayudante`, `conductor`, `lector` |
 | hermano_id | INTEGER | NO | — | FK a `hermanos(id)` sin ON DELETE (NO ACTION): impide borrar un hermano con asignaciones |
 
+### congregation_settings
+
+Tabla singleton con los ajustes de la congregacion. La migracion siembra la unica fila (`id = 1`) con el default que preserva el comportamiento historico.
+
+| Campo | Tipo | Nulo | Default | Descripcion y valores posibles |
+|---|---|---|---|---|
+| id | INTEGER | NO | — | PK y unico valor posible: 1 (`CHECK (id = 1)`) |
+| has_auxiliary_room | INTEGER | NO | 1 | Flag (0/1): la congregacion tiene sala auxiliar. Ajuste no destructivo: nunca borra marcas ni asignaciones guardadas |
+
 ### familias
 
 Agrupaciones de hermanos por familia.
@@ -178,10 +191,12 @@ Tabla de union muchos-a-mucho entre familias y hermanos.
 - `partes` 1:N `asignaciones` — CASCADE: borrar el parte borra sus asignaciones
 - `hermanos` 1:N `asignaciones` — sin ON DELETE (NO ACTION)
 - `familias` N:M `hermanos` via `familia_miembros` — CASCADE en ambos lados
+- `congregation_settings` — sin relaciones; fila unica con los ajustes globales de la congregacion
 
 ## Constraints e indices
 
-- PK `AUTOINCREMENT` en las 6 tablas
+- PK `AUTOINCREMENT` en las 6 tablas de datos (`hermanos`, `semanas`, `partes`, `asignaciones`, `familias`, `familia_miembros`)
+- `congregation_settings` es singleton: `id INTEGER PRIMARY KEY CHECK (id = 1)`, sin AUTOINCREMENT
 - UNIQUE INDEX `idx_asignaciones_unique` sobre `(parte_id, ambito, rol)`: solo una asignacion por rol en cada parte y ambito
 - PK compuesta `(familia_id, hermano_id)` en `familia_miembros`: un hermano no se repite en la misma familia
 - CHECK constraints en `hermanos.sexo`, `hermanos.rol`, `semanas.tipo_especial`, `partes.seccion`, `asignaciones.ambito`, `asignaciones.rol`

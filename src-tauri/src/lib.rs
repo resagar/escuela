@@ -1,4 +1,5 @@
 mod commands;
+mod congregation;
 mod db;
 mod eligibility;
 mod models;
@@ -59,6 +60,8 @@ pub fn run() {
             commands::historial::get_brother_history,
             commands::export::write_file_bytes,
             commands::s89::get_s89_cards_for_week,
+            commands::congregation::get_congregation_settings,
+            commands::congregation::update_congregation_settings,
         ])
         .setup(|app| {
             let db_path = get_db_path(app.handle());
