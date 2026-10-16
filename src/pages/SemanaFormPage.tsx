@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { ASIGNACION_LABELS } from "../types";
 import type { Semana } from "../types";
+import { applyVisitaAdjustments, normalizeWeekType } from "../lib/importPlanner";
 
 interface PartForm {
 	id?: number;
@@ -124,6 +125,16 @@ export default function SemanaFormPage() {
 			setSaving(true);
 			setError(null);
 
+			// Saving a week as a circuit overseer visit applies the visit rules
+			// to its parts: no bible study, no auxiliary classroom.
+			const partesFinales =
+				normalizeWeekType(tipoEspecial) === "VisitaSuperintendente"
+					? applyVisitaAdjustments(partes)
+					: partes;
+			if (partesFinales !== partes) {
+				setPartes(partesFinales);
+			}
+
 			if (isEditing && id) {
 				await invoke("update_semana", {
 					id: Number(id),
@@ -140,10 +151,10 @@ export default function SemanaFormPage() {
 					(await invoke<Parte[]>("list_partes", { semanaId: Number(id) })).map((p) => p.id),
 				);
 				const currentIds = new Set(
-					partes.filter((p) => p.id != null).map((p) => p.id!),
+					partesFinales.filter((p) => p.id != null).map((p) => p.id!),
 				);
 
-				for (const p of partes) {
+				for (const p of partesFinales) {
 					if (p.id != null) {
 						await invoke("update_parte", {
 							id: p.id,
@@ -184,7 +195,7 @@ export default function SemanaFormPage() {
 					tipoEspecial,
 				});
 
-				for (const p of partes) {
+				for (const p of partesFinales) {
 					await invoke("create_parte", {
 						semanaId: (semana as { id: number }).id,
 						numeroOrden: p.numero_orden,
@@ -322,6 +333,12 @@ export default function SemanaFormPage() {
 							Visita del Superintendente
 						</option>
 					</select>
+					{normalizeWeekType(tipoEspecial) === "VisitaSuperintendente" && (
+						<p className="text-xs text-amber-700 mt-1">
+							Al guardar se elimina el estudio bíblico y se desactiva la
+							sala auxiliar en las partes de esta semana.
+						</p>
+					)}
 				</div>
 
 				<div>
