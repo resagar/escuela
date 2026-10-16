@@ -1,6 +1,7 @@
 # Requerimientos y Reglas — Escuela (Asignaciones VyM)
 
-**Versión:** 1.5 (2026-10)
+**Versión:** 1.6 (2026-10)
+**Cambios v1.6 (2026-10):** documentado el candado en los editores (§5.1): la casilla «Sala aux.» de la vista previa de importación del MWB y del formulario de semana queda deshabilitada con aviso y enlace a Configuración, y los formularios envían siempre la marca guardada o inferida (nunca forzada a `0`, para no borrar asignaciones ocultas).
 **Cambios v1.5 (2026-10):** nueva §5.1: configuración de congregación (ajuste de sala auxiliar) como candado duro y no destructivo; tabla `congregation_settings`, comandos y ruta `/configuracion`.
 **Cambios v1.4 (2026-10):** documentadas en §5 dos reglas implícitas del código: integridad de sala auxiliar al editar una parte, y degeneración de ayudantes cuando faltan datos del estudiante.
 **Fuentes:** PRD_Asignaciones_VyM.md v1.2, instrucciones oficiales de la Reunión Vida y Ministerio Cristianos (S-38), código implementado.
@@ -85,6 +86,7 @@ Pantalla **Configuración** (ruta `/configuracion`, entrada fija en el nav princ
   - *Duro*: con el ajuste off, ningún editor permite marcar «Sala aux.», la app no pide asignaciones, consejero ni impresiones de ese ámbito, y el S-140 no muestra la fila del consejero.
   - *No destructivo*: las marcas guardadas (`partes.requiere_sala_auxiliar`) y las asignaciones de `sala_auxiliar` se conservan ocultas y reaparecen intactas al reactivar el ajuste. El ajuste nunca reescribe esos datos.
 - **Flag efectivo**: helper compartido del frontend `hasEffectiveAuxiliaryRoom(has_auxiliary_room, parte)` (`src/utils/auxiliaryRoom.ts`): el ajuste debe estar on **y** la parte marcada. Todas las vistas consumen el flag efectivo; el dato guardado se lee tal cual.
+- **Editores**: en la vista previa de importación del MWB y en el formulario de semana la casilla «Sala aux.» se muestra deshabilitada (no oculta) con aviso y enlace a Configuración cuando el ajuste está off; conserva visible la marca guardada o inferida por el parser. Ambos formularios envían esa marca **sin cambios**, nunca forzada a `0`: forzarla borraría las asignaciones de `sala_auxiliar` de la parte al guardar (`update_parte`). Activación y desactivación del ajuste nunca alteran datos guardados.
 - **Comandos**: `get_congregation_settings` y `update_congregation_settings(has_auxiliary_room)`.
 - **S-89 sin cambios**: sus casillas «Sala principal / Sala auxiliar núm. 1» son parte fija del formulario oficial.
 
