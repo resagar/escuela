@@ -41,6 +41,7 @@ export const WEEK_TYPE_OPTIONS: Array<{ value: WeekType; label: string }> = [
 	{ value: "Normal", label: "Normal" },
 	{ value: "Asamblea", label: "Asamblea" },
 	{ value: "Conmemoracion", label: "Conmemoración" },
+	{ value: "VisitaSuperintendente", label: "Visita del Superintendente" },
 ];
 
 export interface Semana {

@@ -297,6 +297,13 @@ export default function ImportarMwbPage() {
 
 								{expandedWeek === i && !isNoMeeting && (
 									<div className="p-3 border-t border-gray-200">
+										{effectiveType === "VisitaSuperintendente" && (
+											<div className="mb-2 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded px-2 py-1">
+												Visita del superintendente: el estudio
+												bíblico se elimina y no hay clases
+												auxiliares.
+											</div>
+										)}
 										<div className="text-xs mb-2">
 											<span className="font-semibold">Canciones:</span>{" "}
 											{week.cancion_apertura} ·{" "}

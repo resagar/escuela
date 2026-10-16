@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { ParsedPart, ParsedWeek } from "../types";
-import { buildImportPayload, normalizeWeekType } from "./importPlanner";
+import {
+	applyVisitaAdjustments,
+	buildImportPayload,
+	normalizeWeekType,
+} from "./importPlanner";
 
 function makePart(overrides: Partial<ParsedPart> = {}): ParsedPart {
 	return {
@@ -183,5 +187,127 @@ describe("normalizeWeekType", () => {
 		["visita_superintendente", "VisitaSuperintendente"],
 	] as const)("normalizes %s to %s", (raw, expected) => {
 		expect(normalizeWeekType(raw)).toBe(expected);
+	});
+});
+
+describe("applyVisitaAdjustments", () => {
+	it("removes the bible study", () => {
+		const partes = [
+			makePart({ tipo_asignacion: "estudio_biblico" }),
+			makePart({ tipo_asignacion: "haga_revisitas" }),
+		];
+
+		const result = applyVisitaAdjustments(partes);
+
+		expect(result.map((p) => p.tipo_asignacion)).toEqual(["haga_revisitas"]);
+	});
+
+	it("clears the auxiliary classroom flag of every part", () => {
+		const partes = [
+			makePart({ tipo_asignacion: "haga_revisitas", requiere_sala_auxiliar: true }),
+			makePart({ tipo_asignacion: "haga_discipulos", requiere_sala_auxiliar: true }),
+		];
+
+		const result = applyVisitaAdjustments(partes);
+
+		expect(result.every((p) => p.requiere_sala_auxiliar === false)).toBe(true);
+	});
+
+	it("does not mutate the input parts", () => {
+		const partes = [
+			makePart({ requiere_sala_auxiliar: true }),
+			makePart({ tipo_asignacion: "estudio_biblico" }),
+		];
+		const before = JSON.stringify(partes);
+
+		applyVisitaAdjustments(partes);
+
+		expect(JSON.stringify(partes)).toBe(before);
+	});
+
+	it("works with saved part shapes that carry more fields", () => {
+		const partes = [
+			{ id: 7, tipo_asignacion: "estudio_biblico", requiere_sala_auxiliar: false, titulo: "Estudio bíblico" },
+			{ id: 8, tipo_asignacion: "haga_revisitas", requiere_sala_auxiliar: true, titulo: "Revisitas" },
+		];
+
+		const result = applyVisitaAdjustments(partes);
+
+		expect(result).toEqual([
+			{ id: 8, tipo_asignacion: "haga_revisitas", requiere_sala_auxiliar: false, titulo: "Revisitas" },
+		]);
+	});
+});
+
+describe("buildImportPayload with a circuit overseer visit", () => {
+	function makeVisitaWeek(): ParsedWeek {
+		return {
+			...makeWeek(0),
+			partes: [
+				makePart({ numero_orden: 1, tipo_asignacion: "discurso_no_estudiante" }),
+				makePart({
+					numero_orden: 2,
+					tipo_asignacion: "estudio_biblico",
+					requiere_ayudante: true,
+				}),
+				makePart({
+					numero_orden: 3,
+					tipo_asignacion: "haga_revisitas",
+					requiere_sala_auxiliar: true,
+					requiere_ayudante: true,
+				}),
+			],
+		};
+	}
+
+	it("sends the visit week without the bible study and without auxiliary classroom", () => {
+		const payload = buildImportPayload(
+			[makeVisitaWeek()],
+			new Set([0]),
+			{},
+			{ 0: "VisitaSuperintendente" },
+		);
+
+		expect(payload).toHaveLength(1);
+		expect(payload[0].tipo_especial).toBe("VisitaSuperintendente");
+		expect(payload[0].partes.map((p) => p.tipo_asignacion)).toEqual([
+			"discurso_no_estudiante",
+			"haga_revisitas",
+		]);
+		expect(payload[0].partes.every((p) => p.requiere_sala_auxiliar === false)).toBe(
+			true,
+		);
+	});
+
+	it("adjusts a week that the parser already detected as a visit", () => {
+		const week = { ...makeVisitaWeek(), tipo_especial: "VisitaSuperintendente" };
+
+		const payload = buildImportPayload([week], new Set([0]), {}, {});
+
+		expect(payload[0].partes.some((p) => p.tipo_asignacion === "estudio_biblico")).toBe(
+			false,
+		);
+	});
+
+	it("keeps the part edits applied on top of the adjustments", () => {
+		const payload = buildImportPayload(
+			[makeVisitaWeek()],
+			new Set([0]),
+			{ "0-2": { titulo: "Revisitas editadas" } },
+			{ 0: "VisitaSuperintendente" },
+		);
+
+		expect(payload[0].partes).toHaveLength(2);
+		expect(payload[0].partes[1].titulo).toBe("Revisitas editadas");
+	});
+
+	it("does not touch the auxiliary classroom of normal weeks", () => {
+		const weeks = [
+			makeWeek(0, { tipo_asignacion: "haga_revisitas", requiere_sala_auxiliar: true }),
+		];
+
+		const payload = buildImportPayload(weeks, new Set([0]), {}, {});
+
+		expect(payload[0].partes[0].requiere_sala_auxiliar).toBe(true);
 	});
 });

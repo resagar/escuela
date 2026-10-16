@@ -6,6 +6,25 @@ export type PartEdits = Record<string, Partial<ParsedPart>>;
 /** Week type edits made in the import preview, keyed by week index. */
 export type WeekTypeEdits = Record<number, WeekType>;
 
+/** The two fields needed to apply the circuit overseer visit rules. */
+interface PartWithClassroomFlags {
+	tipo_asignacion: string;
+	requiere_sala_auxiliar: boolean;
+}
+
+/**
+ * Applies the circuit overseer visit rules to a list of parts: the bible
+ * study is removed and no part requires the auxiliary classroom. Shared by
+ * the import preview and the week editor. The input list is never mutated.
+ */
+export function applyVisitaAdjustments<T extends PartWithClassroomFlags>(
+	partes: T[],
+): T[] {
+	return partes
+		.filter((parte) => parte.tipo_asignacion !== "estudio_biblico")
+		.map((parte) => ({ ...parte, requiere_sala_auxiliar: false }));
+}
+
 /**
  * Maps a stored or parsed week type (snake_case from the database or the
  * parser enum) to the enum value the `import_parsed_weeks` command expects.
@@ -29,8 +48,9 @@ export function normalizeWeekType(raw: string): WeekType {
  * Builds the list of weeks to send to `import_parsed_weeks`: the selected
  * weeks, in ascending index order, with the week type and part edits of the
  * preview applied. Weeks marked (or detected) as Asamblea or Conmemoracion
- * are excluded, because there is no meeting that week. The parsed weeks are
- * never mutated.
+ * are excluded, because there is no meeting that week; weeks of the circuit
+ * overseer visit get the visit adjustments (no bible study, no auxiliary
+ * classroom). The parsed weeks are never mutated.
  */
 export function buildImportPayload(
 	weeks: ParsedWeek[],
@@ -68,7 +88,10 @@ export function buildImportPayload(
 			};
 		});
 
-		payload.push({ ...week, tipo_especial: tipo, partes });
+		const partesFinales =
+			tipo === "VisitaSuperintendente" ? applyVisitaAdjustments(partes) : partes;
+
+		payload.push({ ...week, tipo_especial: tipo, partes: partesFinales });
 	}
 
 	return payload;
