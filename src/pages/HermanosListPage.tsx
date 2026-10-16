@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { Hermano } from "../types";
 import { ROL_LABELS } from "../types";
@@ -7,8 +7,15 @@ import { ROL_LABELS } from "../types";
 type StatusFilter = "active" | "inactive";
 
 export default function HermanosListPage() {
+	const location = useLocation();
+	// Honor the filter sent back by the form after editing a brother
+	const initialFilter =
+		(location.state as { statusFilter?: StatusFilter } | null)?.statusFilter ===
+		"inactive"
+			? "inactive"
+			: "active";
 	const [hermanos, setHermanos] = useState<Hermano[]>([]);
-	const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
+	const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter);
 	const [loading, setLoading] = useState(true);
 
 	const loadHermanos = async () => {
@@ -32,7 +39,7 @@ export default function HermanosListPage() {
 		if (!confirm(`¿Desactivar a ${nombre}?`)) return;
 		try {
 			await invoke("deactivate_hermano", { id });
-			loadHermanos();
+			await loadHermanos();
 		} catch (err) {
 			console.error("Error deactivating hermano:", err);
 		}
@@ -42,7 +49,7 @@ export default function HermanosListPage() {
 		if (!confirm(`¿Reactivar a ${nombre}?`)) return;
 		try {
 			await invoke("reactivate_hermano", { id });
-			loadHermanos();
+			await loadHermanos();
 		} catch (err) {
 			console.error("Error reactivating hermano:", err);
 		}
