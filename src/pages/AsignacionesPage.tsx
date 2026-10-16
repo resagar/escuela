@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import type { AdjacentWeeks, Semana, Parte, AsignacionDetail } from "../types";
 import { ASIGNACION_LABELS } from "../types";
 import BrotherSelector from "../components/BrotherSelector";
+import { useCongregationSettings } from "../hooks/useCongregationSettings";
+import { hasEffectiveAuxiliaryRoom } from "../utils/auxiliaryRoom";
 
 const SECCION_COLORS: Record<string, string> = {
 	tesoros: "bg-slate-700",
@@ -37,6 +39,7 @@ export default function AsignacionesPage() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const semanaId = Number(id);
+	const { hasAuxiliaryRoom } = useCongregationSettings();
 
 	const [semana, setSemana] = useState<Semana | null>(null);
 	const [partes, setPartes] = useState<Parte[]>([]);
@@ -140,7 +143,7 @@ export default function AsignacionesPage() {
 
 	const renderSelectorsForPart = (parte: Parte, fechaReferencia: string) => {
 		const tipo = parte.tipo_asignacion;
-		const needsSalaAux = parte.requiere_sala_auxiliar;
+		const needsSalaAux = hasEffectiveAuxiliaryRoom(hasAuxiliaryRoom, parte);
 		const needsAyudante = parte.requiere_ayudante;
 		const isEstudioBiblico = tipo === "estudio_biblico";
 		const isNoStudent = [
@@ -422,17 +425,19 @@ export default function AsignacionesPage() {
 							onChange={(v) => handleRoleChange("presidente_id", v)}
 						/>
 					</div>
-					<div>
-						<label className="block text-xs text-gray-500 mb-1">Consejero sala auxiliar</label>
-						<BrotherSelector
-							fechaReferencia={semana.fecha_inicio}
-							tipoAsignacion="normal"
-							rol="consejero_sala"
-							ambito="sala_auxiliar"
-							value={semana.consejero_sala_id}
-							onChange={(v) => handleRoleChange("consejero_sala_id", v)}
-						/>
-					</div>
+					{hasAuxiliaryRoom && (
+						<div>
+							<label className="block text-xs text-gray-500 mb-1">Consejero sala auxiliar</label>
+							<BrotherSelector
+								fechaReferencia={semana.fecha_inicio}
+								tipoAsignacion="normal"
+								rol="consejero_sala"
+								ambito="sala_auxiliar"
+								value={semana.consejero_sala_id}
+								onChange={(v) => handleRoleChange("consejero_sala_id", v)}
+							/>
+						</div>
+					)}
 					<div>
 						<label className="block text-xs text-gray-500 mb-1">Oración apertura</label>
 						<BrotherSelector
