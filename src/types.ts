@@ -87,6 +87,10 @@ export interface Familia {
 	notas: string | null;
 }
 
+export interface CongregationSettings {
+	has_auxiliary_room: boolean;
+}
+
 export interface FamiliaWithMembers extends Familia {
 	miembros: Hermano[];
 }
