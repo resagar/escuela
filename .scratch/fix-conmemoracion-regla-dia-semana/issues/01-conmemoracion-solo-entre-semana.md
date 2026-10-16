@@ -33,3 +33,12 @@ Con el sample real: importar y verificar `tipo_especial` y el nº de partes resu
 ## Cierre (2026-10-13)
 
 **No-aplica.** Verificado en `escuela.db`: las 13 semanas importadas son todas `normal`; el parser solo pondría `Conmemoracion` al encontrar la keyword "CONMEMORACIÓN" en el cuerpo del mwb (`mwb_parser/mod.rs:471-474`), que **no aparece** en los mwb reales (`refs/mwb_S_202609 (1).pdf`). La única vía actual sería marcarlo manualmente desde `SemanaForm.tsx:319-321`, pero se decidió no manejar conmemoraciones en esta app. La regla §23 (weekday) queda pendiente de una decisión UX si se admite el marcaje manual. Drift `docs/user/system-analysis.md` §4.2 #5 → `no-aplica`.
+
+## Reversión (2026-10-16)
+
+Reabierto por el feature de semanas especiales (`.scratch/special-weeks/spec.md`, tickets 01–05). Lo implementado:
+- El marcaje manual ya existe: semana a semana en la vista previa de importación (`src/pages/ImportarMwbPage.tsx` + `src/lib/importPlanner.ts`).
+- La **opción A** (validar el día de la semana) quedó descartada: la decisión es manual, caso a caso — la app **no valida el día**.
+- Al marcar una semana como conmemoración (o asamblea), `buildImportPayload` la excluye: **no se guarda** ningún registro. Con eso el input pendiente de este ticket (un mwb real de conmemoración) deja de ser necesario.
+
+`requirements.md` §4 quedó actualizada a este comportamiento; el drift §4.2 #5 pasa a **resuelto**.

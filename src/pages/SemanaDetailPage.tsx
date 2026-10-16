@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { ASIGNACION_LABELS } from "../types";
+import {
+	ASIGNACION_LABELS,
+	TIPO_ESPECIAL_COLORS,
+	TIPO_ESPECIAL_LABELS,
+} from "../types";
 import type { Semana } from "../types";
 
 interface Parte {
@@ -15,20 +19,6 @@ interface Parte {
 	requiere_sala_auxiliar: boolean;
 	requiere_ayudante: boolean;
 }
-
-const TIPO_ESPECIAL_LABELS: Record<string, string> = {
-	normal: "Normal",
-	asamblea: "Asamblea",
-	conmemoracion: "Conmemoración",
-	visita_superintendente: "Visita del Superintendente",
-};
-
-const TIPO_ESPECIAL_COLORS: Record<string, string> = {
-	normal: "bg-gray-100 text-gray-700",
-	asamblea: "bg-red-100 text-red-700",
-	conmemoracion: "bg-purple-100 text-purple-700",
-	visita_superintendente: "bg-yellow-100 text-yellow-700",
-};
 
 const SECCION_COLORS: Record<string, string> = {
 	tesoros: "bg-blue-100 text-blue-700",

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import type { ParsedWeek, ParsedPart } from "../types";
-import { ASIGNACION_LABELS } from "../types";
+import type { ParsedWeek, ParsedPart, WeekType } from "../types";
+import { ASIGNACION_LABELS, WEEK_TYPE_OPTIONS } from "../types";
+import { buildImportPayload, isNoMeeting, normalizeWeekType } from "../lib/importPlanner";
+import type { WeekTypeEdits } from "../lib/importPlanner";
 
 type Step = "idle" | "file_selected" | "parsing" | "preview" | "saving" | "error";
 
@@ -46,6 +48,7 @@ export default function ImportarMwbPage() {
 	const [errorMessage, setErrorMessage] = useState<string>("");
 	const [expandedWeek, setExpandedWeek] = useState<number | null>(null);
 	const [editingParts, setEditingParts] = useState<Record<string, Partial<ParsedPart>>>({});
+	const [weekTypeEdits, setWeekTypeEdits] = useState<WeekTypeEdits>({});
 
 	const handlePickFile = async () => {
 		try {
@@ -69,6 +72,8 @@ export default function ImportarMwbPage() {
 			});
 			setParsedWeeks(weeks);
 			setSelectedIndices(new Set(weeks.map((_, i) => i)));
+			setEditingParts({});
+			setWeekTypeEdits({});
 			setStep("preview");
 		} catch (err) {
 			setErrorMessage(String(err));
@@ -120,39 +125,22 @@ export default function ImportarMwbPage() {
 		}));
 	};
 
-	const buildImportData = (): ParsedWeek[] => {
-		return Array.from(selectedIndices)
-			.sort()
-			.map((weekIdx) => {
-				const original = parsedWeeks[weekIdx];
-				const partes = original.partes.map((p, pIdx) => {
-					const key = `${weekIdx}-${pIdx}`;
-					const edits = editingParts[key] || {};
-					return {
-						...p,
-						...(edits.titulo !== undefined && { titulo: edits.titulo }),
-						...(edits.tipo_asignacion !== undefined && {
-							tipo_asignacion: edits.tipo_asignacion,
-						}),
-						...(edits.duracion_minutos !== undefined && {
-							duracion_minutos: Number(edits.duracion_minutos),
-						}),
-						...(edits.requiere_sala_auxiliar !== undefined && {
-							requiere_sala_auxiliar: Boolean(edits.requiere_sala_auxiliar),
-						}),
-						...(edits.requiere_ayudante !== undefined && {
-							requiere_ayudante: Boolean(edits.requiere_ayudante),
-						}),
-					};
-				});
-				return { ...original, partes };
-			});
+	const handleWeekTypeEdit = (weekIndex: number, weekType: WeekType) => {
+		setWeekTypeEdits((prev) => ({ ...prev, [weekIndex]: weekType }));
 	};
+
+	const effectiveWeekType = (index: number): WeekType =>
+		normalizeWeekType(weekTypeEdits[index] ?? parsedWeeks[index].tipo_especial);
 
 	const handleImport = async () => {
 		try {
 			setStep("saving");
-			const importData = buildImportData();
+			const importData = buildImportPayload(
+				parsedWeeks,
+				selectedIndices,
+				editingParts,
+				weekTypeEdits,
+			);
 			await invoke("import_parsed_weeks", { parsedWeeks: importData });
 			navigate("/semanas");
 		} catch (err) {
@@ -209,7 +197,12 @@ export default function ImportarMwbPage() {
 	}
 
 	if (step === "preview") {
-		const selectedCount = selectedIndices.size;
+		const importCount = buildImportPayload(
+			parsedWeeks,
+			selectedIndices,
+			editingParts,
+			weekTypeEdits,
+		).length;
 		return (
 			<div>
 				<div className="flex items-center justify-between mb-4">
@@ -221,6 +214,8 @@ export default function ImportarMwbPage() {
 							setStep("idle");
 							setFilePath("");
 							setParsedWeeks([]);
+							setEditingParts({});
+							setWeekTypeEdits({});
 						}}
 						className="text-sm text-gray-500 hover:text-gray-700 underline"
 					>
@@ -248,9 +243,8 @@ export default function ImportarMwbPage() {
 				<div className="space-y-2 mb-4">
 					{parsedWeeks.map((week, i) => {
 						const isSelected = selectedIndices.has(i);
-						const isSpecial =
-							week.tipo_especial !== "Normal" &&
-							week.tipo_especial !== "normal";
+						const effectiveType = effectiveWeekType(i);
+						const noMeeting = isNoMeeting(effectiveType);
 						return (
 							<div
 								key={i}
@@ -278,15 +272,36 @@ export default function ImportarMwbPage() {
 											</span>
 										)}
 									</button>
-									{isSpecial && (
+									<select
+										value={effectiveType}
+										onChange={(e) =>
+											handleWeekTypeEdit(i, e.target.value as WeekType)
+										}
+										className="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white"
+										title="Tipo de semana"
+									>
+										{WEEK_TYPE_OPTIONS.map((option) => (
+											<option key={option.value} value={option.value}>
+												{option.label}
+											</option>
+										))}
+									</select>
+									{noMeeting && (
 										<span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
 											Sin reunión
 										</span>
 									)}
 								</div>
 
-								{expandedWeek === i && !isSpecial && (
+								{expandedWeek === i && !noMeeting && (
 									<div className="p-3 border-t border-gray-200">
+										{effectiveType === "VisitaSuperintendente" && (
+											<div className="mb-2 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded px-2 py-1">
+												Visita del superintendente: el estudio
+												bíblico se elimina y no hay clases
+												auxiliares.
+											</div>
+										)}
 										<div className="text-xs mb-2">
 											<span className="font-semibold">Canciones:</span>{" "}
 											{week.cancion_apertura} ·{" "}
@@ -413,10 +428,10 @@ export default function ImportarMwbPage() {
 									</div>
 								)}
 
-								{expandedWeek === i && isSpecial && (
+								{expandedWeek === i && noMeeting && (
 									<div className="p-3 border-t border-gray-200 text-sm text-gray-500">
-										Esta semana no hay reunión. Se importará como
-										referencia sin partes asignables.
+										Esta semana no hay reunión. No se guardará al
+										importar.
 									</div>
 								)}
 							</div>
@@ -427,16 +442,15 @@ export default function ImportarMwbPage() {
 				<div className="flex gap-2">
 					<button
 						onClick={handleImport}
-						disabled={selectedCount === 0}
+						disabled={importCount === 0}
 						className={`px-6 py-2 rounded text-sm transition-colors ${
-							selectedCount > 0
+							importCount > 0
 								? "bg-slate-700 text-white hover:bg-slate-800"
 								: "bg-gray-200 text-gray-400 cursor-not-allowed"
 						}`}
 					>
-						Importar {selectedCount} semana
-						{selectedCount !== 1 ? "s" : ""} seleccionada
-						{selectedCount !== 1 ? "s" : ""}
+						Importar {importCount} semana
+						{importCount !== 1 ? "s" : ""}
 					</button>
 				</div>
 			</div>
