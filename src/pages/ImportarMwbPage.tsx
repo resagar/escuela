@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import type { ParsedWeek, ParsedPart } from "../types";
 import { ASIGNACION_LABELS } from "../types";
+import { buildImportPayload } from "../lib/importPlanner";
 
 type Step = "idle" | "file_selected" | "parsing" | "preview" | "saving" | "error";
 
@@ -120,39 +121,10 @@ export default function ImportarMwbPage() {
 		}));
 	};
 
-	const buildImportData = (): ParsedWeek[] => {
-		return Array.from(selectedIndices)
-			.sort()
-			.map((weekIdx) => {
-				const original = parsedWeeks[weekIdx];
-				const partes = original.partes.map((p, pIdx) => {
-					const key = `${weekIdx}-${pIdx}`;
-					const edits = editingParts[key] || {};
-					return {
-						...p,
-						...(edits.titulo !== undefined && { titulo: edits.titulo }),
-						...(edits.tipo_asignacion !== undefined && {
-							tipo_asignacion: edits.tipo_asignacion,
-						}),
-						...(edits.duracion_minutos !== undefined && {
-							duracion_minutos: Number(edits.duracion_minutos),
-						}),
-						...(edits.requiere_sala_auxiliar !== undefined && {
-							requiere_sala_auxiliar: Boolean(edits.requiere_sala_auxiliar),
-						}),
-						...(edits.requiere_ayudante !== undefined && {
-							requiere_ayudante: Boolean(edits.requiere_ayudante),
-						}),
-					};
-				});
-				return { ...original, partes };
-			});
-	};
-
 	const handleImport = async () => {
 		try {
 			setStep("saving");
-			const importData = buildImportData();
+			const importData = buildImportPayload(parsedWeeks, selectedIndices, editingParts);
 			await invoke("import_parsed_weeks", { parsedWeeks: importData });
 			navigate("/semanas");
 		} catch (err) {
