@@ -4,11 +4,18 @@
 
 **Bloqueado por:** Ninguno (puede empezar de inmediato).
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — implementado en `feat/inactive-brothers` (merge `6fe26ba`)
 
-- [ ] La pantalla Hermanos muestra un filtro Activos/Inactivos; al abrir, la vista por defecto es Activos y se ve igual que hoy.
-- [ ] La vista Inactivos muestra únicamente hermanos con baja lógica, ordenados por nombre.
-- [ ] Cada fila inactiva muestra el indicador "Inactivo", conserva el enlace Editar y no ofrece "Desactivar".
-- [ ] Al desactivar un hermano desde Activos, cambia a Inactivos y aparece listado; al volver a Activos ya no está.
-- [ ] Los selectores de asignación siguen sin mostrar inactivos (sin regresión).
-- [ ] `tsc --noEmit` y `pnpm build` pasan.
+- [x] La pantalla Hermanos muestra un filtro Activos/Inactivos; al abrir, la vista por defecto es Activos y se ve igual que hoy.
+- [x] La vista Inactivos muestra únicamente hermanos con baja lógica, ordenados por nombre.
+- [x] Cada fila inactiva muestra el indicador "Inactivo", conserva el enlace Editar y no ofrece "Desactivar".
+- [x] Al desactivar un hermano desde Activos, cambia a Inactivos y aparece listado; al volver a Activos ya no está.
+- [x] Los selectores de asignación siguen sin mostrar inactivos (sin regresión).
+- [x] `tsc --noEmit` y `pnpm build` pasan.
+
+## Comments
+
+- Implementado en `feat/ib-01-ver-inactivos` (commit `b6c56f0`; merge a integración `6fe26ba`). El code review pidió conservar el filtro al volver de editar (`274ed2f`).
+- Verificación: `pnpm exec tsc --noEmit` y `pnpm build` OK. Sin regresión en selectores (todos filtran `activo = 1`; revisión estática).
+- Interpretación de AC 4: al desactivar, la lista se recarga y el hermano sale de Activos; aparece al abrir la pestaña Inactivos (sin cambio automático de pestaña; decisión del plan: filtro en la misma pantalla).
+- La comprobación visual en la GUI no es ejecutable en este entorno (sin display): queda un pase manual recomendado.
