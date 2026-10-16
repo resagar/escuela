@@ -1,5 +1,7 @@
 import React from "react";
 import type { Semana, Parte, AsignacionDetail, Hermano } from "../types";
+import { useCongregationSettings } from "../hooks/useCongregationSettings";
+import { hasEffectiveAuxiliaryRoom } from "../utils/auxiliaryRoom";
 
 const CONG_NAME = "Cong. CASANAY";
 
@@ -32,6 +34,8 @@ interface S140WeekViewProps {
 }
 
 export default function S140WeekView({ semana, partes, asignaciones, personas }: S140WeekViewProps) {
+	const { hasAuxiliaryRoom } = useCongregationSettings();
+
 	function getPersonaName(id: number | null | undefined): string {
 		if (!id) return "";
 		return personas[id]?.nombre ?? "";
@@ -123,7 +127,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 			const estudianteAux = getAssignmentName(parte.id, "sala_auxiliar", "estudiante");
 			const estudianteAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
 
-			if (!parte.requiere_sala_auxiliar) {
+			if (!hasEffectiveAuxiliaryRoom(hasAuxiliaryRoom, parte)) {
 				return (
 					<tr key={parte.id}>
 						<td className="time">0:00</td>
@@ -155,7 +159,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 		const estAud = getAssignmentName(parte.id, "auditorio_principal", "estudiante");
 		const ayuAud = getAssignmentName(parte.id, "auditorio_principal", "ayudante");
 
-		if (!parte.requiere_sala_auxiliar) {
+		if (!hasEffectiveAuxiliaryRoom(hasAuxiliaryRoom, parte)) {
 			return (
 				<tr key={parte.id}>
 					<td className="time">0:00</td>
@@ -187,7 +191,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 		startIndex: number,
 	) {
 		const rows: React.JSX.Element[] = [];
-		const hasSalaAux = secPartes.some((p) => p.requiere_sala_auxiliar);
+		const hasSalaAux = secPartes.some((p) => hasEffectiveAuxiliaryRoom(hasAuxiliaryRoom, p));
 
 		if (hasSalaAux) {
 			rows.push(
@@ -244,16 +248,20 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 					<tr style={{ height: 4, border: "none" }}>
 						<td colSpan={5} style={{ border: "none", padding: 0 }} />
 					</tr>
-					<tr className="row-info">
+					{/* The counselor row belongs to the auxiliary-room scope: it is hidden
+					    with the setting off and the president row then closes the block. */}
+					<tr className={`row-info${hasAuxiliaryRoom ? "" : " row-info-last"}`}>
 						<td colSpan={3} className="date-text">{fullDate}</td>
 						<td className="lbl">Presidente:</td>
 						<td className="val">{getPersonaName(semana.presidente_id)}</td>
 					</tr>
-					<tr className="row-info row-info-last">
-						<td colSpan={3} />
-						<td className="lbl">Consejero de la sala auxiliar:</td>
-						<td className="val">{getPersonaName(semana.consejero_sala_id)}</td>
-					</tr>
+					{hasAuxiliaryRoom && (
+						<tr className="row-info row-info-last">
+							<td colSpan={3} />
+							<td className="lbl">Consejero de la sala auxiliar:</td>
+							<td className="val">{getPersonaName(semana.consejero_sala_id)}</td>
+						</tr>
+					)}
 					<tr style={{ height: 4, border: "none" }}>
 						<td colSpan={5} style={{ border: "none", padding: 0 }} />
 					</tr>
