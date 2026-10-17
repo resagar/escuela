@@ -41,7 +41,7 @@ La tipografía es **Arial, "Helvetica Neue", Helvetica** (fuentes sans-serif del
 
 ## 📐 3. Grilla y Proporciones de Columna
 
-Para garantizar una alineación milimétrica perfecta de arriba a abajo de la página, el programa semanal se construye sobre una **única tabla unificada de 5 columnas** (coordenadas del docx oficial; `s140-mockup.html:237-244`, `src/components/S140WeekView.tsx:230-236`):
+Para garantizar una alineación milimétrica perfecta de arriba a abajo de la página, el programa semanal se construye sobre una **única tabla unificada de 5 columnas** (coordenadas del docx oficial; `s140-mockup.html:237-244`, `src/components/S140WeekView.tsx:235-239`):
 
 1. **Columna 1: Hora (`0:00`)** → Ancho de `45px` (6.2% del ancho imprimible).
 2. **Columna 2: Título de la Parte** → Ancho de `192px` (26.6% del ancho imprimible).
