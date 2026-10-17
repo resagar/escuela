@@ -1,6 +1,6 @@
 # Spec: Ajuste de congregación — sala auxiliar
 
-**Status:** ready-for-agent
+**Status:** implementado (2026-10-16) — integrado en `feat/congregation-settings` (merges `fd426b4`, `ce56093`, `cf6cce6`, `75697ea` + correcciones de review `92dc93b`); tickets 01–04 resueltos
 **Fecha:** 2026-10-16
 **Referencia:** nota de planificación `inkdrop://note/VKs1rz0d` (decisiones del usuario, 2026-10)
 

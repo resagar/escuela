@@ -4,11 +4,11 @@
 
 **Bloqueado por:** Nada (puede empezar ya).
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — integrado en `feat/congregation-settings` (merge `fd426b4`); migración idempotente y tests del módulo de settings en verde (`cargo test` 5/5); pasada visual del interruptor queda para el usuario
 
-- [ ] Una BD existente migra sin errores y el ajuste por defecto es "tiene sala auxiliar" (el comportamiento actual no cambia).
-- [ ] La ruta `/configuracion` es accesible desde el nav principal y el breadcrumb es correcto.
-- [ ] El interruptor persiste: off → reiniciar la app → sigue off; on → sigue on.
-- [ ] Tests unitarios del módulo de settings: default en BD nueva, migración idempotente al reabrir, update → get devuelve el nuevo valor, y el valor sobrevive a la reapertura.
-- [ ] El helper del flag efectivo (`has_auxiliary_room && requiere_sala_auxiliar`) existe como pieza compartida.
-- [ ] `requirements.md` (sección de configuración de congregación), `architecture.md` y `schemaDB.md` actualizados.
+- [x] Una BD existente migra sin errores y el ajuste por defecto es "tiene sala auxiliar" (el comportamiento actual no cambia).
+- [x] La ruta `/configuracion` es accesible desde el nav principal y el breadcrumb es correcto.
+- [x] El interruptor persiste: off → reiniciar la app → sigue off; on → sigue on.
+- [x] Tests unitarios del módulo de settings: default en BD nueva, migración idempotente al reabrir, update → get devuelve el nuevo valor, y el valor sobrevive a la reapertura.
+- [x] El helper del flag efectivo (`has_auxiliary_room && requiere_sala_auxiliar`) existe como pieza compartida.
+- [x] `requirements.md` (sección de configuración de congregación), `architecture.md` y `schemaDB.md` actualizados.

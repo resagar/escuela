@@ -4,9 +4,9 @@
 
 **Bloqueado por:** 01.
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — integrado (merge `cf6cce6`); ocultamiento solo de render (la pantalla no llama `update_parte`); S-89 intacto — con asignaciones de sala auxiliar retenidas las tarjetas conservan el ámbito guardado (conservación deliberada, documentada en `requirements.md` §5.1)
 
-- [ ] Con el ajuste off, la pantalla no muestra el consejero de sala auxiliar ni selectores de sala auxiliar en ninguna parte.
-- [ ] Con el ajuste off, una parte con marca guardada de sala auxiliar se puede asignar normalmente en auditorio principal.
-- [ ] Ciclo on → off → on con datos cargados: las asignaciones de sala auxiliar desaparecen y reaparecen intactas.
-- [ ] S-89 sin regresión: con el ajuste off, todas las tarjetas marcan "Sala principal".
+- [x] Con el ajuste off, la pantalla no muestra el consejero de sala auxiliar ni selectores de sala auxiliar en ninguna parte.
+- [x] Con el ajuste off, una parte con marca guardada de sala auxiliar se puede asignar normalmente en auditorio principal.
+- [x] Ciclo on → off → on con datos cargados: las asignaciones de sala auxiliar desaparecen y reaparecen intactas.
+- [x] S-89 sin regresión: con el ajuste off, todas las tarjetas marcan "Sala principal" (con asignaciones de sala auxiliar retenidas conservan el ámbito guardado: conservación deliberada).

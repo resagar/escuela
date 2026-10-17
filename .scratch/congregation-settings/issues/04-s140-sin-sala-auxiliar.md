@@ -4,10 +4,10 @@
 
 **Bloqueado por:** 01.
 
-**Status:** ready-for-agent
+**Status:** resuelto (2026-10-16) — integrado (merge `ce56093`); fila del consejero condicional en el componente compartido (semana suelta y rango); `ux-guidelines.md` documenta la regla; impresión/exportación pendiente de la pasada manual del usuario (sin GUI en el entorno de agentes)
 
-- [ ] Con el ajuste off, el S-140 de semana suelta no muestra la fila del consejero y la grilla no queda desalineada ni con filas vacías.
-- [ ] Con el ajuste off, el rango del S-140 se genera coherente en todas las semanas.
-- [ ] Con el ajuste on, el S-140 (semana y rango) es visualmente idéntico al actual, incluida la fila del consejero.
-- [ ] Impresión/exportación verificadas en ambos estados (una semana por página, márgenes, colores y tipografías intactos).
-- [ ] `ux-guidelines.md` documenta la regla condicional de la fila del consejero.
+- [x] Con el ajuste off, el S-140 de semana suelta no muestra la fila del consejero y la grilla no queda desalineada ni con filas vacías.
+- [x] Con el ajuste off, el rango del S-140 se genera coherente en todas las semanas.
+- [x] Con el ajuste on, el S-140 (semana y rango) es visualmente idéntico al actual, incluida la fila del consejero.
+- [ ] Impresión/exportación verificadas en ambos estados (una semana por página, márgenes, colores y tipografías intactos). — pendiente de la pasada manual del usuario.
+- [x] `ux-guidelines.md` documenta la regla condicional de la fila del consejero.
