@@ -1,4 +1,5 @@
 pub mod asignaciones;
+pub mod congregation;
 pub mod eligibility;
 pub mod export;
 pub mod familias;

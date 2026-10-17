@@ -1,6 +1,9 @@
 # Requerimientos y Reglas — Escuela (Asignaciones VyM)
 
-**Versión:** 1.5 (2026-10)
+**Versión:** 1.8 (2026-10)
+**Cambios v1.8 (2026-10):** precisión de alcance en §5.1: el flag efectivo lo consumen las vistas con candado (no «todas las vistas»), y el S-89 documenta que con datos de sala auxiliar retenidos sus tarjetas siguen marcando el ámbito guardado (conservación deliberada).
+**Cambios v1.7 (2026-10):** documentado el candado en los editores (§5.1): la casilla «Sala aux.» de la vista previa de importación del MWB y del formulario de semana queda deshabilitada con aviso y enlace a Configuración, y los formularios envían siempre la marca guardada o inferida (nunca forzada a `0`, para no borrar asignaciones ocultas).
+**Cambios v1.6 (2026-10):** nueva §5.1: configuración de congregación (ajuste de sala auxiliar) como candado duro y no destructivo; tabla `congregation_settings`, comandos y ruta `/configuracion`.
 **Cambios v1.5 (2026-10):** §4 actualizado al comportamiento implementado: el tipo de semana especial se marca manualmente en la vista previa de importación (asamblea y conmemoración **no se guardan**) y la visita del superintendente ajusta las partes — sin estudio bíblico y sin sala auxiliar — al importar y al cambiar el tipo de una semana guardada.
 **Cambios v1.4 (2026-10):** documentadas en §5 dos reglas implícitas del código: integridad de sala auxiliar al editar una parte, y degeneración de ayudantes cuando faltan datos del estudiante.
 **Fuentes:** PRD_Asignaciones_VyM.md v1.2, instrucciones oficiales de la Reunión Vida y Ministerio Cristianos (S-38), código implementado.
@@ -78,6 +81,19 @@ Filtro base **siempre**: `activo = 1`, ordenado por nombre. Fuente de verdad en 
 - **Lecturas largas**: el superintendente considera las capacidades de cada estudiante al asignar lecturas más largas (§5) — nota de proceso, no regla de filtro.
 - **Ancianos como estudiantes**: si es necesario, los ancianos pueden recibir asignaciones de estudiante (§6).
 
+## 5.1 Configuración de congregación (sala auxiliar)
+
+Pantalla **Configuración** (ruta `/configuracion`, entrada fija en el nav principal), la primera de la app, donde el Superintendente declara si la congregación tiene sala auxiliar. Por ahora es el único ajuste; la pantalla queda preparada para futuros ajustes de congregación.
+
+- **Persistencia**: tabla singleton `congregation_settings` (una sola fila, `id = 1`) con `has_auxiliary_room` (0/1). Default `1` = "tiene sala auxiliar", que preserva el comportamiento histórico en instalaciones nuevas y existentes. Lógica en `src-tauri/src/congregation/settings.rs`; migración idempotente en `src-tauri/src/db.rs`.
+- **Alcance del ajuste**: candado **duro y no destructivo**.
+  - *Duro*: con el ajuste off, ningún editor permite marcar «Sala aux.», la app no pide asignaciones, consejero ni impresiones de ese ámbito, y el S-140 no muestra la fila del consejero.
+  - *No destructivo*: las marcas guardadas (`partes.requiere_sala_auxiliar`) y las asignaciones de `sala_auxiliar` se conservan ocultas y reaparecen intactas al reactivar el ajuste. El ajuste nunca reescribe esos datos.
+- **Flag efectivo**: helper compartido del frontend `hasEffectiveAuxiliaryRoom(has_auxiliary_room, parte)` (`src/utils/auxiliaryRoom.ts`): el ajuste debe estar on **y** la parte marcada. Las vistas con candado (importación MWB, formulario de semana, asignaciones y S-140) consumen el flag efectivo; el dato guardado se lee tal cual.
+- **Editores**: en la vista previa de importación del MWB y en el formulario de semana la casilla «Sala aux.» se muestra deshabilitada (no oculta) con aviso y enlace a Configuración cuando el ajuste está off; conserva visible la marca guardada o inferida por el parser. Ambos formularios envían esa marca **sin cambios**, nunca forzada a `0`: forzarla borraría las asignaciones de `sala_auxiliar` de la parte al guardar (`update_parte`). Activación y desactivación del ajuste nunca alteran datos guardados.
+- **Comandos**: `get_congregation_settings` y `update_congregation_settings(has_auxiliary_room)`.
+- **S-89 sin cambios**: sus casillas «Sala principal / Sala auxiliar núm. 1» son parte fija del formulario oficial. Con asignaciones de `sala_auxiliar` retenidas por el ajuste off, sus tarjetas siguen marcando el ámbito guardado: la conservación es deliberada, no una regresión.
+
 ## 6. Catálogo de tipos de asignación (`tipo_asignacion`)
 
 `discurso_no_estudiante`, `busquemos_perlas`, `lectura_biblia`, `empiece_conversaciones`, `haga_revisitas`, `haga_discipulos`, `explique_creencias_discurso`, `explique_creencias_escenificacion`, `discurso_estudiante`, `que_dirias`, `analisis_auditorio`, `necesidades_congregacion`, `estudio_biblico`, `oracion`, `cancion`, `introduccion`, `conclusion`.
@@ -91,14 +107,15 @@ Cada tipo define: sección (`tesoros` / `mejores_maestros` / `vida_cristiana` / 
 - **partes**: id, semana_id (CASCADE), numero_orden, seccion, tipo_asignacion, titulo, duracion_minutos, requiere_sala_auxiliar, requiere_ayudante
 - **asignaciones**: id, parte_id (CASCADE), ambito (`auditorio_principal`/`sala_auxiliar`), rol (`estudiante`/`ayudante`/`conductor`/`lector`), hermano_id
 - **familias** / **familia_miembros**: agrupaciones familiares; `familia_miembros.familia_id` + `hermano_id`. Usadas por la regla "o familiar" de ayudantes
+- **congregation_settings**: tabla singleton (una fila, `id = 1`) con `has_auxiliary_room` (0/1). Ajuste de congregación; ver §5.1
 
 ## 8. Comandos Tauri (resumen)
 
-`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate/reactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_brother_history` · exportación S-140/S-89 (PDF/JPEG).
+`get_eligible_brothers(tipo_asignacion, rol, ambito, sexo_estudiante?, estudiante_id?)` → `Vec<Hermano>` · CRUD hermanos (create/update/get/list/deactivate/reactivate, batch) · `parse_mwb_pdf(path)`, `pick_mwb_file()`, `import_parsed_weeks(weeks)` · CRUD semanas y partes · `assign_brother`, `remove_assignment`, `get_assignments_for_week`, `update_semana_roles` · `get_congregation_settings`, `update_congregation_settings(has_auxiliary_room)` · `get_brother_history` · exportación S-140/S-89 (PDF/JPEG).
 
 ## 9. Rutas de la UI
 
-`/` Dashboard · `/hermanos`, `/hermanos/nuevo`, `/hermanos/:id/editar` · `/semanas`, `/semanas/importar`, `/semanas/nuevo`, `/semanas/:id/editar`, `/semanas/:id` (Asignaciones) · `/familias`, `/familias/:id` · `/semanas/:id/s140`, `/s140/rango` · `/semanas/:id/s89`, `/s89/rango`
+`/` Dashboard · `/hermanos`, `/hermanos/nuevo`, `/hermanos/:id/editar` · `/semanas`, `/semanas/importar`, `/semanas/nuevo`, `/semanas/:id/editar`, `/semanas/:id` (Asignaciones) · `/familias`, `/familias/:id` · `/semanas/:id/s140`, `/s140/rango` · `/semanas/:id/s89`, `/s89/rango` · `/configuracion` (Configuración de congregación, §5.1)
 
 **Fidelidad S-140**: visual/impresión del S-140 debe ser idéntico al oficial — ver `docs/user/ux-guidelines.md` y `s140-mockup.html` antes de tocar cualquier vista de impresión.
 

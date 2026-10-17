@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { ASIGNACION_LABELS, TIPO_ESPECIAL_LABELS } from "../types";
 import type { Semana } from "../types";
 import { applyVisitaAdjustments, normalizeWeekType } from "../lib/importPlanner";
+import AuxiliaryRoomCheckbox from "../components/AuxiliaryRoomCheckbox";
+import AuxiliaryRoomLockNotice from "../components/AuxiliaryRoomLockNotice";
 
 interface PartForm {
 	id?: number;
@@ -153,6 +155,11 @@ export default function SemanaFormPage() {
 					adjustedPartes.filter((p) => p.id != null).map((p) => p.id!),
 				);
 
+				// The stored `requiere_sala_auxiliar` mark is always sent as is, even
+				// when the congregation has no auxiliary room: `update_parte` deletes
+				// the sala_auxiliar assignments of any part saved with 0, so forcing
+				// the lock here would silently destroy hidden data. Only the circuit
+				// overseer visit rule above may clear the mark.
 				for (const p of adjustedPartes) {
 					if (p.id != null) {
 						await invoke("update_parte", {
@@ -353,6 +360,8 @@ export default function SemanaFormPage() {
 						</button>
 					</div>
 
+					<AuxiliaryRoomLockNotice className="mb-2" />
+
 					{partes.length === 0 && (
 						<p className="text-xs text-gray-400 italic">
 							Sin partes. Haz clic en "+ Agregar parte" para añadir.
@@ -456,20 +465,12 @@ export default function SemanaFormPage() {
 										className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
 									/>
 								</div>
-								<label className="flex items-center gap-1 text-xs text-gray-600">
-									<input
-										type="checkbox"
-										checked={parte.requiere_sala_auxiliar}
-										onChange={(e) =>
-											updateParte(
-												i,
-												"requiere_sala_auxiliar",
-												e.target.checked,
-											)
-										}
-									/>
-									Sala aux.
-								</label>
+								<AuxiliaryRoomCheckbox
+									checked={parte.requiere_sala_auxiliar}
+									onChange={(checked) =>
+										updateParte(i, "requiere_sala_auxiliar", checked)
+									}
+								/>
 								<label className="flex items-center gap-1 text-xs text-gray-600">
 									<input
 										type="checkbox"

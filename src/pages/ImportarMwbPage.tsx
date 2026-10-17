@@ -5,6 +5,8 @@ import type { ParsedWeek, ParsedPart, WeekType } from "../types";
 import { ASIGNACION_LABELS, WEEK_TYPE_OPTIONS } from "../types";
 import { buildImportPayload, isNoMeeting, normalizeWeekType } from "../lib/importPlanner";
 import type { WeekTypeEdits } from "../lib/importPlanner";
+import AuxiliaryRoomCheckbox from "../components/AuxiliaryRoomCheckbox";
+import AuxiliaryRoomLockNotice from "../components/AuxiliaryRoomLockNotice";
 
 type Step = "idle" | "file_selected" | "parsing" | "preview" | "saving" | "error";
 
@@ -228,6 +230,8 @@ export default function ImportarMwbPage() {
 					{parsedWeeks.length} semanas detectadas
 				</div>
 
+				<AuxiliaryRoomLockNotice className="mb-4" />
+
 				<div className="mb-4">
 					<label className="text-sm text-gray-600 mr-2">
 						A partir de fecha:
@@ -316,6 +320,9 @@ export default function ImportarMwbPage() {
 													<th className="px-2 py-1 text-left">Título</th>
 													<th className="px-2 py-1 text-left">Tipo</th>
 													<th className="px-2 py-1 text-center">Dur.</th>
+													<th className="px-2 py-1 text-center">
+														Sala aux.
+													</th>
 												</tr>
 											</thead>
 											<tbody className="divide-y divide-gray-200">
@@ -419,6 +426,25 @@ export default function ImportarMwbPage() {
 																	className="w-12 border border-gray-300 rounded px-1 py-0.5 text-center"
 																	min={0}
 																/>
+															</td>
+															{/* Locked without auxiliary room; the parsed mark is persisted as is. */}
+															<td className="px-2 py-1">
+																<div className="flex justify-center">
+																	<AuxiliaryRoomCheckbox
+																		checked={
+																			edits.requiere_sala_auxiliar ??
+																			part.requiere_sala_auxiliar
+																		}
+																		onChange={(checked) =>
+																			handlePartEdit(
+																				i,
+																				pIdx,
+																				"requiere_sala_auxiliar",
+																				checked,
+																			)
+																		}
+																	/>
+																</div>
 															</td>
 														</tr>
 													);

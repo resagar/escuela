@@ -5,6 +5,7 @@ const NAV_LINKS = [
 	{ to: "/semanas", label: "Semanas" },
 	{ to: "/hermanos", label: "Hermanos" },
 	{ to: "/familias", label: "Familias" },
+	{ to: "/configuracion", label: "Configuración" },
 ];
 
 function getBreadcrumbs(pathname: string): Array<{ label: string; path: string }> {
@@ -19,6 +20,7 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; path: string }
 		if (seg === "semanas") crumbs.push({ label: "Semanas", path: "/semanas" });
 		else if (seg === "hermanos") crumbs.push({ label: "Hermanos", path: "/hermanos" });
 		else if (seg === "familias") crumbs.push({ label: "Familias", path: "/familias" });
+		else if (seg === "configuracion") crumbs.push({ label: "Configuración", path: "/configuracion" });
 		else if (seg === "importar") crumbs.push({ label: "Importar MWB", path: currentPath });
 		else if (seg === "nuevo" || seg === "editar") crumbs.push({ label: "Editar", path: currentPath });
 		else if (seg === "s140") crumbs.push({ label: "S-140", path: currentPath });

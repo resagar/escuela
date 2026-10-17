@@ -26,9 +26,11 @@
 │  │  /semanas/:id  │      │  │  └ elegibilidad.rs   │  │ │
 │  │  /semanas/:id/ │      │  │  └ asignaciones.rs   │  │ │
 │  │    s140        │      │  │  └ historial.rs      │  │ │
+│  │  /configuracion│      │  │  └ congregation.rs   │  │ │
 │  │               │      │  ├────────────────────┤  │ │
 │  │               │      │  │  mwb_parser/        │  │ │
 │  │               │      │  │  eligibility/        │  │ │
+│  │               │      │  │  congregation/       │  │ │
 │  │               │      │  ├────────────────────┤  │ │
 │  │               │      │  │  db.rs (SQLite)     │  │ │
 │  │               │      │  │  models.rs           │  │ │
@@ -38,7 +40,7 @@
 
 ## Base de Datos
 
-6 tablas SQLite con foreign keys y WAL mode: `hermanos`, `semanas`, `partes`, `asignaciones`, `familias`, `familia_miembros` (`src-tauri/src/db.rs:31-96`).
+7 tablas SQLite con foreign keys y WAL mode: `hermanos`, `semanas`, `partes`, `asignaciones`, `familias`, `familia_miembros`, `congregation_settings` (`src-tauri/src/db.rs:31-105`).
 
 ### `hermanos`
 Catálogo de miembros de la congregación.
@@ -100,9 +102,17 @@ Asignación de hermanos a partes.
 | rol | TEXT | "estudiante" / "ayudante" / "conductor" / "lector" |
 | hermano_id | FK→hermanos | |
 
+### `congregation_settings`
+Ajustes de la congregación. Tabla singleton: exactamente una fila (`id = 1`), sembrada por la migración con los valores que preservan el comportamiento histórico.
+
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| id | INTEGER PK | Siempre 1 (CHECK) |
+| has_auxiliary_room | INTEGER | 0/1 — la congregación tiene sala auxiliar (default 1) |
+
 ## Comandos Tauri
 
-Todos implementados y registrados en `src-tauri/src/lib.rs:26-63`:
+Todos implementados y registrados en `src-tauri/src/lib.rs:27-66`:
 
 | Comando | Descripción |
 |---------|------------|
@@ -127,6 +137,8 @@ Todos implementados y registrados en `src-tauri/src/lib.rs:26-63`:
 | `add_familia_member`, `remove_familia_member`, `list_familias_with_count` | Miembros de familia y listado con conteo |
 | `write_file_bytes` | Escritura de bytes exportados (PDF/JPEG) |
 | `get_s89_cards_for_week` | Tarjetas S-89 de una semana |
+| `get_congregation_settings` | Ajustes de congregación (hoy: sala auxiliar) |
+| `update_congregation_settings` | Persiste el ajuste de sala auxiliar y lo devuelve |
 
 > `get_bimonthly_stats` no existe: el dashboard calcula el progreso del bimestre client-side (`src/pages/DashboardPage.tsx:53-86`).
 
@@ -194,3 +206,9 @@ DB: INSERT OR UPDATE (UPSERT)
   ▼
 S140Page: llama get_assignments_for_week → renderiza tabla
 ```
+
+## Ajuste de congregación (sala auxiliar)
+
+`congregation_settings` guarda el ajuste declarado en la pantalla Configuración (`/configuracion`): hoy solo `has_auxiliary_room`, con default `1` («tiene sala auxiliar») para preservar el comportamiento histórico. Migración idempotente en `db.rs`; lógica en `src-tauri/src/congregation/settings.rs` (funciones puras sobre la conexión, con tests `#[cfg(test)]` sobre una BD SQLite temporal).
+
+El ajuste es un candado duro y no destructivo: el frontend lo combina con la marca guardada mediante el helper compartido `hasEffectiveAuxiliaryRoom` (`src/utils/auxiliaryRoom.ts`), y lo distribuye a todas las vistas con `CongregationSettingsProvider` / `useCongregationSettings` (`src/hooks/useCongregationSettings.tsx`). Ninguna vista reescribe `partes.requiere_sala_auxiliar` ni las asignaciones de `sala_auxiliar` por cambiar el ajuste.
