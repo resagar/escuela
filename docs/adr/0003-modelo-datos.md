@@ -11,3 +11,7 @@ borran (`activo = 0`) porque asignaciones e historial los referencian con FKs ac
 
 Consequences: desnormalización deliberada 1:1 de los roles del marco; cambiar su conjunto
 exige migración de columnas; el historial de participación sobrevive a la desactivación.
+
+Enmienda (2026-10-16): el recuento inicial («SQLite de 6 tablas») quedó desactualizado — la
+app usa hoy **7 tablas** con `congregation_settings` (configuración singleton de congregación;
+feature «sala auxiliar»). Las tres decisiones de este ADR siguen vigentes sin cambios.
