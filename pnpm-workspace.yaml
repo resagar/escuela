@@ -1,2 +1,6 @@
+# esbuild ships a postinstall script. pnpm 10 reads onlyBuiltDependencies;
+# pnpm 12 reads allowBuilds. Keep both keys so every pnpm version approves it.
+onlyBuiltDependencies:
+  - esbuild
 allowBuilds:
   esbuild: true
