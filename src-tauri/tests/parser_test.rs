@@ -4,7 +4,7 @@ use std::process::Command;
 #[test]
 fn test_parse_real_pdf() {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let pdf_path = format!("{}/../refs/mwb_S_202609 (1).pdf", manifest_dir);
+    let pdf_path = format!("{}/../refs/mwb_S_202611.pdf", manifest_dir);
     let result = mwb_parser::parse_mwb_pdf(&pdf_path);
     if let Err(ref e) = result {
         let output = Command::new("pdftotext")
@@ -143,51 +143,108 @@ NUESTRA VIDA CRISTIANA\n\n\
 }
 
 #[test]
-fn test_real_pdf_sep21_sections() {
-    // Week 21-27 SEP (21 de septiembre): the "¿Qué diría?" with the "Análisis
-    // con el auditorio" suffix must be mejores_maestros, while "Seamos siempre
-    // neutrales..." (after "NUESTRA VIDA CRISTIANA") must be vida_cristiana.
+fn test_real_pdf_nov_dec_sections() {
+    // Week 16-22 NOV (16 de noviembre): the "¿Qué dirías?" with the "Análisis
+    // con el auditorio" suffix must be mejores_maestros, while "No nos
+    // olvidemos de nuestros hermanos inactivos" (after "NUESTRA VIDA
+    // CRISTIANA") must be vida_cristiana.
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let pdf_path = format!("{}/../refs/mwb_S_202609 (1).pdf", manifest_dir);
+    let pdf_path = format!("{}/../refs/mwb_S_202611.pdf", manifest_dir);
     let weeks =
         mwb_parser::parse_mwb_pdf(&pdf_path).expect("real PDF should parse");
-    let sep21 = weeks
+    let nov16 = weeks
         .iter()
-        .find(|w| w.fecha_inicio == "2026-09-21")
-        .expect("week 2026-09-21 not found");
+        .find(|w| w.fecha_inicio == "2026-11-16")
+        .expect("week 2026-11-16 not found");
 
-    let que_diria = sep21
+    let que_diria = nov16
         .partes
         .iter()
-        .find(|p| p.titulo.starts_with("¿Qué diría?") && p.tipo_asignacion == "analisis_auditorio")
-        .expect("¿Qué diría? with análisis not found");
+        .find(|p| p.titulo.starts_with("¿Qué dirías?") && p.tipo_asignacion == "analisis_auditorio")
+        .expect("¿Qué dirías? with análisis not found");
     assert_eq!(
         que_diria.seccion, "mejores_maestros",
-        "¿Qué diría? must stay in mejores_maestros"
+        "¿Qué dirías? must stay in mejores_maestros"
     );
 
-    let primera_vida = sep21
+    let primera_vida = nov16
         .partes
         .iter()
-        .find(|p| p.titulo.contains("Seamos siempre neutrales"))
-        .expect("Seamos siempre neutrales not found");
+        .find(|p| p.titulo.contains("No nos olvidemos de nuestros hermanos inactivos"))
+        .expect("first vida cristiana part not found");
     assert_eq!(
         primera_vida.seccion, "vida_cristiana",
         "first vida cristiana part must be vida_cristiana"
     );
 
-    let busquemos = sep21
+    let busquemos = nov16
         .partes
         .iter()
         .find(|p| p.tipo_asignacion == "busquemos_perlas")
         .expect("busquemos perlas not found");
     assert_eq!(busquemos.seccion, "tesoros");
 
-    // Songs for the 21-sep week: 74 / 142 / 134 (intermediate must be found
+    // Songs for the 16-nov week: 28 / 90 / 75 (intermediate must be found
     // even though the "VIDA CRISTIANA" header arrives fragmented with [SONG]).
-    assert_eq!(sep21.cancion_apertura, 74, "unexpected opening song");
-    assert_eq!(sep21.cancion_intermedia, 142, "unexpected intermediate song");
-    assert_eq!(sep21.cancion_cierre, 134, "unexpected closing song");
+    assert_eq!(nov16.cancion_apertura, 28, "unexpected opening song");
+    assert_eq!(nov16.cancion_intermedia, 90, "unexpected intermediate song");
+    assert_eq!(nov16.cancion_cierre, 75, "unexpected closing song");
+}
+
+#[test]
+fn test_real_pdf_nov_dec_sbmt_titles() {
+    // The Nov-Dec 2026 guide renamed the student assignments in "Seamos
+    // mejores maestros" to the first person plural. Every one of them must be
+    // recognised instead of falling back to discurso_estudiante.
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let pdf_path = format!("{}/../refs/mwb_S_202611.pdf", manifest_dir);
+    let weeks =
+        mwb_parser::parse_mwb_pdf(&pdf_path).expect("real PDF should parse");
+
+    let expected = [
+        ("Empecemos conversaciones", "empiece_conversaciones", true),
+        ("Hagamos revisitas", "haga_revisitas", true),
+        ("Hagamos discípulos", "haga_discipulos", true),
+        (
+            "Expliquemos nuestras creencias",
+            "explique_creencias_escenificacion",
+            true,
+        ),
+    ];
+    let mut seen = std::collections::HashSet::new();
+
+    for week in &weeks {
+        for part in &week.partes {
+            for (titulo, tipo, requiere_ayudante) in expected {
+                if part.titulo.contains(titulo) {
+                    assert_eq!(
+                        part.tipo_asignacion, tipo,
+                        "{} must be classified as {}",
+                        titulo, tipo
+                    );
+                    assert_eq!(
+                        part.requiere_ayudante, requiere_ayudante,
+                        "{} must require an assistant",
+                        titulo
+                    );
+                    seen.insert(titulo);
+                }
+            }
+
+            if part.seccion == "mejores_maestros" && part.tipo_asignacion == "discurso_estudiante"
+            {
+                assert!(
+                    part.titulo.eq_ignore_ascii_case("Discurso"),
+                    "unexpected fallback to discurso_estudiante for SBMT part: {}",
+                    part.titulo
+                );
+            }
+        }
+    }
+
+    for (titulo, _, _) in expected {
+        assert!(seen.contains(titulo), "title {} not found in the guide", titulo);
+    }
 }
 
 #[test]

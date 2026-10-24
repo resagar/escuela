@@ -805,13 +805,13 @@ fn classify_part_title(title: &str) -> String {
         "busquemos_perlas".to_string()
     } else if upper.contains("LECTURA DE LA BIBLIA") {
         "lectura_biblia".to_string()
-    } else if upper.contains("EMPIECE CONVERSACIONES") {
+    } else if upper.contains("EMPECEMOS CONVERSACIONES") {
         "empiece_conversaciones".to_string()
-    } else if upper.contains("HAGA REVISITAS") {
+    } else if upper.contains("HAGAMOS REVISITAS") {
         "haga_revisitas".to_string()
-    } else if upper.contains("HAGA DISCÍPULOS") || upper.contains("HAGA DISCIPULOS") {
+    } else if upper.contains("HAGAMOS DISCÍPULOS") || upper.contains("HAGAMOS DISCIPULOS") {
         "haga_discipulos".to_string()
-    } else if upper.contains("EXPLIQUE SUS CREENCIAS") {
+    } else if upper.contains("EXPLIQUEMOS NUESTRAS CREENCIAS") {
         "explique_creencias".to_string()
     } else if upper.contains("NECESIDADES DE LA CONGREGACIÓN")
         || upper.contains("NECESIDADES DE LA CONGREGACION")
@@ -912,16 +912,16 @@ fn classify_part_type(titulo: &str, seccion: &str) -> (String, bool, bool) {
     if upper.contains("LECTURA DE LA BIBLIA") {
         return ("lectura_biblia".to_string(), true, false);
     }
-    if upper.contains("EMPIECE CONVERSACIONES") {
+    if upper.contains("EMPECEMOS CONVERSACIONES") {
         return ("empiece_conversaciones".to_string(), true, true);
     }
-    if upper.contains("HAGA REVISITAS") {
+    if upper.contains("HAGAMOS REVISITAS") {
         return ("haga_revisitas".to_string(), true, true);
     }
-    if upper.contains("HAGA DISCÍPULOS") || upper.contains("HAGA DISCIPULOS") {
+    if upper.contains("HAGAMOS DISCÍPULOS") || upper.contains("HAGAMOS DISCIPULOS") {
         return ("haga_discipulos".to_string(), true, true);
     }
-    if upper.contains("EXPLIQUE SUS CREENCIAS") {
+    if upper.contains("EXPLIQUEMOS NUESTRAS CREENCIAS") {
         if upper.contains("DISCURSO") {
             return ("explique_creencias_discurso".to_string(), true, false);
         }

@@ -119,7 +119,7 @@ Enum `TipoAsignacion` con 17 variantes, serializado en snake_case (`src-tauri/sr
 ### 3.2 Parser del mwb
 
 - **Idioma: solo español.** Meses en `SPANISH_MONTHS` (`mwb_parser/mod.rs:7-20`); keywords de secciones en español (`mod.rs:460-468`); clasificación por títulos en español (`mod.rs:802-965`). ✅ (`docs/user/master-plan.md:8`)
-- **Convención de filename `mwb_S_YYYYMM.pdf`:** el año y mes base se extraen del path con regex `(\d{4})(\d{2})` (`mod.rs:103-112`); fallback 2026-01. Archivo de prueba en `refs/mwb_S_202609 (1).pdf`. ✅
+- **Convención de filename `mwb_S_YYYYMM.pdf`:** el año y mes base se extraen del path con regex `(\d{4})(\d{2})` (`mod.rs:103-112`); fallback 2026-01. Archivo de prueba en `refs/mwb_S_202611.pdf`. ✅
 - **Detección de semanas:** lógica propia `is_week_header_line` + `parse_week_header` (`mod.rs:179-323`), más robusta que la regex única que describe el master-plan (`docs/user/master-plan.md:159`) — drift #19 (documentación, no funcional).
 - **Canciones:** regex `(?:\[SONG\]|Canción|Cántico)\s*(\d+)` (`mod.rs:511`); la intermedia es la primera canción en línea siguiente al header "VIDA CRISTIANA" (`mod.rs:531-544`), con manejo del texto fragmentado del PDF.
 - **Sección de cada parte:** partes 1–3 → `tesoros`; la numerada que inicia tras "NUESTRA VIDA CRISTIANA" → `vida_cristiana`; el resto → `mejores_maestros` (`mod.rs:715-724`).
