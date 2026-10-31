@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import type { BrotherWithHistory, Hermano } from "../types";
+import type { BrotherWithHistory, Hermano, RecentAssignmentParticipation } from "../types";
 import { ASIGNACION_LABELS } from "../types";
 import BrotherPickerModal from "./BrotherPickerModal";
 
@@ -38,7 +38,15 @@ interface BrotherSelectorProps {
 	onChange: (id: number | null) => void;
 }
 
-export default function BrotherSelector({
+export default function BrotherSelector(props: BrotherSelectorProps) {
+	const contextKey = JSON.stringify([
+		props.tipoAsignacion, props.rol, props.ambito, props.fechaReferencia,
+		props.sexoEstudiante, props.estudianteId,
+	]);
+	return <AssignmentSelector key={contextKey} {...props} />;
+}
+
+function AssignmentSelector({
 	tipoAsignacion,
 	rol,
 	ambito,
@@ -53,16 +61,15 @@ export default function BrotherSelector({
 	const [error, setError] = useState<string | null>(null);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [fallbackName, setFallbackName] = useState<string | null>(null);
+	const [recentParticipations, setRecentParticipations] = useState<RecentAssignmentParticipation[]>([]);
+	const [recentLoading, setRecentLoading] = useState(true);
+	const [recentError, setRecentError] = useState<string | null>(null);
 
 	useEffect(() => {
-		loadEligible();
-	}, [tipoAsignacion, rol, ambito, sexoEstudiante, estudianteId, fechaReferencia]);
-
-	const loadEligible = async () => {
-		try {
-			setLoading(true);
-			setError(null);
-			const data = await invoke<BrotherWithHistory[]>(
+		let cancelled = false;
+		setLoading(true);
+		setError(null);
+		invoke<BrotherWithHistory[]>(
 				"get_eligible_brothers_with_history",
 				{
 					tipoAsignacion,
@@ -73,14 +80,30 @@ export default function BrotherSelector({
 					months: HISTORY_MONTHS,
 					fechaReferencia,
 				},
-			);
-			setBrothers(data);
-		} catch (err) {
-			setError(String(err));
-		} finally {
-			setLoading(false);
-		}
-	};
+			).then((data) => {
+				if (!cancelled) setBrothers(data);
+			}).catch((err) => {
+				if (!cancelled) setError(String(err));
+			}).finally(() => {
+				if (!cancelled) setLoading(false);
+			});
+		return () => { cancelled = true; };
+	}, [tipoAsignacion, rol, ambito, sexoEstudiante, estudianteId, fechaReferencia]);
+
+	useEffect(() => {
+		if (!modalOpen) return;
+		let cancelled = false;
+		invoke<RecentAssignmentParticipation[]>("get_recent_assignment_participants", {
+			tipoAsignacion, rol, fechaReferencia,
+		}).then((data) => {
+			if (!cancelled) setRecentParticipations(data);
+		}).catch((err) => {
+			if (!cancelled) setRecentError(String(err));
+		}).finally(() => {
+			if (!cancelled) setRecentLoading(false);
+		});
+		return () => { cancelled = true; };
+	}, [modalOpen, tipoAsignacion, rol, fechaReferencia]);
 
 	useEffect(() => {
 		if (value == null) {
@@ -91,9 +114,12 @@ export default function BrotherSelector({
 			setFallbackName(null);
 			return;
 		}
+		let cancelled = false;
+		setFallbackName(null);
 		invoke<Hermano>("get_hermano", { id: value })
-			.then((h) => setFallbackName(h.nombre))
-			.catch(() => setFallbackName(null));
+			.then((h) => { if (!cancelled) setFallbackName(h.nombre); })
+			.catch(() => { if (!cancelled) setFallbackName(null); });
+		return () => { cancelled = true; };
 	}, [value, brothers]);
 
 	const selected =
@@ -111,7 +137,12 @@ export default function BrotherSelector({
 				type="button"
 				disabled={loading}
 				aria-haspopup="dialog"
-				onClick={() => setModalOpen(true)}
+				onClick={() => {
+					setRecentLoading(true);
+					setRecentError(null);
+					setRecentParticipations([]);
+					setModalOpen(true);
+				}}
 				className={`w-full border rounded px-2 py-1 text-xs text-left flex items-center justify-between gap-2 ${
 					error
 						? "border-red-300 bg-red-50 text-red-700"
@@ -128,9 +159,13 @@ export default function BrotherSelector({
 				onClose={() => setModalOpen(false)}
 				title={pickerTitle(tipoAsignacion, rol)}
 				brothers={brothers}
+				recentParticipations={recentParticipations}
+				recentLoading={recentLoading}
+				recentError={recentError}
 				loading={loading}
 				error={error}
 				onSelect={(id) => {
+					if (id !== null && (loading || error || !brothers.some((b) => b.hermano.id === id))) return;
 					onChange(id);
 					setModalOpen(false);
 				}}

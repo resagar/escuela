@@ -186,6 +186,13 @@ pub struct BrotherWithHistory {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecentAssignmentParticipation {
+    pub hermano_id: i64,
+    pub nombre: String,
+    pub participacion: AssignmentHistory,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AdjacentWeeks {
     pub anterior: Option<Semana>,
     pub siguiente: Option<Semana>,

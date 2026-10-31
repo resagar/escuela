@@ -59,6 +59,7 @@ pub fn run() {
             commands::asignaciones::get_assignments_for_week,
             commands::asignaciones::update_semana_roles,
             commands::historial::get_brother_history,
+            commands::recent_participants::get_recent_assignment_participants,
             commands::export::write_file_bytes,
             commands::s89::get_s89_cards_for_week,
             commands::congregation::get_congregation_settings,

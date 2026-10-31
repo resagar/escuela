@@ -182,6 +182,12 @@ export interface BrotherWithHistory {
 	historial: AssignmentHistory[];
 }
 
+export interface RecentAssignmentParticipation {
+	hermano_id: number;
+	nombre: string;
+	participacion: AssignmentHistory;
+}
+
 export interface S89Card {
 	parte_id: number;
 	estudiante_nombre: string;
