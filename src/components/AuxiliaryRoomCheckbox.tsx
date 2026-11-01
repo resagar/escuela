@@ -23,7 +23,7 @@ export default function AuxiliaryRoomCheckbox({
 	return (
 		<label
 			className={`flex items-center gap-1 text-xs ${
-				locked ? "cursor-not-allowed text-gray-400" : "text-gray-600"
+				locked ? "cursor-not-allowed text-ui-muted" : "text-ui-secondary"
 			}`}
 			title={
 				locked

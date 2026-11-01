@@ -35,14 +35,14 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
 				role="dialog"
 				aria-modal="true"
 				aria-label={title}
-				className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col"
+				className="bg-ui-surface rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col"
 			>
-				<div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-					<h2 className="text-sm font-bold text-gray-800">{title}</h2>
+				<div className="flex items-center justify-between px-4 py-3 border-b border-ui-divider">
+					<h2 className="text-sm font-bold text-ui-text">{title}</h2>
 					<button
 						type="button"
 						onClick={onClose}
-						className="text-gray-400 hover:text-gray-700 text-2xl leading-none px-2"
+						className="text-ui-muted hover:text-ui-text text-2xl leading-none px-2"
 						aria-label="Cerrar"
 					>
 						×

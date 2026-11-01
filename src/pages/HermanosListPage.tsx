@@ -56,7 +56,7 @@ export default function HermanosListPage() {
 	};
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	const visibleHermanos = hermanos.filter((h) =>
@@ -73,17 +73,17 @@ export default function HermanosListPage() {
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-4">
-				<h1 className="text-xl font-bold text-gray-800">Hermanos</h1>
+				<h1 className="text-xl font-bold text-ui-text">Hermanos</h1>
 				<div className="flex items-center gap-3">
-					<span className="text-xs text-gray-500">Mostrar:</span>
-					<div className="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+					<span className="text-xs text-ui-muted">Mostrar:</span>
+					<div className="flex rounded-lg border border-ui-border overflow-hidden text-sm">
 						<button
 							type="button"
 							onClick={() => setStatusFilter("active")}
 							className={`px-3 py-1.5 transition-colors ${
 								statusFilter === "active"
 									? "bg-slate-700 text-white"
-									: "bg-white text-gray-600 hover:bg-gray-100"
+									: "bg-ui-surface text-ui-secondary hover:bg-ui-subtle"
 							}`}
 						>
 							Activos
@@ -94,7 +94,7 @@ export default function HermanosListPage() {
 							className={`px-3 py-1.5 transition-colors ${
 								statusFilter === "inactive"
 									? "bg-slate-700 text-white"
-									: "bg-white text-gray-600 hover:bg-gray-100"
+									: "bg-ui-surface text-ui-secondary hover:bg-ui-subtle"
 							}`}
 						>
 							Inactivos
@@ -110,11 +110,11 @@ export default function HermanosListPage() {
 			</div>
 
 			{visibleHermanos.length === 0 ? (
-				<p className="text-gray-500 text-center py-8">{emptyMessage}</p>
+				<p className="text-ui-muted text-center py-8">{emptyMessage}</p>
 			) : (
 				<div className="overflow-x-auto">
-					<table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-						<thead className="bg-slate-100 text-left">
+					<table className="w-full text-sm border border-ui-divider rounded-lg overflow-hidden">
+						<thead className="bg-ui-subtle text-left">
 							<tr>
 								<th className="px-3 py-2 font-semibold">Nombre</th>
 								<th className="px-3 py-2 font-semibold">Sexo</th>
@@ -122,13 +122,13 @@ export default function HermanosListPage() {
 								<th className="px-3 py-2 font-semibold">Acciones</th>
 							</tr>
 						</thead>
-						<tbody className="divide-y divide-gray-200">
+						<tbody className="divide-y divide-ui-divider">
 							{visibleHermanos.map((h) => (
-								<tr key={h.id} className="hover:bg-gray-50 transition-colors">
+								<tr key={h.id} className="hover:bg-ui-canvas transition-colors">
 									<td className="px-3 py-2">
 										{h.nombre}
 										{!h.activo && (
-											<span className="ml-2 inline-block text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+											<span className="ml-2 inline-block text-xs px-2 py-0.5 rounded-full bg-ui-subtle text-ui-text">
 												Inactivo
 											</span>
 										)}
@@ -140,14 +140,14 @@ export default function HermanosListPage() {
 									<td className="px-3 py-2 flex gap-2">
 										<Link
 											to={`/hermanos/${h.id}/editar`}
-											className="text-slate-600 hover:text-slate-800 underline text-xs"
+											className="text-ui-link hover:text-ui-link underline text-xs"
 										>
 											Editar
 										</Link>
 										{h.activo ? (
 											<button
 												onClick={() => handleDeactivate(h.id, h.nombre)}
-												className="text-red-500 hover:text-red-700 underline text-xs"
+												className="text-ui-danger hover:text-ui-danger underline text-xs"
 											>
 												Desactivar
 											</button>

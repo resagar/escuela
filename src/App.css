@@ -5,11 +5,105 @@
 }
 
 :focus-visible {
-	outline: 2px solid #575a5d;
+	outline: 2px solid var(--ui-focus);
 	outline-offset: 2px;
 }
 
 select,
 input {
 	transition: border-color 0.15s ease;
+}
+
+/* Interface colors are independent of section accents and document palettes. */
+@theme inline {
+	--color-ui-canvas: var(--ui-canvas);
+	--color-ui-surface: var(--ui-surface);
+	--color-ui-subtle: var(--ui-subtle);
+	--color-ui-hover: var(--ui-hover);
+	--color-ui-disabled: var(--ui-disabled);
+	--color-ui-text: var(--ui-text);
+	--color-ui-secondary: var(--ui-secondary);
+	--color-ui-muted: var(--ui-muted);
+	--color-ui-border: var(--ui-border);
+	--color-ui-divider: var(--ui-divider);
+	--color-ui-link: var(--ui-link);
+	--color-ui-danger: var(--ui-danger);
+	--color-ui-danger-surface: var(--ui-danger-surface);
+	--color-ui-danger-border: var(--ui-danger-border);
+	--color-ui-success: var(--ui-success);
+	--color-ui-warning: var(--ui-warning);
+	--color-ui-warning-surface: var(--ui-warning-surface);
+	--color-ui-warning-border: var(--ui-warning-border);
+}
+
+:root {
+	color-scheme: light;
+	--ui-canvas: #f9fafb;
+	--ui-surface: #ffffff;
+	--ui-subtle: #f3f4f6;
+	--ui-hover: #f1f5f9;
+	--ui-disabled: #d1d5db;
+	--ui-text: #1f2937;
+	--ui-secondary: #4b5563;
+	--ui-muted: #64748b;
+	--ui-border: #d1d5db;
+	--ui-divider: #e5e7eb;
+	--ui-link: #475569;
+	--ui-focus: #575a5d;
+	--ui-danger: #b91c1c;
+	--ui-danger-surface: #fef2f2;
+	--ui-danger-border: #fca5a5;
+	--ui-success: #15803d;
+	--ui-warning: #854d0e;
+	--ui-warning-surface: #fefce8;
+	--ui-warning-border: #fde68a;
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--ui-canvas: #111827;
+	--ui-surface: #1f2937;
+	--ui-subtle: #283548;
+	--ui-hover: #334155;
+	--ui-disabled: #475569;
+	--ui-text: #f1f5f9;
+	--ui-secondary: #cbd5e1;
+	--ui-muted: #b0bed0;
+	--ui-border: #64748b;
+	--ui-divider: #475569;
+	--ui-link: #cbd5e1;
+	--ui-focus: #e2e8f0;
+	--ui-danger: #fda4af;
+	--ui-danger-surface: #3a1724;
+	--ui-danger-border: #be4560;
+	--ui-success: #86efac;
+	--ui-warning: #fde68a;
+	--ui-warning-surface: #382d15;
+	--ui-warning-border: #a16207;
+}
+
+@layer base {
+	body {
+		background-color: var(--ui-canvas);
+		color: var(--ui-text);
+	}
+	input, select, textarea {
+		background-color: var(--ui-surface);
+		color: var(--ui-text);
+		accent-color: #64748b;
+	}
+	input::placeholder, textarea::placeholder {
+		color: var(--ui-muted);
+		opacity: 1;
+	}
+}
+
+@media print {
+	:root, :root[data-theme] { color-scheme: only light; }
+	body, .app-shell {
+		background-color: #ffffff;
+		color: #000000;
+	}
+	/* Keep the pre-theme app canvas used by the existing print layout. */
+	.app-shell { background-color: var(--color-gray-50); }
 }

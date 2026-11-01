@@ -8,6 +8,8 @@ export async function downloadS140AsJpeg(
 ): Promise<void> {
 	const wrapper = document.createElement("div");
 	wrapper.style.backgroundColor = "#ffffff";
+	wrapper.style.color = "#000000";
+	wrapper.style.colorScheme = "only light";
 	wrapper.style.padding = "24px";
 	wrapper.style.display = "inline-block";
 	const clone = element.cloneNode(true) as HTMLElement;

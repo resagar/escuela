@@ -95,6 +95,15 @@ Pantalla **Configuración** (ruta `/configuracion`, entrada fija en el nav princ
 - **Comandos**: `get_congregation_settings` y `update_congregation_settings(has_auxiliary_room)`.
 - **S-89 sin cambios**: sus casillas «Sala principal / Sala auxiliar núm. 1» son parte fija del formulario oficial. Con asignaciones de `sala_auxiliar` retenidas por el ajuste off, sus tarjetas siguen marcando el ámbito guardado: la conservación es deliberada, no una regresión.
 
+## 5.2 Apariencia de la interfaz
+
+- **Tema local**: Configuración ofrece Claro y Oscuro. La preferencia se guarda en `localStorage` con la clave `escuela.theme`, separada de los ajustes de congregación y de SQLite. Sin una preferencia válida se usa Claro; no sigue automáticamente al sistema.
+- **Arranque y fallos**: la preferencia se aplica antes de montar React. Si no se puede leer el almacenamiento se usa Claro; si falla el guardado, el cambio funciona durante la sesión y se avisa que no sobrevivirá al reinicio.
+- **Alcance**: navegación, dashboard, roster, familias, semanas, importación MWB, asignaciones, modales y controles de generación. Cambiar el tema no reinicia los formularios ni modifica datos, elegibilidad o selecciones.
+- **Colores de dominio**: las bandas de sección de Asignaciones y los chips de sección de la importación conservan sus colores propios. El editor de semana mantiene su selector de sección sin agregar bandas nuevas.
+- **Formularios S**: S-140 y S-89 conservan sus paletas y geometría en previsualización, JPEG e impresión/PDF, tanto individuales como por bimestre. Solo el entorno y sus controles cambian de tema. Los colores del documento están separados de los neutrales de interfaz; la impresión fuerza un esquema claro y conserva el fondo de impresión anterior a esta funcionalidad.
+- **Límites**: el tema no modifica la decoración nativa de la ventana ni los diálogos del sistema. La verificación en navegador no sustituye la comprobación de persistencia y controles en la aplicación Tauri empaquetada.
+
 ## 6. Catálogo de tipos de asignación (`tipo_asignacion`)
 
 `discurso_no_estudiante`, `busquemos_perlas`, `lectura_biblia`, `empiece_conversaciones`, `haga_revisitas`, `haga_discipulos`, `explique_creencias_discurso`, `explique_creencias_escenificacion`, `discurso_estudiante`, `que_dirias`, `analisis_auditorio`, `necesidades_congregacion`, `estudio_biblico`, `oracion`, `cancion`, `introduccion`, `conclusion`.

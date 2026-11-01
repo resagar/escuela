@@ -158,7 +158,7 @@ export default function HermanoFormPage() {
 	) => (
 		<>
 			<label className="block">
-				<span className="text-sm font-medium text-gray-700">
+				<span className="text-sm font-medium text-ui-text">
 					Nombre completo
 				</span>
 				<input
@@ -167,30 +167,30 @@ export default function HermanoFormPage() {
 					required
 					value={data.nombre}
 					onChange={onChange}
-					className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+					className="mt-1 block w-full rounded border border-ui-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
 				/>
 			</label>
 
 			<div className="flex gap-4">
 				<label className="flex-1">
-					<span className="text-sm font-medium text-gray-700">Sexo</span>
+					<span className="text-sm font-medium text-ui-text">Sexo</span>
 					<select
 						name="sexo"
 						value={data.sexo}
 						onChange={onChange}
-						className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+						className="mt-1 block w-full rounded border border-ui-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
 					>
 						<option value="masculino">Masculino</option>
 						<option value="femenino">Femenino</option>
 					</select>
 				</label>
 				<label className="flex-1">
-					<span className="text-sm font-medium text-gray-700">Rol</span>
+					<span className="text-sm font-medium text-ui-text">Rol</span>
 					<select
 						name="rol"
 						value={data.rol}
 						onChange={onChange}
-						className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+						className="mt-1 block w-full rounded border border-ui-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
 					>
 						<option value="anciano">Anciano</option>
 						<option value="siervo_ministerial">Siervo Ministerial</option>
@@ -200,8 +200,8 @@ export default function HermanoFormPage() {
 				</label>
 			</div>
 
-			<fieldset className="border border-gray-200 rounded-lg p-3">
-				<legend className="text-sm font-medium text-gray-700 px-1">
+			<fieldset className="border border-ui-divider rounded-lg p-3">
+				<legend className="text-sm font-medium text-ui-text px-1">
 					Permisos
 				</legend>
 				<div className="flex flex-wrap gap-x-6 gap-y-2 mt-1">
@@ -211,7 +211,7 @@ export default function HermanoFormPage() {
 							name="puede_presidir"
 							checked={data.puede_presidir}
 							onChange={onChange}
-							className="rounded border-gray-300 text-slate-700 focus:ring-slate-500"
+							className="rounded border-ui-border text-ui-link focus:ring-slate-500"
 						/>
 						Presidir
 					</label>
@@ -221,7 +221,7 @@ export default function HermanoFormPage() {
 							name="puede_conducir_estudio"
 							checked={data.puede_conducir_estudio}
 							onChange={onChange}
-							className="rounded border-gray-300 text-slate-700 focus:ring-slate-500"
+							className="rounded border-ui-border text-ui-link focus:ring-slate-500"
 						/>
 						Conducir estudio
 					</label>
@@ -231,7 +231,7 @@ export default function HermanoFormPage() {
 							name="puede_ser_consejero_sala"
 							checked={data.puede_ser_consejero_sala}
 							onChange={onChange}
-							className="rounded border-gray-300 text-slate-700 focus:ring-slate-500"
+							className="rounded border-ui-border text-ui-link focus:ring-slate-500"
 						/>
 						Consejero sala
 					</label>
@@ -248,10 +248,10 @@ export default function HermanoFormPage() {
 	if (isEditing) {
 		return (
 			<div className="max-w-lg mx-auto">
-				<h1 className="text-xl font-bold text-gray-800 mb-4">Editar Hermano</h1>
+				<h1 className="text-xl font-bold text-ui-text mb-4">Editar Hermano</h1>
 				<form
 					onSubmit={handleSingleSubmit}
-					className="bg-white rounded-lg shadow p-6 space-y-4"
+					className="bg-ui-surface rounded-lg shadow p-6 space-y-4"
 				>
 					{renderSingleFields(single, handleSingleChange)}
 					<div className="flex gap-3 pt-2">
@@ -265,7 +265,7 @@ export default function HermanoFormPage() {
 						<button
 							type="button"
 							onClick={() => navigate("/hermanos")}
-							className="border border-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-100 transition-colors text-sm"
+							className="border border-ui-border text-ui-text px-6 py-2 rounded hover:bg-ui-subtle transition-colors text-sm"
 						>
 							Cancelar
 						</button>
@@ -279,17 +279,17 @@ export default function HermanoFormPage() {
 	return (
 		<div className="max-w-2xl mx-auto">
 			<div className="flex items-center justify-between mb-4">
-				<h1 className="text-xl font-bold text-gray-800">Nuevo Hermano</h1>
+				<h1 className="text-xl font-bold text-ui-text">Nuevo Hermano</h1>
 				<div className="flex items-center gap-3">
-					<span className="text-xs text-gray-500">Modo:</span>
-					<div className="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+					<span className="text-xs text-ui-muted">Modo:</span>
+					<div className="flex rounded-lg border border-ui-border overflow-hidden text-sm">
 						<button
 							type="button"
 							onClick={() => setMode("single")}
 							className={`px-3 py-1.5 transition-colors ${
 								mode === "single"
 									? "bg-slate-700 text-white"
-									: "bg-white text-gray-600 hover:bg-gray-100"
+									: "bg-ui-surface text-ui-secondary hover:bg-ui-subtle"
 							}`}
 						>
 							Individual
@@ -300,7 +300,7 @@ export default function HermanoFormPage() {
 							className={`px-3 py-1.5 transition-colors ${
 								mode === "batch"
 									? "bg-slate-700 text-white"
-									: "bg-white text-gray-600 hover:bg-gray-100"
+									: "bg-ui-surface text-ui-secondary hover:bg-ui-subtle"
 							}`}
 						>
 							Por lotes
@@ -313,7 +313,7 @@ export default function HermanoFormPage() {
 			{mode === "single" && (
 				<form
 					onSubmit={handleSingleSubmit}
-					className="bg-white rounded-lg shadow p-6 space-y-4"
+					className="bg-ui-surface rounded-lg shadow p-6 space-y-4"
 				>
 					{renderSingleFields(single, handleSingleChange)}
 					<div className="flex gap-3 pt-2">
@@ -327,7 +327,7 @@ export default function HermanoFormPage() {
 						<button
 							type="button"
 							onClick={() => navigate("/hermanos")}
-							className="border border-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-100 transition-colors text-sm"
+							className="border border-ui-border text-ui-text px-6 py-2 rounded hover:bg-ui-subtle transition-colors text-sm"
 						>
 							Cancelar
 						</button>
@@ -341,18 +341,18 @@ export default function HermanoFormPage() {
 					{batch.map((row, index) => (
 						<div
 							key={index}
-							className="bg-white rounded-lg shadow p-5 space-y-3 relative border-l-4 border-slate-400"
+							className="bg-ui-surface rounded-lg shadow p-5 space-y-3 relative border-l-4 border-slate-400"
 						>
 							{/* Row header */}
 							<div className="flex items-center justify-between">
-								<span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+								<span className="text-xs font-semibold text-ui-muted uppercase tracking-wide">
 									Hermano #{index + 1}
 								</span>
 								{batch.length > 1 && (
 									<button
 										type="button"
 										onClick={() => removeBatchRow(index)}
-										className="text-red-500 hover:text-red-700 text-xs underline"
+										className="text-ui-danger hover:text-ui-danger text-xs underline"
 									>
 										Eliminar fila
 									</button>
@@ -378,7 +378,7 @@ export default function HermanoFormPage() {
 					<button
 						type="button"
 						onClick={addBatchRow}
-						className="w-full border-2 border-dashed border-gray-300 rounded-lg py-3 text-sm text-gray-500 hover:border-slate-500 hover:text-slate-700 transition-colors"
+						className="w-full border-2 border-dashed border-ui-border rounded-lg py-3 text-sm text-ui-muted hover:border-ui-border hover:text-ui-link transition-colors"
 					>
 						+ Agregar otro hermano
 					</button>
@@ -395,7 +395,7 @@ export default function HermanoFormPage() {
 						<button
 							type="button"
 							onClick={() => navigate("/hermanos")}
-							className="border border-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-100 transition-colors text-sm"
+							className="border border-ui-border text-ui-text px-6 py-2 rounded hover:bg-ui-subtle transition-colors text-sm"
 						>
 							Cancelar
 						</button>

@@ -83,14 +83,14 @@ export default function FamiliaDetailPage() {
 	};
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	if (error) {
 		return (
 			<div className="text-center py-12">
-				<p className="text-red-500 mb-4">{error}</p>
-				<Link to="/familias" className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<p className="text-ui-danger mb-4">{error}</p>
+				<Link to="/familias" className="text-ui-link hover:text-ui-link underline text-sm">
 					Volver a familias
 				</Link>
 			</div>
@@ -103,9 +103,9 @@ export default function FamiliaDetailPage() {
 		<div>
 			<div className="flex items-center justify-between mb-4">
 				<div>
-					<h1 className="text-xl font-bold text-gray-800">{familia.nombre}</h1>
+					<h1 className="text-xl font-bold text-ui-text">{familia.nombre}</h1>
 					{familia.notas && (
-						<p className="text-sm text-gray-500 mt-1">{familia.notas}</p>
+						<p className="text-sm text-ui-muted mt-1">{familia.notas}</p>
 					)}
 				</div>
 				<div className="flex gap-2">
@@ -115,25 +115,25 @@ export default function FamiliaDetailPage() {
 					>
 						Eliminar familia
 					</button>
-					<Link to="/familias" className="text-slate-600 hover:text-slate-800 underline text-sm">
+					<Link to="/familias" className="text-ui-link hover:text-ui-link underline text-sm">
 						← Volver
 					</Link>
 				</div>
 			</div>
 
-			<div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
-				<h2 className="text-sm font-semibold text-gray-700 mb-3">
+			<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 mb-4">
+				<h2 className="text-sm font-semibold text-ui-text mb-3">
 					Miembros ({familia.miembros.length})
 				</h2>
 
 				{familia.miembros.length === 0 ? (
-					<p className="text-gray-400 italic text-sm">
+					<p className="text-ui-muted italic text-sm">
 						Esta familia no tiene miembros asignados.
 					</p>
 				) : (
 					<div className="overflow-x-auto">
-						<table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-							<thead className="bg-slate-100 text-left">
+						<table className="w-full text-sm border border-ui-divider rounded-lg overflow-hidden">
+							<thead className="bg-ui-subtle text-left">
 								<tr>
 									<th className="px-3 py-2 font-semibold">Nombre</th>
 									<th className="px-3 py-2 font-semibold">Sexo</th>
@@ -141,9 +141,9 @@ export default function FamiliaDetailPage() {
 									<th className="px-3 py-2 font-semibold">Acciones</th>
 								</tr>
 							</thead>
-							<tbody className="divide-y divide-gray-200">
+							<tbody className="divide-y divide-ui-divider">
 								{familia.miembros.map((h) => (
-									<tr key={h.id} className="hover:bg-gray-50 transition-colors">
+									<tr key={h.id} className="hover:bg-ui-canvas transition-colors">
 										<td className="px-3 py-2">{h.nombre}</td>
 										<td className="px-3 py-2 capitalize">{h.sexo}</td>
 										<td className="px-3 py-2 text-xs">
@@ -152,7 +152,7 @@ export default function FamiliaDetailPage() {
 										<td className="px-3 py-2">
 											<button
 												onClick={() => handleRemoveMember(h.id, h.nombre)}
-												className="text-red-500 hover:text-red-700 underline text-xs"
+												className="text-ui-danger hover:text-ui-danger underline text-xs"
 											>
 												Quitar
 											</button>
@@ -165,10 +165,10 @@ export default function FamiliaDetailPage() {
 				)}
 			</div>
 
-			<div className="bg-white border border-gray-200 rounded-lg p-4">
-				<h2 className="text-sm font-semibold text-gray-700 mb-3">Agregar miembro</h2>
+			<div className="bg-ui-surface border border-ui-divider rounded-lg p-4">
+				<h2 className="text-sm font-semibold text-ui-text mb-3">Agregar miembro</h2>
 				{availableHermanos.length === 0 ? (
-					<p className="text-gray-400 italic text-sm">
+					<p className="text-ui-muted italic text-sm">
 						Todos los hermanos activos ya están en esta familia.
 					</p>
 				) : (
@@ -177,7 +177,7 @@ export default function FamiliaDetailPage() {
 							<select
 								value={selectedHermanoId ?? ""}
 								onChange={(e) => setSelectedHermanoId(e.target.value ? Number(e.target.value) : null)}
-								className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+								className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 							>
 								<option value="">Seleccionar hermano...</option>
 								{availableHermanos.map((h) => (
@@ -192,7 +192,7 @@ export default function FamiliaDetailPage() {
 							disabled={adding || selectedHermanoId === null}
 							className={`px-4 py-2 rounded text-sm transition-colors ${
 								adding || selectedHermanoId === null
-									? "bg-gray-300 text-gray-500 cursor-not-allowed"
+									? "bg-ui-disabled text-ui-muted cursor-not-allowed"
 									: "bg-slate-700 text-white hover:bg-slate-800"
 							}`}
 						>

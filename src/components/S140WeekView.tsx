@@ -209,7 +209,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 					<td className={`sec-header ${secDef.css}`} colSpan={3}>
 						{secDef.label}
 					</td>
-					<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--color-border)" }}></td>
+					<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--s140-border)" }}></td>
 				</tr>,
 			);
 		}
@@ -287,7 +287,7 @@ export default function S140WeekView({ semana, partes, asignaciones, personas }:
 						<td className={`sec-header sec-vida`} colSpan={3}>
 							NUESTRA VIDA CRISTIANA
 						</td>
-						<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--color-border)" }}></td>
+						<td colSpan={2} style={{ border: "none", borderBottom: "0.5px solid var(--s140-border)" }}></td>
 					</tr>
 					<tr>
 						<td className="time">0:00</td>

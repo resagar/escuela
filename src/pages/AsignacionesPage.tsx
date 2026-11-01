@@ -150,7 +150,7 @@ export default function AsignacionesPage() {
 		if (isEstudioBiblico) {
 			return (
 				<div>
-					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Conductor:</label>
+					<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Conductor:</label>
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
@@ -159,7 +159,7 @@ export default function AsignacionesPage() {
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "conductor" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "conductor", v)}
 					/>
-					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Lector:</label>
+					<label className="text-xs font-semibold text-ui-secondary block mb-0.5 mt-1.5">Lector:</label>
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
@@ -175,7 +175,7 @@ export default function AsignacionesPage() {
 		if (isNoStudent) {
 			return (
 				<div>
-					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Presentador:</label>
+					<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Presentador:</label>
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
@@ -192,7 +192,7 @@ export default function AsignacionesPage() {
 			return (
 				<div className="grid grid-cols-2 gap-3">
 					<div>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Estudiante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -201,7 +201,7 @@ export default function AsignacionesPage() {
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
 						/>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -214,7 +214,7 @@ export default function AsignacionesPage() {
 						/>
 					</div>
 					<div>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Estudiante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -223,7 +223,7 @@ export default function AsignacionesPage() {
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
 							onChange={(v) => handlePartAssignmentChange(parte.id, "sala_auxiliar", "estudiante", v)}
 						/>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5 mt-1.5">Ayudante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -243,7 +243,7 @@ export default function AsignacionesPage() {
 			return (
 				<div className="grid grid-cols-2 gap-3">
 					<div>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Estudiante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -254,7 +254,7 @@ export default function AsignacionesPage() {
 						/>
 					</div>
 					<div>
-						<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+						<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Estudiante:</label>
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
@@ -271,7 +271,7 @@ export default function AsignacionesPage() {
 		if (needsAyudante) {
 			return (
 				<div>
-					<label className="text-xs font-semibold text-gray-600 block mb-0.5">Estudiante:</label>
+					<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Estudiante:</label>
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
@@ -280,7 +280,7 @@ export default function AsignacionesPage() {
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
 						onChange={(v) => handlePartAssignmentChange(parte.id, "auditorio_principal", "estudiante", v)}
 					/>
-					<label className="text-xs font-semibold text-gray-600 block mb-0.5 mt-1.5">Ayudante:</label>
+					<label className="text-xs font-semibold text-ui-secondary block mb-0.5 mt-1.5">Ayudante:</label>
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
@@ -297,7 +297,7 @@ export default function AsignacionesPage() {
 
 		return (
 			<div>
-				<label className="text-xs font-semibold text-gray-600 block mb-0.5">Presentador:</label>
+				<label className="text-xs font-semibold text-ui-secondary block mb-0.5">Presentador:</label>
 				<BrotherSelector
 					fechaReferencia={fechaReferencia}
 					tipoAsignacion={tipo}
@@ -328,14 +328,14 @@ export default function AsignacionesPage() {
 	}, {});
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	if (error) {
 		return (
 			<div className="text-center py-12">
-				<p className="text-red-500 mb-4">{error}</p>
-				<Link to="/semanas" className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<p className="text-ui-danger mb-4">{error}</p>
+				<Link to="/semanas" className="text-ui-link hover:text-ui-link underline text-sm">
 					Volver a semanas
 				</Link>
 			</div>
@@ -354,18 +354,18 @@ export default function AsignacionesPage() {
 		<div>
 			<div className="flex items-center justify-between mb-4">
 				<div>
-					<h1 className="text-xl font-bold text-gray-800">
+					<h1 className="text-xl font-bold text-ui-text">
 						Asignaciones — {formatDateRange(semana.fecha_inicio, semana.fecha_fin)}
 					</h1>
 					<div className="flex items-center gap-3 mt-1">
 						{semana.libro_biblico && (
-							<span className="text-sm text-gray-600">{semana.libro_biblico}</span>
+							<span className="text-sm text-ui-secondary">{semana.libro_biblico}</span>
 						)}
-						<span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+						<span className="text-xs px-2 py-0.5 rounded-full bg-ui-subtle text-ui-text">
 							{TIPO_ESPECIAL_LABELS[semana.tipo_especial] ?? semana.tipo_especial}
 						</span>
 						{savedFeedback && (
-							<span className="text-xs text-green-600 font-medium">{savedFeedback}</span>
+							<span className="text-xs text-ui-success font-medium">{savedFeedback}</span>
 						)}
 					</div>
 				</div>
@@ -377,7 +377,7 @@ export default function AsignacionesPage() {
 						const prev = adjacent?.anterior;
 						if (prev) navigate(`/semanas/${prev.id}`);
 					}}
-					className="text-slate-600 hover:text-slate-800 underline text-sm disabled:opacity-40 disabled:no-underline"
+					className="text-ui-link hover:text-ui-link underline text-sm disabled:opacity-40 disabled:no-underline"
 				>
 					← Anterior
 				</button>
@@ -388,27 +388,27 @@ export default function AsignacionesPage() {
 						const next = adjacent?.siguiente;
 						if (next) navigate(`/semanas/${next.id}`);
 					}}
-					className="text-slate-600 hover:text-slate-800 underline text-sm disabled:opacity-40 disabled:no-underline"
+					className="text-ui-link hover:text-ui-link underline text-sm disabled:opacity-40 disabled:no-underline"
 				>
 					Siguiente →
 				</button>
-				<Link to={`/semanas/${semana.id}/s140`} className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<Link to={`/semanas/${semana.id}/s140`} className="text-ui-link hover:text-ui-link underline text-sm">
 					Ver S-140
 				</Link>
-				<Link to={`/semanas/${semana.id}/s89`} className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<Link to={`/semanas/${semana.id}/s89`} className="text-ui-link hover:text-ui-link underline text-sm">
 					S-89
 				</Link>
-				<Link to="/semanas" className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<Link to="/semanas" className="text-ui-link hover:text-ui-link underline text-sm">
 					← Volver
 				</Link>
 			</div>
 			</div>
 
-			<div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-				<h2 className="text-sm font-semibold text-gray-700 mb-3">Marco General</h2>
+			<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 mb-6">
+				<h2 className="text-sm font-semibold text-ui-text mb-3">Marco General</h2>
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="block text-xs text-gray-500 mb-1">Presidente</label>
+						<label className="block text-xs text-ui-muted mb-1">Presidente</label>
 						<BrotherSelector
 							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="normal"
@@ -420,7 +420,7 @@ export default function AsignacionesPage() {
 					</div>
 					{hasAuxiliaryRoom && (
 						<div>
-							<label className="block text-xs text-gray-500 mb-1">Consejero sala auxiliar</label>
+							<label className="block text-xs text-ui-muted mb-1">Consejero sala auxiliar</label>
 							<BrotherSelector
 								fechaReferencia={semana.fecha_inicio}
 								tipoAsignacion="normal"
@@ -432,7 +432,7 @@ export default function AsignacionesPage() {
 						</div>
 					)}
 					<div>
-						<label className="block text-xs text-gray-500 mb-1">Oración apertura</label>
+						<label className="block text-xs text-ui-muted mb-1">Oración apertura</label>
 						<BrotherSelector
 							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="oracion"
@@ -443,7 +443,7 @@ export default function AsignacionesPage() {
 						/>
 					</div>
 					<div>
-						<label className="block text-xs text-gray-500 mb-1">Oración cierre</label>
+						<label className="block text-xs text-ui-muted mb-1">Oración cierre</label>
 						<BrotherSelector
 							fechaReferencia={semana.fecha_inicio}
 							tipoAsignacion="oracion"
@@ -461,23 +461,23 @@ export default function AsignacionesPage() {
 				if (!secPartes || secPartes.length === 0) return null;
 				return (
 					<div key={sec.key} className="mb-4">
-						<div className={`${SECCION_COLORS[sec.key]} text-white px-3 py-2 rounded-t text-sm font-bold`}>
+						<div className={`${SECCION_COLORS[sec.key]} ${sec.key === "mejores_maestros" ? "text-black" : "text-white"} px-3 py-2 rounded-t text-sm font-bold`}>
 							{sec.label}
 						</div>
-						<div className="border border-t-0 border-gray-200 rounded-b divide-y divide-gray-100">
+						<div className="border border-t-0 border-ui-divider rounded-b divide-y divide-ui-divider">
 							{secPartes.map((p) => (
-								<div key={p.id} className="px-3 py-3 hover:bg-gray-50 transition-colors">
+								<div key={p.id} className="px-3 py-3 hover:bg-ui-canvas transition-colors">
 									<div className="flex items-start gap-4">
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center gap-2 mb-1">
-												<span className="text-xs font-bold text-gray-500">
+												<span className="text-xs font-bold text-ui-muted">
 													{p.numero_orden}.
 												</span>
-												<span className="text-sm text-gray-800">
+												<span className="text-sm text-ui-text">
 													{p.titulo ?? ASIGNACION_LABELS[p.tipo_asignacion] ?? p.tipo_asignacion}
 												</span>
 												{p.duracion_minutos != null && (
-													<span className="text-xs text-gray-400">({p.duracion_minutos} min)</span>
+													<span className="text-xs text-ui-muted">({p.duracion_minutos} min)</span>
 												)}
 											</div>
 											{renderSelectorsForPart(p, semana.fecha_inicio)}

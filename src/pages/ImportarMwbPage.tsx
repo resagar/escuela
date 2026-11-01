@@ -156,8 +156,8 @@ export default function ImportarMwbPage() {
 	if (step === "parsing") {
 		return (
 			<div className="text-center py-16">
-				<p className="text-lg text-gray-600">Analizando PDF...</p>
-				<div className="mt-4 inline-block w-6 h-6 border-2 border-slate-700 border-t-transparent rounded-full animate-spin" />
+				<p className="text-lg text-ui-secondary">Analizando PDF...</p>
+				<div className="mt-4 inline-block w-6 h-6 border-2 border-ui-link border-t-transparent rounded-full animate-spin" />
 			</div>
 		);
 	}
@@ -165,8 +165,8 @@ export default function ImportarMwbPage() {
 	if (step === "saving") {
 		return (
 			<div className="text-center py-16">
-				<p className="text-lg text-gray-600">Guardando semanas...</p>
-				<div className="mt-4 inline-block w-6 h-6 border-2 border-slate-700 border-t-transparent rounded-full animate-spin" />
+				<p className="text-lg text-ui-secondary">Guardando semanas...</p>
+				<div className="mt-4 inline-block w-6 h-6 border-2 border-ui-link border-t-transparent rounded-full animate-spin" />
 			</div>
 		);
 	}
@@ -174,7 +174,7 @@ export default function ImportarMwbPage() {
 	if (step === "error") {
 		return (
 			<div className="text-center py-12">
-				<p className="text-red-500 bg-red-50 border border-red-200 rounded p-4 mb-4 inline-block">
+				<p className="text-ui-danger bg-ui-danger-surface border border-ui-danger-border rounded p-4 mb-4 inline-block">
 					{errorMessage}
 				</p>
 				<div className="flex gap-2 justify-center">
@@ -189,7 +189,7 @@ export default function ImportarMwbPage() {
 					</button>
 					<button
 						onClick={() => navigate("/semanas")}
-						className="bg-white text-slate-700 border border-slate-300 px-4 py-2 rounded hover:bg-slate-50 text-sm"
+						className="bg-ui-surface text-ui-link border border-ui-border px-4 py-2 rounded hover:bg-ui-hover text-sm"
 					>
 						Volver
 					</button>
@@ -208,7 +208,7 @@ export default function ImportarMwbPage() {
 		return (
 			<div>
 				<div className="flex items-center justify-between mb-4">
-					<h1 className="text-xl font-bold text-gray-800">
+					<h1 className="text-xl font-bold text-ui-text">
 						Vista previa de importación
 					</h1>
 					<button
@@ -219,13 +219,13 @@ export default function ImportarMwbPage() {
 							setEditingParts({});
 							setWeekTypeEdits({});
 						}}
-						className="text-sm text-gray-500 hover:text-gray-700 underline"
+						className="text-sm text-ui-muted hover:text-ui-text underline"
 					>
 						Seleccionar otro archivo
 					</button>
 				</div>
 
-				<div className="bg-gray-50 border border-gray-200 rounded p-3 mb-4 text-sm text-gray-600">
+				<div className="bg-ui-canvas border border-ui-divider rounded p-3 mb-4 text-sm text-ui-secondary">
 					Archivo: <span className="font-medium">{fileName}</span> —{" "}
 					{parsedWeeks.length} semanas detectadas
 				</div>
@@ -233,14 +233,14 @@ export default function ImportarMwbPage() {
 				<AuxiliaryRoomLockNotice className="mb-4" />
 
 				<div className="mb-4">
-					<label className="text-sm text-gray-600 mr-2">
+					<label className="text-sm text-ui-secondary mr-2">
 						A partir de fecha:
 					</label>
 					<input
 						type="date"
 						value={filterDate}
 						onChange={(e) => handleFilterDateChange(e.target.value)}
-						className="border border-gray-300 rounded px-2 py-1 text-sm"
+						className="border border-ui-border rounded px-2 py-1 text-sm"
 					/>
 				</div>
 
@@ -253,10 +253,10 @@ export default function ImportarMwbPage() {
 							<div
 								key={i}
 								className={`border rounded-lg overflow-hidden ${
-									isSelected ? "border-slate-300" : "border-gray-200 opacity-60"
+									isSelected ? "border-ui-border" : "border-ui-divider opacity-60"
 								}`}
 							>
-								<div className="flex items-center gap-3 px-3 py-2 bg-gray-50">
+								<div className="flex items-center gap-3 px-3 py-2 bg-ui-canvas">
 									<input
 										type="checkbox"
 										checked={isSelected}
@@ -271,7 +271,7 @@ export default function ImportarMwbPage() {
 											{week.fecha_inicio} — {week.fecha_fin}
 										</span>
 										{week.libro_biblico && (
-											<span className="text-gray-500 text-xs ml-2">
+											<span className="text-ui-muted text-xs ml-2">
 												· {week.libro_biblico}
 											</span>
 										)}
@@ -281,7 +281,7 @@ export default function ImportarMwbPage() {
 										onChange={(e) =>
 											handleWeekTypeEdit(i, e.target.value as WeekType)
 										}
-										className="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white"
+										className="border border-ui-border rounded px-1 py-0.5 text-xs bg-ui-surface"
 										title="Tipo de semana"
 									>
 										{WEEK_TYPE_OPTIONS.map((option) => (
@@ -298,9 +298,9 @@ export default function ImportarMwbPage() {
 								</div>
 
 								{expandedWeek === i && !noMeeting && (
-									<div className="p-3 border-t border-gray-200">
+									<div className="p-3 border-t border-ui-divider">
 										{effectiveType === "VisitaSuperintendente" && (
-											<div className="mb-2 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded px-2 py-1">
+											<div className="mb-2 text-xs bg-ui-warning-surface text-ui-warning border border-ui-warning-border rounded px-2 py-1">
 												Visita del superintendente: el estudio
 												bíblico se elimina y no hay clases
 												auxiliares.
@@ -312,8 +312,8 @@ export default function ImportarMwbPage() {
 											{week.cancion_intermedia} ·{" "}
 											{week.cancion_cierre}
 										</div>
-										<table className="w-full text-xs border border-gray-200 rounded overflow-hidden">
-											<thead className="bg-gray-100">
+										<table className="w-full text-xs border border-ui-divider rounded overflow-hidden">
+											<thead className="bg-ui-subtle">
 												<tr>
 													<th className="px-2 py-1 text-left">#</th>
 													<th className="px-2 py-1 text-left">Sección</th>
@@ -325,7 +325,7 @@ export default function ImportarMwbPage() {
 													</th>
 												</tr>
 											</thead>
-											<tbody className="divide-y divide-gray-200">
+											<tbody className="divide-y divide-ui-divider">
 												{week.partes.map((part, pIdx) => {
 													const editKey = `${i}-${pIdx}`;
 													const edits = editingParts[editKey] || {};
@@ -345,7 +345,7 @@ export default function ImportarMwbPage() {
 															key={pIdx}
 															className={
 																isUncertain
-																	? "bg-yellow-50"
+																	? "bg-ui-warning-surface"
 																	: ""
 															}
 														>
@@ -374,7 +374,7 @@ export default function ImportarMwbPage() {
 																			e.target.value,
 																		)
 																	}
-																	className="w-full border border-gray-300 rounded px-1 py-0.5"
+																	className="w-full border border-ui-border rounded px-1 py-0.5"
 																/>
 															</td>
 															<td className="px-2 py-1">
@@ -388,7 +388,7 @@ export default function ImportarMwbPage() {
 																			e.target.value,
 																		)
 																	}
-																	className="border border-gray-300 rounded px-1 py-0.5 max-w-[180px]"
+																	className="border border-ui-border rounded px-1 py-0.5 max-w-[180px]"
 																>
 																	{Object.entries(
 																		ASIGNACION_LABELS,
@@ -423,7 +423,7 @@ export default function ImportarMwbPage() {
 																			),
 																		)
 																	}
-																	className="w-12 border border-gray-300 rounded px-1 py-0.5 text-center"
+																	className="w-12 border border-ui-border rounded px-1 py-0.5 text-center"
 																	min={0}
 																/>
 															</td>
@@ -455,7 +455,7 @@ export default function ImportarMwbPage() {
 								)}
 
 								{expandedWeek === i && noMeeting && (
-									<div className="p-3 border-t border-gray-200 text-sm text-gray-500">
+									<div className="p-3 border-t border-ui-divider text-sm text-ui-muted">
 										Esta semana no hay reunión. No se guardará al
 										importar.
 									</div>
@@ -472,7 +472,7 @@ export default function ImportarMwbPage() {
 						className={`px-6 py-2 rounded text-sm transition-colors ${
 							importCount > 0
 								? "bg-slate-700 text-white hover:bg-slate-800"
-								: "bg-gray-200 text-gray-400 cursor-not-allowed"
+								: "bg-ui-subtle text-ui-muted cursor-not-allowed"
 						}`}
 					>
 						Importar {importCount} semana
@@ -486,10 +486,10 @@ export default function ImportarMwbPage() {
 	if (step === "file_selected") {
 		return (
 			<div className="text-center py-12">
-				<h1 className="text-xl font-bold text-gray-800 mb-2">
+				<h1 className="text-xl font-bold text-ui-text mb-2">
 					Importar guía de actividades (mwb)
 				</h1>
-				<div className="bg-gray-50 border border-gray-200 rounded p-3 mb-6 inline-block text-sm text-gray-600">
+				<div className="bg-ui-canvas border border-ui-divider rounded p-3 mb-6 inline-block text-sm text-ui-secondary">
 					Archivo seleccionado: <span className="font-medium">{fileName}</span>
 				</div>
 				<div className="flex gap-2 justify-center">
@@ -501,7 +501,7 @@ export default function ImportarMwbPage() {
 					</button>
 					<button
 						onClick={handlePickFile}
-						className="bg-white text-slate-700 border border-slate-300 px-6 py-3 rounded hover:bg-slate-50 transition-colors"
+						className="bg-ui-surface text-ui-link border border-ui-border px-6 py-3 rounded hover:bg-ui-hover transition-colors"
 					>
 						Seleccionar otro archivo
 					</button>
@@ -512,10 +512,10 @@ export default function ImportarMwbPage() {
 
 	return (
 		<div className="text-center py-12">
-			<h1 className="text-xl font-bold text-gray-800 mb-2">
+			<h1 className="text-xl font-bold text-ui-text mb-2">
 				Importar guía de actividades (mwb)
 			</h1>
-			<p className="text-gray-500 mb-6">
+			<p className="text-ui-muted mb-6">
 				Selecciona el archivo mwb_S_YYYYMM.pdf para importar el programa
 				semanal
 			</p>

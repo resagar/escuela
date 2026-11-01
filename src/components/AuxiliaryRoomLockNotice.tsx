@@ -24,14 +24,14 @@ export default function AuxiliaryRoomLockNotice({
 	return (
 		<p
 			id={AUXILIARY_ROOM_LOCK_NOTICE_ID}
-			className={`rounded border border-yellow-200 bg-yellow-50 p-2 text-xs text-yellow-800 ${className}`}
+			className={`rounded border border-ui-warning-border bg-ui-warning-surface p-2 text-xs text-ui-warning ${className}`}
 		>
 			La congregación no tiene sala auxiliar: «Sala aux.» queda deshabilitada y las
 			marcas de sala auxiliar no se usan (se conservan: si vuelves a activarla,
 			reaparecen tal cual).{" "}
 			<Link
 				to="/configuracion"
-				className="font-medium underline hover:text-yellow-900"
+				className="font-medium underline hover:text-ui-warning"
 			>
 				Revisar en Configuración
 			</Link>

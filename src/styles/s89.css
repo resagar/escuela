@@ -1,9 +1,10 @@
 /* === COLORS === */
-:root {
-  --color-text: #000000;
-  --color-slate: #575a5d;
-  --color-border-guide: #cccccc;
-  --color-white: #ffffff;
+.s89-wrapper,
+.page-shadow-wrapper {
+  --s89-text: #000000;
+  --s89-slate: #575a5d;
+  --s89-border-guide: #cccccc;
+  --s89-white: #ffffff;
 }
 
 /* === PAGE SETUP === */
@@ -14,8 +15,8 @@
   }
   body {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    color: var(--color-text);
-    background: var(--color-white);
+    color: #000000;
+    background: #ffffff;
     margin: 0;
     padding: 0;
     -webkit-print-color-adjust: exact;
@@ -43,7 +44,7 @@
 
 /* === PAGE SHEET (cada página física Letter) === */
 .s89-wrapper .page-shadow-wrapper {
-  background: var(--color-white);
+  background: var(--s89-white);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   width: 8.5in;
   height: 11in;
@@ -84,7 +85,7 @@
   right: 0;
   top: 5.5in;
   height: 1px;
-  border-top: 1px dashed var(--color-border-guide);
+  border-top: 1px dashed var(--s89-border-guide);
 }
 
 .s89-wrapper .page-shadow-wrapper::after {
@@ -94,7 +95,7 @@
   bottom: 0;
   left: 4.25in;
   width: 1px;
-  border-left: 1px dashed var(--color-border-guide);
+  border-left: 1px dashed var(--s89-border-guide);
 }
 
 @media print {
@@ -163,7 +164,7 @@
 
 .s89-wrapper .s89-card .s89-value {
   flex-grow: 1;
-  border-bottom: 1.2px dotted var(--color-text);
+  border-bottom: 1.2px dotted var(--s89-text);
   font-size: 11pt;
   font-weight: normal;
   padding-left: 8px;
@@ -198,7 +199,7 @@
 .s89-wrapper .s89-card .s89-box {
   width: 13px;
   height: 13px;
-  border: 1px solid var(--color-text);
+  border: 1px solid var(--s89-text);
   margin-right: 10px;
   display: flex;
   justify-content: center;
@@ -206,7 +207,7 @@
   font-size: 8.5pt;
   font-weight: bold;
   line-height: 1;
-  background-color: var(--color-white);
+  background-color: var(--s89-white);
   flex-shrink: 0;
 }
 
@@ -237,7 +238,7 @@
 
 .s89-wrapper .s89-card .s89-code {
   font-size: 7.5pt;
-  color: var(--color-slate);
+  color: var(--s89-slate);
   font-family: Arial, sans-serif;
 }
 
@@ -255,12 +256,20 @@
 
 /* === SCREEN ONLY INFO BAR === */
 .s89-wrapper .no-print {
-  background: #fff3cd;
-  border: 1px solid #ffc107;
+  background: var(--ui-warning-surface);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-warning-border);
   padding: 10px;
   margin-bottom: 20px;
   font-size: 10pt;
   border-radius: 4px;
   text-align: center;
   width: 8.5in;
+}
+
+/* Document colors never inherit the interface appearance. */
+.page-shadow-wrapper {
+  color: #000000;
+  background-color: #ffffff;
+  color-scheme: only light;
 }

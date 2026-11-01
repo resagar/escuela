@@ -225,17 +225,17 @@ export default function SemanaFormPage() {
 	};
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	return (
 		<div>
-			<h1 className="text-xl font-bold text-gray-800 mb-4">
+			<h1 className="text-xl font-bold text-ui-text mb-4">
 				{isEditing ? "Editar Semana" : "Nueva Semana"}
 			</h1>
 
 			{error && (
-				<p className="text-red-500 bg-red-50 border border-red-200 rounded p-3 mb-4 text-sm">
+				<p className="text-ui-danger bg-ui-danger-surface border border-ui-danger-border rounded p-3 mb-4 text-sm">
 					{error}
 				</p>
 			)}
@@ -243,7 +243,7 @@ export default function SemanaFormPage() {
 			<form onSubmit={handleSubmit} className="space-y-4 max-w-xl">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
+						<label className="block text-sm font-medium text-ui-text mb-1">
 							Fecha inicio
 						</label>
 						<input
@@ -251,11 +251,11 @@ export default function SemanaFormPage() {
 							value={fechaInicio}
 							onChange={(e) => setFechaInicio(e.target.value)}
 							required
-							className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+							className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
+						<label className="block text-sm font-medium text-ui-text mb-1">
 							Fecha fin
 						</label>
 						<input
@@ -263,13 +263,13 @@ export default function SemanaFormPage() {
 							value={fechaFin}
 							onChange={(e) => setFechaFin(e.target.value)}
 							required
-							className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+							className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 						/>
 					</div>
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1">
+					<label className="block text-sm font-medium text-ui-text mb-1">
 						Libro bíblico
 					</label>
 					<input
@@ -277,13 +277,13 @@ export default function SemanaFormPage() {
 						value={libroBiblico}
 						onChange={(e) => setLibroBiblico(e.target.value)}
 						placeholder="Ej: Isaías 41, 42"
-						className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+						className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 					/>
 				</div>
 
 				<div className="grid grid-cols-3 gap-4">
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
+						<label className="block text-sm font-medium text-ui-text mb-1">
 							Canción apertura
 						</label>
 						<input
@@ -292,11 +292,11 @@ export default function SemanaFormPage() {
 							onChange={(e) => setCancionApertura(e.target.value)}
 							min={1}
 							max={160}
-							className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+							className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
+						<label className="block text-sm font-medium text-ui-text mb-1">
 							Canción intermedia
 						</label>
 						<input
@@ -305,11 +305,11 @@ export default function SemanaFormPage() {
 							onChange={(e) => setCancionIntermedia(e.target.value)}
 							min={1}
 							max={160}
-							className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+							className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
+						<label className="block text-sm font-medium text-ui-text mb-1">
 							Canción cierre
 						</label>
 						<input
@@ -318,19 +318,19 @@ export default function SemanaFormPage() {
 							onChange={(e) => setCancionCierre(e.target.value)}
 							min={1}
 							max={160}
-							className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+							className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 						/>
 					</div>
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1">
+					<label className="block text-sm font-medium text-ui-text mb-1">
 						Tipo de semana
 					</label>
 					<select
 						value={tipoEspecial}
 						onChange={(e) => setTipoEspecial(e.target.value)}
-						className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+						className="w-full border border-ui-border rounded px-3 py-2 text-sm"
 					>
 						{Object.entries(TIPO_ESPECIAL_LABELS).map(([value, label]) => (
 							<option key={value} value={value}>
@@ -339,7 +339,7 @@ export default function SemanaFormPage() {
 						))}
 					</select>
 					{isVisita && (
-						<p className="text-xs text-amber-700 mt-1">
+						<p className="text-xs text-ui-warning mt-1">
 							Al guardar se elimina el estudio bíblico y se desactiva la
 							sala auxiliar en las partes de esta semana.
 						</p>
@@ -348,13 +348,13 @@ export default function SemanaFormPage() {
 
 				<div>
 					<div className="flex items-center justify-between mb-2">
-						<h2 className="text-sm font-semibold text-gray-700">
+						<h2 className="text-sm font-semibold text-ui-text">
 							Partes
 						</h2>
 						<button
 							type="button"
 							onClick={addParte}
-							className="text-xs text-slate-600 hover:text-slate-800 underline"
+							className="text-xs text-ui-link hover:text-ui-link underline"
 						>
 							+ Agregar parte
 						</button>
@@ -363,7 +363,7 @@ export default function SemanaFormPage() {
 					<AuxiliaryRoomLockNotice className="mb-2" />
 
 					{partes.length === 0 && (
-						<p className="text-xs text-gray-400 italic">
+						<p className="text-xs text-ui-muted italic">
 							Sin partes. Haz clic en "+ Agregar parte" para añadir.
 						</p>
 					)}
@@ -371,16 +371,16 @@ export default function SemanaFormPage() {
 					{partes.map((parte, i) => (
 						<div
 							key={i}
-							className="border border-gray-200 rounded p-3 mb-2 space-y-2"
+							className="border border-ui-divider rounded p-3 mb-2 space-y-2"
 						>
 							<div className="flex items-center justify-between">
-								<span className="text-xs font-semibold text-gray-600">
+								<span className="text-xs font-semibold text-ui-secondary">
 									Parte #{parte.numero_orden}
 								</span>
 								<button
 									type="button"
 									onClick={() => removeParte(i)}
-									className="text-xs text-red-500 hover:text-red-700 underline"
+									className="text-xs text-ui-danger hover:text-ui-danger underline"
 								>
 									Eliminar
 								</button>
@@ -388,7 +388,7 @@ export default function SemanaFormPage() {
 
 							<div className="grid grid-cols-2 gap-2">
 								<div>
-									<label className="block text-xs text-gray-500">
+									<label className="block text-xs text-ui-muted">
 										Sección
 									</label>
 									<select
@@ -396,7 +396,7 @@ export default function SemanaFormPage() {
 										onChange={(e) =>
 											updateParte(i, "seccion", e.target.value)
 										}
-										className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+										className="w-full border border-ui-border rounded px-2 py-1 text-xs"
 									>
 										{SECCIONES.map((s) => (
 											<option key={s.value} value={s.value}>
@@ -406,7 +406,7 @@ export default function SemanaFormPage() {
 									</select>
 								</div>
 								<div>
-									<label className="block text-xs text-gray-500">
+									<label className="block text-xs text-ui-muted">
 										Tipo de asignación
 									</label>
 									<select
@@ -418,7 +418,7 @@ export default function SemanaFormPage() {
 												e.target.value,
 											)
 										}
-										className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+										className="w-full border border-ui-border rounded px-2 py-1 text-xs"
 									>
 										{Object.entries(ASIGNACION_LABELS).map(
 											([key, label]) => (
@@ -432,7 +432,7 @@ export default function SemanaFormPage() {
 							</div>
 
 							<div>
-								<label className="block text-xs text-gray-500">
+								<label className="block text-xs text-ui-muted">
 									Título
 								</label>
 								<input
@@ -442,13 +442,13 @@ export default function SemanaFormPage() {
 										updateParte(i, "titulo", e.target.value)
 									}
 									placeholder="Título de la parte"
-									className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+									className="w-full border border-ui-border rounded px-2 py-1 text-xs"
 								/>
 							</div>
 
 							<div className="grid grid-cols-3 gap-2 items-end">
 								<div>
-									<label className="block text-xs text-gray-500">
+									<label className="block text-xs text-ui-muted">
 										Duración (min)
 									</label>
 									<input
@@ -462,7 +462,7 @@ export default function SemanaFormPage() {
 											)
 										}
 										min={1}
-										className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+										className="w-full border border-ui-border rounded px-2 py-1 text-xs"
 									/>
 								</div>
 								<AuxiliaryRoomCheckbox
@@ -471,7 +471,7 @@ export default function SemanaFormPage() {
 										updateParte(i, "requiere_sala_auxiliar", checked)
 									}
 								/>
-								<label className="flex items-center gap-1 text-xs text-gray-600">
+								<label className="flex items-center gap-1 text-xs text-ui-secondary">
 									<input
 										type="checkbox"
 										checked={parte.requiere_ayudante}
@@ -496,7 +496,7 @@ export default function SemanaFormPage() {
 						disabled={saving}
 						className={`px-6 py-2 rounded text-sm transition-colors ${
 							saving
-								? "bg-gray-300 text-gray-500 cursor-not-allowed"
+								? "bg-ui-disabled text-ui-muted cursor-not-allowed"
 								: "bg-slate-700 text-white hover:bg-slate-800"
 						}`}
 					>
@@ -509,7 +509,7 @@ export default function SemanaFormPage() {
 					<button
 						type="button"
 						onClick={() => navigate("/semanas")}
-						className="px-6 py-2 rounded text-sm border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+						className="px-6 py-2 rounded text-sm border border-ui-border text-ui-secondary hover:bg-ui-canvas transition-colors"
 					>
 						Cancelar
 					</button>

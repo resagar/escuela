@@ -86,7 +86,7 @@ export default function DashboardPage() {
 	};
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	const semanasNormales = stats.filter((s) => s.totalPartes > 0);
@@ -108,13 +108,13 @@ export default function DashboardPage() {
 	return (
 		<div>
 			<div className="mb-6">
-				<h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-				<p className="text-sm text-gray-500">{getBimestreLabel()}</p>
+				<h1 className="text-2xl font-bold text-ui-text">Dashboard</h1>
+				<p className="text-sm text-ui-muted">{getBimestreLabel()}</p>
 			</div>
 
 			{stats.length === 0 && hermanoCount === 0 ? (
 				<div className="text-center py-16">
-					<p className="text-gray-500 mb-4">
+					<p className="text-ui-muted mb-4">
 						Bienvenido a Escuela. Para comenzar, agrega hermanos y importa el programa.
 					</p>
 					<div className="flex gap-3 justify-center">
@@ -126,7 +126,7 @@ export default function DashboardPage() {
 						</Link>
 						<Link
 							to="/semanas/importar"
-							className="bg-white text-slate-700 border border-slate-300 px-5 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+							className="bg-ui-surface text-ui-link border border-ui-border px-5 py-2 rounded hover:bg-ui-hover transition-colors text-sm"
 						>
 							Importar mwb
 						</Link>
@@ -135,61 +135,61 @@ export default function DashboardPage() {
 			) : (
 				<>
 					<div className="grid grid-cols-4 gap-4 mb-6">
-						<div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-							<div className="text-3xl font-bold text-gray-800">{semanasNormales.length}</div>
-							<div className="text-xs text-gray-500 mt-1">Total semanas</div>
+						<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 text-center">
+							<div className="text-3xl font-bold text-ui-text">{semanasNormales.length}</div>
+							<div className="text-xs text-ui-muted mt-1">Total semanas</div>
 						</div>
-						<div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-							<div className="text-3xl font-bold text-green-600">{completas}</div>
-							<div className="text-xs text-gray-500 mt-1">Completas</div>
+						<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 text-center">
+							<div className="text-3xl font-bold text-ui-success">{completas}</div>
+							<div className="text-xs text-ui-muted mt-1">Completas</div>
 						</div>
-						<div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-							<div className="text-3xl font-bold text-yellow-600">{parciales}</div>
-							<div className="text-xs text-gray-500 mt-1">Parciales</div>
+						<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 text-center">
+							<div className="text-3xl font-bold text-ui-warning">{parciales}</div>
+							<div className="text-xs text-ui-muted mt-1">Parciales</div>
 						</div>
-						<div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-							<div className="text-3xl font-bold text-red-500">{pendientes}</div>
-							<div className="text-xs text-gray-500 mt-1">Pendientes</div>
+						<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 text-center">
+							<div className="text-3xl font-bold text-ui-danger">{pendientes}</div>
+							<div className="text-xs text-ui-muted mt-1">Pendientes</div>
 						</div>
 					</div>
 
-					<div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+					<div className="bg-ui-surface border border-ui-divider rounded-lg p-4 mb-6">
 						<div className="flex items-center justify-between mb-2">
-							<span className="text-sm font-medium text-gray-700">Progreso del bimestre</span>
-							<span className="text-sm font-semibold text-gray-800">{progressPct}%</span>
+							<span className="text-sm font-medium text-ui-text">Progreso del bimestre</span>
+							<span className="text-sm font-semibold text-ui-text">{progressPct}%</span>
 						</div>
-						<div className="w-full bg-gray-200 rounded-full h-3">
+						<div className="w-full bg-ui-subtle rounded-full h-3">
 							<div
 								className="bg-slate-700 h-3 rounded-full transition-all duration-500"
 								style={{ width: `${progressPct}%` }}
 							/>
 						</div>
-						<div className="text-xs text-gray-400 mt-1">
+						<div className="text-xs text-ui-muted mt-1">
 							{totalAsignadasAll} de {totalPartesAll} partes asignadas
 						</div>
 					</div>
 
 					{nextWeeks.length > 0 && (
 						<div className="mb-6">
-							<h2 className="text-sm font-semibold text-gray-700 mb-3">Próximas semanas</h2>
+							<h2 className="text-sm font-semibold text-ui-text mb-3">Próximas semanas</h2>
 							<div className="space-y-2">
 								{nextWeeks.map((s) => (
 									<div
 										key={s.semana.id}
-										className="bg-white border border-gray-200 rounded-lg p-3 flex items-center justify-between"
+										className="bg-ui-surface border border-ui-divider rounded-lg p-3 flex items-center justify-between"
 									>
 										<div>
-											<div className="text-sm font-medium text-gray-800">
+											<div className="text-sm font-medium text-ui-text">
 												{formatDateRange(s.semana.fecha_inicio, s.semana.fecha_fin)}
 											</div>
-											<div className="text-xs text-gray-500 mt-0.5">
+											<div className="text-xs text-ui-muted mt-0.5">
 												{s.asignadas} de {s.totalPartes} partes asignadas
 												{s.semana.libro_biblico && ` · ${s.semana.libro_biblico}`}
 											</div>
 										</div>
 										<Link
 											to={`/semanas/${s.semana.id}`}
-											className="text-slate-600 hover:text-slate-800 underline text-xs"
+											className="text-ui-link hover:text-ui-link underline text-xs"
 										>
 											Asignar →
 										</Link>
@@ -211,14 +211,14 @@ export default function DashboardPage() {
 						{semanasNormales.length > 0 && (
 							<Link
 								to="/s140/rango"
-								className="bg-white text-slate-700 border border-slate-300 px-5 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+								className="bg-ui-surface text-ui-link border border-ui-border px-5 py-2 rounded hover:bg-ui-hover transition-colors text-sm"
 							>
 								Ver S-140 del bimestre
 							</Link>
 						)}
 						<Link
 							to="/semanas"
-							className="bg-white text-slate-700 border border-slate-300 px-5 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+							className="bg-ui-surface text-ui-link border border-ui-border px-5 py-2 rounded hover:bg-ui-hover transition-colors text-sm"
 						>
 							Ver todas las semanas
 						</Link>

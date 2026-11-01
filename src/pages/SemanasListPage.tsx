@@ -46,13 +46,13 @@ export default function SemanasListPage() {
 	};
 
 	if (loading) {
-		return <p className="text-gray-500 text-center py-8">Cargando...</p>;
+		return <p className="text-ui-muted text-center py-8">Cargando...</p>;
 	}
 
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-4">
-				<h1 className="text-xl font-bold text-gray-800">Semanas</h1>
+				<h1 className="text-xl font-bold text-ui-text">Semanas</h1>
 				<div className="flex gap-2">
 					<Link
 						to="/semanas/importar"
@@ -62,7 +62,7 @@ export default function SemanasListPage() {
 					</Link>
 					<Link
 						to="/semanas/nuevo"
-						className="bg-white text-slate-700 border border-slate-300 px-4 py-2 rounded hover:bg-slate-50 transition-colors text-sm"
+						className="bg-ui-surface text-ui-link border border-ui-border px-4 py-2 rounded hover:bg-ui-hover transition-colors text-sm"
 					>
 						+ Nueva Semana
 					</Link>
@@ -70,14 +70,14 @@ export default function SemanasListPage() {
 			</div>
 
 			{error && (
-				<p className="text-red-500 bg-red-50 border border-red-200 rounded p-3 mb-4 text-sm">
+				<p className="text-ui-danger bg-ui-danger-surface border border-ui-danger-border rounded p-3 mb-4 text-sm">
 					{error}
 				</p>
 			)}
 
 			{semanas.length === 0 ? (
 				<div className="text-center py-12">
-					<p className="text-gray-500 mb-4">
+					<p className="text-ui-muted mb-4">
 						No hay semanas. ¡Importa el primer mwb!
 					</p>
 					<Link
@@ -89,8 +89,8 @@ export default function SemanasListPage() {
 				</div>
 			) : (
 				<div className="overflow-x-auto">
-					<table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-						<thead className="bg-slate-100 text-left">
+					<table className="w-full text-sm border border-ui-divider rounded-lg overflow-hidden">
+						<thead className="bg-ui-subtle text-left">
 							<tr>
 								<th className="px-3 py-2 font-semibold">Semana</th>
 								<th className="px-3 py-2 font-semibold">Libro</th>
@@ -99,30 +99,30 @@ export default function SemanasListPage() {
 								<th className="px-3 py-2 font-semibold">Acciones</th>
 							</tr>
 						</thead>
-						<tbody className="divide-y divide-gray-200">
+						<tbody className="divide-y divide-ui-divider">
 							{semanas.map((s) => (
 								<tr
 									key={s.id}
-									className="hover:bg-gray-50 transition-colors"
+									className="hover:bg-ui-canvas transition-colors"
 								>
 									<td className="px-3 py-2 whitespace-nowrap">
 										{formatDateRange(s.fecha_inicio, s.fecha_fin)}
 									</td>
-									<td className="px-3 py-2 text-gray-600 max-w-[200px] truncate">
+									<td className="px-3 py-2 text-ui-secondary max-w-[200px] truncate">
 										{s.libro_biblico ?? "-"}
 									</td>
 									<td className="px-3 py-2">
 										<span
 											className={`inline-block text-xs px-2 py-0.5 rounded-full ${
 												TIPO_ESPECIAL_COLORS[s.tipo_especial] ??
-												"bg-gray-100 text-gray-700"
+												"bg-ui-subtle text-ui-text"
 											}`}
 										>
 											{TIPO_ESPECIAL_LABELS[s.tipo_especial] ??
 												s.tipo_especial}
 										</span>
 									</td>
-									<td className="px-3 py-2 text-xs text-gray-500">
+									<td className="px-3 py-2 text-xs text-ui-muted">
 										{s.cancion_apertura && s.cancion_intermedia && s.cancion_cierre
 											? `${s.cancion_apertura} · ${s.cancion_intermedia} · ${s.cancion_cierre}`
 											: "-"}
@@ -130,19 +130,19 @@ export default function SemanasListPage() {
 									<td className="px-3 py-2 flex gap-2">
 										<Link
 											to={`/semanas/${s.id}`}
-											className="text-slate-600 hover:text-slate-800 underline text-xs"
+											className="text-ui-link hover:text-ui-link underline text-xs"
 										>
 											Ver
 										</Link>
 										<Link
 											to={`/semanas/${s.id}/editar`}
-											className="text-slate-600 hover:text-slate-800 underline text-xs"
+											className="text-ui-link hover:text-ui-link underline text-xs"
 										>
 											Editar
 										</Link>
 										<Link
 											to={`/semanas/${s.id}/s89`}
-											className="text-slate-600 hover:text-slate-800 underline text-xs"
+											className="text-ui-link hover:text-ui-link underline text-xs"
 										>
 											S-89
 										</Link>
@@ -150,7 +150,7 @@ export default function SemanasListPage() {
 											onClick={() =>
 												handleDelete(s.id, s.fecha_inicio)
 											}
-											className="text-red-500 hover:text-red-700 underline text-xs"
+											className="text-ui-danger hover:text-ui-danger underline text-xs"
 										>
 											Eliminar
 										</button>

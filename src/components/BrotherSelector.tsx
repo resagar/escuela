@@ -145,14 +145,14 @@ function AssignmentSelector({
 				}}
 				className={`w-full border rounded px-2 py-1 text-xs text-left flex items-center justify-between gap-2 ${
 					error
-						? "border-red-300 bg-red-50 text-red-700"
-						: "border-gray-300 bg-white hover:bg-gray-50 text-gray-800"
+						? "border-ui-danger-border bg-ui-danger-surface text-ui-danger"
+						: "border-ui-border bg-ui-surface hover:bg-ui-canvas text-ui-text"
 				} ${loading ? "cursor-wait" : ""}`}
 			>
 				<span className="truncate">
 					{label}
 				</span>
-				<span className="text-gray-400 text-[10px] shrink-0">▾</span>
+				<span className="text-ui-muted text-[10px] shrink-0">▾</span>
 			</button>
 			<BrotherPickerModal
 				open={modalOpen}

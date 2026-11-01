@@ -64,7 +64,7 @@ export default function S140Page() {
 	}
 
 	if (loading) return <p style={{ padding: 20 }}>Cargando...</p>;
-	if (error) return <p style={{ padding: 20, color: "red" }}>Error: {error}</p>;
+	if (error) return <p className="p-5 text-ui-danger">Error: {error}</p>;
 	if (!semana) return <p style={{ padding: 20 }}>Semana no encontrada.</p>;
 
 	const currentIndex = semanas.findIndex((s) => s.id === semana.id);
@@ -98,7 +98,7 @@ export default function S140Page() {
 					Descargar JPEG
 				</button>
 				{" | "}
-				<Link to="/s140/rango" className="text-slate-600 hover:text-slate-800 underline text-sm">
+				<Link to="/s140/rango" className="text-ui-link hover:text-ui-link underline text-sm">
 					Ver bimestre completo
 				</Link>
 			</div>
