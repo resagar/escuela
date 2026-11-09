@@ -12,9 +12,10 @@
 
 /* === PAGE SETUP === */
 @media print {
-  @page {
+  @page s140 {
     size: letter;
-    margin: 0.5in 0.5in 0.5in 0.5in;
+    /* Keep browser headers and footers outside the printed document. */
+    margin: 0;
   }
   body {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -27,7 +28,15 @@
     print-color-adjust: exact;
   }
   .s140-wrapper {
+    page: s140;
+    max-width: none !important;
+    padding: 0.5in !important;
+  }
+  .s140-range {
     padding: 0 !important;
+  }
+  .s140-wrapper .week-page {
+    padding: 0.5in;
   }
   main {
     padding: 0 !important;
@@ -233,9 +242,4 @@
   color: #000000;
   background-color: #ffffff;
   color-scheme: only light;
-}
-
-@media print {
-  /* Preserve the existing printed canvas behind the transparent weekly table. */
-  .week-container { background-color: transparent; }
 }

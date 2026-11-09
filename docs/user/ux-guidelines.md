@@ -77,7 +77,7 @@ Con el ajuste activo, el formulario es **idéntico** a la plantilla de referenci
 
 Al compilar a PDF o imprimir, se deben asegurar las siguientes reglas de CSS para que el formato quepa perfectamente en hojas tamaño carta (Letter):
 
-* **Márgenes de página**: `0.5in` en los cuatro lados.
+* **Márgenes del contenido**: `0.5in` en los cuatro lados, aplicados como padding al formulario individual o a cada `.week-page` del rango. La página de impresión `s140` usa `margin: 0` para evitar los encabezados y pies automáticos del navegador (fecha, hora, URL y número de página).
 * **Saltos de página**: Cada semana se encapsula en un contenedor con `page-break-inside: avoid;`.
 * **Separadores**: el `hr` punteado entre semanas es solo de pantalla; al imprimir un rango se fuerza **una semana por página** (`page-break-after: always` en `.week-page`, `src/styles/s140.css:190-198`; commit `d35a1a4`).
 * **Forzar colores de fondo**: Asegurar la propiedad `print-color-adjust: exact;` y `-webkit-print-color-adjust: exact;` en el body para que los navegadores impriman los fondos de color de las secciones.

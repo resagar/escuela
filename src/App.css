@@ -104,6 +104,4 @@ input {
 		background-color: #ffffff;
 		color: #000000;
 	}
-	/* Keep the pre-theme app canvas used by the existing print layout. */
-	.app-shell { background-color: var(--color-gray-50); }
 }
