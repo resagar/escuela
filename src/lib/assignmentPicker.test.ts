@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { BrotherWithHistory, RecentAssignmentParticipation } from "../types";
-import { buildPickerSections } from "./assignmentPicker";
+import { buildPickerSections, recentHistoryPeriod } from "./assignmentPicker";
 
 function eligible(id: number, nombre: string): BrotherWithHistory {
 	return {
@@ -57,5 +57,25 @@ describe("buildPickerSections", () => {
 	it("keeps the full eligible list available when history is empty or unavailable", () => {
 		const brothers = [eligible(1, "Ana"), eligible(2, "Luis")];
 		expect(buildPickerSections(brothers, [])).toEqual({ recent: [], remaining: brothers });
+	});
+});
+
+describe("recentHistoryPeriod", () => {
+	it("uses the previous calendar bimester through the day before the selected week", () => {
+		for (const [reference, expected] of [
+			["2026-11-23", "del 01/09/2026 al 22/11/2026"],
+			["2026-12-28", "del 01/09/2026 al 27/12/2026"],
+			["2026-01-05", "del 01/11/2025 al 04/01/2026"],
+			["2026-02-02", "del 01/11/2025 al 01/02/2026"],
+			["2024-03-01", "del 01/01/2024 al 29/02/2024"],
+		]) {
+			expect(recentHistoryPeriod("lectura_biblia", "tesoros", reference)).toBe(expected);
+			expect(recentHistoryPeriod("analisis_auditorio", "mejores_maestros", reference)).toBe(expected);
+		}
+	});
+	it("keeps other sections and framework roles at three weeks", () => {
+		expect(recentHistoryPeriod("analisis_auditorio", "vida_cristiana", "2026-11-23")).toBe("en las 3 semanas anteriores");
+		expect(recentHistoryPeriod("estudio_biblico", "vida_cristiana", "2026-11-23")).toBe("en las 3 semanas anteriores");
+		expect(recentHistoryPeriod("normal", undefined, "2026-11-23")).toBe("en las 3 semanas anteriores");
 	});
 });

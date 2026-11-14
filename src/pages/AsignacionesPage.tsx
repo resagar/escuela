@@ -154,6 +154,7 @@ export default function AsignacionesPage() {
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
+						seccion={parte.seccion}
 						rol="conductor"
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "conductor" })}
@@ -163,6 +164,7 @@ export default function AsignacionesPage() {
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
+						seccion={parte.seccion}
 						rol="lector"
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "lector" })}
@@ -179,6 +181,7 @@ export default function AsignacionesPage() {
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
+						seccion={parte.seccion}
 						rol="estudiante"
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
@@ -196,6 +199,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="estudiante"
 							ambito="auditorio_principal"
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
@@ -205,6 +209,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="ayudante"
 							ambito="auditorio_principal"
 							sexoEstudiante={getAssignmentSexo(parte.id, "auditorio_principal")}
@@ -218,6 +223,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="estudiante"
 							ambito="sala_auxiliar"
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
@@ -227,6 +233,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="ayudante"
 							ambito="sala_auxiliar"
 							sexoEstudiante={getAssignmentSexo(parte.id, "sala_auxiliar")}
@@ -247,6 +254,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="estudiante"
 							ambito="auditorio_principal"
 							value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
@@ -258,6 +266,7 @@ export default function AsignacionesPage() {
 						<BrotherSelector
 							fechaReferencia={fechaReferencia}
 							tipoAsignacion={tipo}
+							seccion={parte.seccion}
 							rol="estudiante"
 							ambito="sala_auxiliar"
 							value={getAssignment({ parte_id: parte.id, ambito: "sala_auxiliar", rol: "estudiante" })}
@@ -275,6 +284,7 @@ export default function AsignacionesPage() {
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
+						seccion={parte.seccion}
 						rol="estudiante"
 						ambito="auditorio_principal"
 						value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}
@@ -284,6 +294,7 @@ export default function AsignacionesPage() {
 					<BrotherSelector
 						fechaReferencia={fechaReferencia}
 						tipoAsignacion={tipo}
+						seccion={parte.seccion}
 						rol="ayudante"
 						ambito="auditorio_principal"
 						sexoEstudiante={getAssignmentSexo(parte.id, "auditorio_principal")}
@@ -301,6 +312,7 @@ export default function AsignacionesPage() {
 				<BrotherSelector
 					fechaReferencia={fechaReferencia}
 					tipoAsignacion={tipo}
+					seccion={parte.seccion}
 					rol="estudiante"
 					ambito="auditorio_principal"
 					value={getAssignment({ parte_id: parte.id, ambito: "auditorio_principal", rol: "estudiante" })}

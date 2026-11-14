@@ -39,3 +39,12 @@ export function buildPickerSections(
 	const remaining = brothers.filter(({ hermano }) => !byId.has(hermano.id) && matches(hermano.nombre));
 	return { recent, remaining };
 }
+
+export function recentHistoryPeriod(type: string, section: string | undefined, reference: string): string {
+	if (type !== "lectura_biblia" && section !== "mejores_maestros") return "en las 3 semanas anteriores";
+	const [year, month, day] = reference.split("-").map(Number);
+	const start = new Date(Date.UTC(year, month - 1 - ((month - 1) % 2) - 2, 1));
+	const end = new Date(Date.UTC(year, month - 1, day - 1));
+	const format = (date: Date) => `${String(date.getUTCDate()).padStart(2, "0")}/${String(date.getUTCMonth() + 1).padStart(2, "0")}/${date.getUTCFullYear()}`;
+	return `del ${format(start)} al ${format(end)}`;
+}

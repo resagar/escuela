@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import type { BrotherWithHistory, Hermano, RecentAssignmentParticipation } from "../types";
 import { ASIGNACION_LABELS } from "../types";
+import { recentHistoryPeriod } from "../lib/assignmentPicker";
 import BrotherPickerModal from "./BrotherPickerModal";
 
 const ROL_ABBREV: Record<string, string> = {
@@ -28,6 +29,7 @@ function pickerTitle(tipoAsignacion: string, rol: string): string {
 }
 
 interface BrotherSelectorProps {
+	seccion?: string;
 	tipoAsignacion: string;
 	rol: string;
 	ambito: string;
@@ -40,13 +42,14 @@ interface BrotherSelectorProps {
 
 export default function BrotherSelector(props: BrotherSelectorProps) {
 	const contextKey = JSON.stringify([
-		props.tipoAsignacion, props.rol, props.ambito, props.fechaReferencia,
+		props.tipoAsignacion, props.seccion, props.rol, props.ambito, props.fechaReferencia,
 		props.sexoEstudiante, props.estudianteId,
 	]);
 	return <AssignmentSelector key={contextKey} {...props} />;
 }
 
 function AssignmentSelector({
+	seccion,
 	tipoAsignacion,
 	rol,
 	ambito,
@@ -94,7 +97,7 @@ function AssignmentSelector({
 		if (!modalOpen) return;
 		let cancelled = false;
 		invoke<RecentAssignmentParticipation[]>("get_recent_assignment_participants", {
-			tipoAsignacion, rol, fechaReferencia,
+			tipoAsignacion, rol, fechaReferencia, seccion: seccion ?? null,
 		}).then((data) => {
 			if (!cancelled) setRecentParticipations(data);
 		}).catch((err) => {
@@ -103,7 +106,7 @@ function AssignmentSelector({
 			if (!cancelled) setRecentLoading(false);
 		});
 		return () => { cancelled = true; };
-	}, [modalOpen, tipoAsignacion, rol, fechaReferencia]);
+	}, [modalOpen, tipoAsignacion, rol, fechaReferencia, seccion]);
 
 	useEffect(() => {
 		if (value == null) {
@@ -160,6 +163,7 @@ function AssignmentSelector({
 				title={pickerTitle(tipoAsignacion, rol)}
 				brothers={brothers}
 				recentParticipations={recentParticipations}
+				recentPeriod={recentHistoryPeriod(tipoAsignacion, seccion, fechaReferencia)}
 				recentLoading={recentLoading}
 				recentError={recentError}
 				loading={loading}

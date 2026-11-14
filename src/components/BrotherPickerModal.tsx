@@ -10,6 +10,7 @@ interface BrotherPickerModalProps {
 	title: string;
 	brothers: BrotherWithHistory[];
 	recentParticipations: RecentAssignmentParticipation[];
+	recentPeriod: string;
 	recentLoading: boolean;
 	recentError: string | null;
 	loading: boolean;
@@ -18,7 +19,7 @@ interface BrotherPickerModalProps {
 }
 
 export default function BrotherPickerModal({
-	open, onClose, title, brothers, recentParticipations, recentLoading, recentError,
+	open, onClose, title, brothers, recentParticipations, recentPeriod, recentLoading, recentError,
 	loading, error, onSelect,
 }: BrotherPickerModalProps) {
 	const [query, setQuery] = useState("");
@@ -37,11 +38,11 @@ export default function BrotherPickerModal({
 					className="w-full border border-ui-border rounded px-2 py-1 text-sm" />
 			</div>
 			<section aria-label="Participantes recientes" className="mb-4">
-				<h3 className="text-sm font-semibold text-ui-text">Participaron en esta asignación en las 3 semanas anteriores</h3>
+				<h3 className="text-sm font-semibold text-ui-text">Participaron en esta asignación {recentPeriod}</h3>
 				<p className="text-xs text-ui-secondary mt-1 mb-2">Solo información: participar recientemente no impide volver a ser asignado.</p>
 				{recentLoading ? <p role="status" className="text-sm text-ui-secondary py-2">Cargando participaciones recientes...</p>
 					: recentError ? <p role="alert" className="text-sm text-ui-danger py-2">No se pudieron cargar las participaciones recientes. Cierre y vuelva a abrir el selector para reintentar.</p>
-						: recent.length === 0 ? <p className="text-sm text-ui-secondary py-2">{searching ? "Sin participantes recientes que coincidan con la búsqueda." : "No hay participaciones registradas para esta asignación en las 3 semanas anteriores."}</p>
+						: recent.length === 0 ? <p className="text-sm text-ui-secondary py-2">{searching ? "Sin participantes recientes que coincidan con la búsqueda." : `No hay participaciones registradas para esta asignación ${recentPeriod}.`}</p>
 							: <div className="space-y-2">{recent.map((participant) => (
 								<BrotherPickerRow key={participant.hermano_id} name={participant.nombre} history={participant.historial} recent
 									fullHistory={participant.eligibleBrother?.historial}

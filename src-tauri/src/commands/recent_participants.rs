@@ -8,6 +8,7 @@ pub fn fetch_recent_participants(
     tipo_asignacion: &str,
     rol: &str,
     fecha_referencia: &str,
+    seccion: Option<&str>,
 ) -> Result<Vec<RecentAssignmentParticipation>, String> {
     let valid_date: bool = conn
         .query_row(
@@ -24,7 +25,12 @@ pub fn fetch_recent_participants(
             "
         WITH recent_weeks AS (
             SELECT * FROM semanas
-            WHERE fecha_inicio >= date(?2, '-21 days') AND fecha_inicio < ?2
+            WHERE fecha_inicio >= CASE
+                WHEN ?1 = 'lectura_biblia' OR ?4 = 'mejores_maestros' THEN
+                    date(?2, 'start of month', printf('-%d months',
+                        2 + (CAST(strftime('%m', ?2) AS INTEGER) - 1) % 2))
+                ELSE date(?2, '-21 days')
+            END AND fecha_inicio < ?2
         ), framework_roles(slot, title, role, room) AS (
             VALUES
                 ('president', 'Presidente de la reunión', 'presidente', 'auditorio_principal'),
@@ -61,20 +67,23 @@ pub fn fetch_recent_participants(
         )
         .map_err(|e| e.to_string())?;
     let rows = stmt
-        .query_map(params![tipo_asignacion, fecha_referencia, rol], |row| {
-            Ok(RecentAssignmentParticipation {
-                hermano_id: row.get(0)?,
-                nombre: row.get(1)?,
-                participacion: AssignmentHistory {
-                    semana_fecha_inicio: row.get(2)?,
-                    semana_fecha_fin: row.get(3)?,
-                    parte_titulo: row.get(4)?,
-                    parte_tipo: row.get(5)?,
-                    ambito: row.get(6)?,
-                    rol: row.get(7)?,
-                },
-            })
-        })
+        .query_map(
+            params![tipo_asignacion, fecha_referencia, rol, seccion],
+            |row| {
+                Ok(RecentAssignmentParticipation {
+                    hermano_id: row.get(0)?,
+                    nombre: row.get(1)?,
+                    participacion: AssignmentHistory {
+                        semana_fecha_inicio: row.get(2)?,
+                        semana_fecha_fin: row.get(3)?,
+                        parte_titulo: row.get(4)?,
+                        parte_tipo: row.get(5)?,
+                        ambito: row.get(6)?,
+                        rol: row.get(7)?,
+                    },
+                })
+            },
+        )
         .map_err(|e| e.to_string())?;
     rows.collect::<Result<Vec<_>, _>>()
         .map_err(|e| e.to_string())
@@ -86,9 +95,16 @@ pub fn get_recent_assignment_participants(
     tipo_asignacion: String,
     rol: String,
     fecha_referencia: String,
+    seccion: Option<String>,
 ) -> Result<Vec<RecentAssignmentParticipation>, String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
-    fetch_recent_participants(&conn, &tipo_asignacion, &rol, &fecha_referencia)
+    fetch_recent_participants(
+        &conn,
+        &tipo_asignacion,
+        &rol,
+        &fecha_referencia,
+        seccion.as_deref(),
+    )
 }
 
 #[cfg(test)]
@@ -138,7 +154,8 @@ mod tests {
     fn includes_all_recent_roles_and_inactive_brothers_without_extending_missing_weeks() {
         let conn = fixture();
         let result =
-            fetch_recent_participants(&conn, "haga_revisitas", "estudiante", "2026-10-26").unwrap();
+            fetch_recent_participants(&conn, "haga_revisitas", "estudiante", "2026-10-26", None)
+                .unwrap();
         let events: Vec<_> = result
             .iter()
             .map(|r| {
@@ -175,7 +192,7 @@ mod tests {
         )
         .unwrap();
         let president =
-            fetch_recent_participants(&conn, "normal", "presidente", "2026-10-26").unwrap();
+            fetch_recent_participants(&conn, "normal", "presidente", "2026-10-26", None).unwrap();
         assert_eq!(
             president
                 .iter()
@@ -184,11 +201,13 @@ mod tests {
             vec![(1, "presidente")]
         );
         let counselor =
-            fetch_recent_participants(&conn, "normal", "consejero_sala", "2026-10-26").unwrap();
+            fetch_recent_participants(&conn, "normal", "consejero_sala", "2026-10-26", None)
+                .unwrap();
         assert_eq!(counselor.len(), 1);
         assert_eq!(counselor[0].hermano_id, 2);
         assert_eq!(counselor[0].participacion.ambito, "sala_auxiliar");
-        let prayers = fetch_recent_participants(&conn, "oracion", "oracion", "2026-10-26").unwrap();
+        let prayers =
+            fetch_recent_participants(&conn, "oracion", "oracion", "2026-10-26", None).unwrap();
         let mut titles: Vec<_> = prayers
             .iter()
             .map(|r| r.participacion.parte_titulo.as_str())
@@ -211,13 +230,15 @@ mod tests {
     fn anchors_history_to_the_selected_week_instead_of_today() {
         let conn = fixture();
         let past =
-            fetch_recent_participants(&conn, "haga_revisitas", "ayudante", "2026-10-12").unwrap();
+            fetch_recent_participants(&conn, "haga_revisitas", "ayudante", "2026-10-12", None)
+                .unwrap();
         assert_eq!(past.len(), 3);
         assert!(past
             .iter()
             .all(|r| r.participacion.semana_fecha_inicio.as_str() < "2026-10-12"));
         let future =
-            fetch_recent_participants(&conn, "haga_revisitas", "estudiante", "2026-11-09").unwrap();
+            fetch_recent_participants(&conn, "haga_revisitas", "estudiante", "2026-11-09", None)
+                .unwrap();
         assert_eq!(
             future
                 .iter()
@@ -226,7 +247,7 @@ mod tests {
             vec!["2026-11-02", "2026-10-26", "2026-10-19"]
         );
         assert!(
-            fetch_recent_participants(&conn, "missing_type", "estudiante", "2026-10-26")
+            fetch_recent_participants(&conn, "missing_type", "estudiante", "2026-10-26", None)
                 .unwrap()
                 .is_empty()
         );
@@ -248,7 +269,8 @@ mod tests {
         .unwrap();
         for role in ["conductor", "lector"] {
             let result =
-                fetch_recent_participants(&conn, "estudio_biblico", role, "2026-10-26").unwrap();
+                fetch_recent_participants(&conn, "estudio_biblico", role, "2026-10-26", None)
+                    .unwrap();
             assert_eq!(
                 result
                     .iter()
@@ -275,15 +297,97 @@ mod tests {
     }
 
     #[test]
+    fn extends_student_history_from_the_previous_bimester_including_helpers() {
+        for (reference, start, before_start) in [
+            ("2026-11-23", "2026-09-01", "2026-08-31"),
+            ("2026-12-28", "2026-09-01", "2026-08-31"),
+            ("2026-01-05", "2025-11-01", "2025-10-31"),
+            ("2026-02-02", "2025-11-01", "2025-10-31"),
+            ("2024-03-04", "2024-01-01", "2023-12-31"),
+        ] {
+            for (assignment_type, section) in [
+                ("lectura_biblia", "tesoros"),
+                ("haga_revisitas", "mejores_maestros"),
+                ("analisis_auditorio", "mejores_maestros"),
+            ] {
+                let conn = fixture();
+                conn.execute("DELETE FROM asignaciones WHERE parte_id = 6", [])
+                    .unwrap();
+                conn.execute(
+                    "UPDATE semanas SET fecha_inicio = ?1 WHERE id = 1",
+                    [before_start],
+                )
+                .unwrap();
+                conn.execute("UPDATE semanas SET fecha_inicio = ?1 WHERE id = 2", [start])
+                    .unwrap();
+                conn.execute(
+                    "UPDATE semanas SET fecha_inicio = date(?1, '-1 day') WHERE id = 3",
+                    [reference],
+                )
+                .unwrap();
+                conn.execute(
+                    "UPDATE semanas SET fecha_inicio = ?1 WHERE id = 4",
+                    [reference],
+                )
+                .unwrap();
+                conn.execute(
+                    "UPDATE semanas SET fecha_inicio = date(?1, '+7 days') WHERE id = 5",
+                    [reference],
+                )
+                .unwrap();
+                conn.execute(
+                    "UPDATE partes SET tipo_asignacion = ?1 WHERE id <= 5",
+                    [assignment_type],
+                )
+                .unwrap();
+                for role in ["estudiante", "ayudante"] {
+                    let result = fetch_recent_participants(
+                        &conn,
+                        assignment_type,
+                        role,
+                        reference,
+                        Some(section),
+                    )
+                    .unwrap();
+                    assert_eq!(result.len(), 3, "{assignment_type}: {reference}");
+                    assert_eq!(
+                        result
+                            .iter()
+                            .map(|r| r.participacion.rol.as_str())
+                            .collect::<Vec<_>>(),
+                        vec!["ayudante", "estudiante", "ayudante"]
+                    );
+                    assert!(result
+                        .iter()
+                        .all(|r| r.participacion.semana_fecha_inicio.as_str() >= start
+                            && r.participacion.semana_fecha_inicio.as_str() < reference));
+                }
+                if assignment_type == "analisis_auditorio" {
+                    let result = fetch_recent_participants(
+                        &conn,
+                        assignment_type,
+                        "estudiante",
+                        reference,
+                        Some("vida_cristiana"),
+                    )
+                    .unwrap();
+                    assert_eq!(result.len(), 1);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn rejects_invalid_reference_dates_without_interpreting_sql_input() {
         let conn = fixture();
         for date in ["not-a-date", "2026-02-30", "2026-10-26' OR 1=1 --"] {
             assert!(
-                fetch_recent_participants(&conn, "haga_revisitas", "estudiante", date).is_err()
+                fetch_recent_participants(&conn, "haga_revisitas", "estudiante", date, None)
+                    .is_err()
             );
         }
         assert!(
-            fetch_recent_participants(&conn, "' OR 1=1 --", "estudiante", "2026-10-26")
+            fetch_recent_participants(&conn, "' OR 1=1 --", "estudiante", "2026-10-26", None)
                 .unwrap()
                 .is_empty()
         );
