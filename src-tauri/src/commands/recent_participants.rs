@@ -40,6 +40,7 @@ pub fn fetch_recent_participants(
             JOIN partes p ON p.semana_id = s.id
             JOIN asignaciones a ON a.parte_id = p.id
             WHERE p.tipo_asignacion = ?1
+              AND (p.tipo_asignacion <> 'estudio_biblico' OR a.rol = ?3)
               AND ?3 NOT IN ('presidente', 'consejero_sala', 'oracion')
             UNION ALL
             SELECT CASE f.slot
@@ -232,14 +233,16 @@ mod tests {
     }
 
     #[test]
-    fn includes_conductor_and_lector_for_the_same_type() {
+    fn filters_bible_study_history_by_role() {
         let conn = fixture();
         conn.execute_batch(
             "
-            INSERT INTO partes VALUES (7, 3, 'estudio_biblico', NULL);
+            INSERT INTO partes VALUES (7, 3, 'estudio_biblico', NULL),
+                (8, 2, 'estudio_biblico', NULL);
             INSERT INTO asignaciones VALUES
                 (7, 1, 'auditorio_principal', 'conductor'),
-                (7, 3, 'auditorio_principal', 'lector');
+                (7, 3, 'auditorio_principal', 'lector'),
+                (8, 1, 'auditorio_principal', 'lector');
         ",
         )
         .unwrap();
@@ -251,7 +254,19 @@ mod tests {
                     .iter()
                     .map(|r| r.participacion.rol.as_str())
                     .collect::<Vec<_>>(),
-                vec!["conductor", "lector"]
+                if role == "conductor" {
+                    vec!["conductor"]
+                } else {
+                    vec!["lector", "lector"]
+                }
+            );
+            assert_eq!(
+                result.iter().map(|r| r.hermano_id).collect::<Vec<_>>(),
+                if role == "conductor" {
+                    vec![1]
+                } else {
+                    vec![3, 1]
+                }
             );
             assert!(result
                 .iter()
