@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Esquema SQLite — Escuela</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F2F3F0;
+    --panel:#FCFCFA;
+    --ink:#232528;
+    --muted:#6D7175;
+    --line:#DEDFD9;
+    --line-strong:#C7C9C2;
+    --slate:#575A5D;
+    --ochre:#BE8900;
+    --wine:#7E0024;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+    --sans:'Archivo','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:var(--sans); font-size:13px; color:var(--ink); background:var(--paper);
+    display:flex; flex-direction:column; height:100vh; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit}
+  ::selection{background:#DCE2D9}
+
+  .topbar{
+    position:relative; display:flex; align-items:center; justify-content:space-between;
+    gap:18px; padding:13px 18px; background:var(--panel);
+    border-bottom:1px solid var(--line); z-index:20; flex:0 0 auto;
+  }
+  .topbar::before{
+    content:''; position:absolute; inset:0 0 auto 0; height:3px;
+    background:linear-gradient(90deg,var(--slate) 0 33.3%,var(--ochre) 33.3% 66.6%,var(--wine) 66.6% 100%);
+  }
+  .brand{display:flex; flex-direction:column; gap:2px; min-width:0}
+  .brand h1{margin:0; font-size:15px; font-weight:600; letter-spacing:-.012em}
+  .brand p{margin:0; font-size:11.5px; color:var(--muted)}
+  .actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+
+  .btn{
+    font-size:12px; font-weight:500; padding:7px 12px; border-radius:3px;
+    border:1px solid var(--line-strong); background:#fff; color:var(--ink); cursor:pointer;
+    transition:background .12s,border-color .12s;
+  }
+  .btn:hover{background:#F4F5F1; border-color:#B6B8B0}
+  .btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .btn:disabled{opacity:.4; cursor:not-allowed}
+  .btn.primary{background:var(--ink); border-color:var(--ink); color:#fff}
+  .btn.primary:hover{background:#393C40}
+  .btn.primary:disabled{opacity:.34; cursor:not-allowed; background:var(--ink)}
+  .btn.ghost{border-color:transparent; background:transparent; color:var(--muted)}
+  .btn.ghost:hover{background:#EFEFEA; color:var(--ink)}
+  .btn.danger{color:var(--wine); border-color:#E2C8CF; background:#fff}
+  .btn.danger:hover{background:#FBF0F2; border-color:#D3A9B4}
+  .btn.sm{padding:5px 9px; font-size:11.5px}
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--muted);
+    padding:6px 10px; border:1px solid var(--line); border-radius:3px; background:#F7F7F4;
+  }
+  .chip b{font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+  .chip .dot{width:6px; height:6px; border-radius:50%; background:#B9BBB3}
+  .chip.dirty{border-color:#E0C98A; background:#FBF4E2; color:#7A5A05}
+  .chip.dirty .dot{background:var(--ochre)}
+
+  .workspace{flex:1; display:flex; min-height:0}
+
+  .rail{
+    width:226px; flex:0 0 226px; border-right:1px solid var(--line);
+    background:var(--panel); overflow:auto; padding:12px 0 28px;
+  }
+  .rail-inner{display:flex; flex-direction:column}
+  .rail-group{padding:0 0 6px}
+  .rail-group + .rail-group{margin-top:8px}
+  .rail-group-title{
+    margin:0; padding:6px 16px; font-size:10.5px; font-weight:600;
+    color:var(--muted); letter-spacing:.02em;
+  }
+  .rail-item{
+    display:flex; align-items:center; gap:8px; width:100%;
+    padding:6px 16px; background:none; border:0; border-left:2px solid transparent;
+    font:inherit; text-align:left; cursor:pointer; color:var(--ink);
+  }
+  .rail-item:hover{background:#F1F2ED}
+  .rail-item[aria-current="true"]{background:#ECEEEA; border-left-color:var(--dc)}
+  .rail-item .ind{width:7px; height:7px; flex:0 0 7px; border-radius:1px; background:var(--dc)}
+  .rail-item .nm{font-family:var(--mono); font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .rail-item .ct{margin-left:auto; font-size:10.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+
+  .canvas-wrap{position:relative; flex:1; min-width:0; display:flex; flex-direction:column; background:var(--paper)}
+  .canvas-bar{
+    display:flex; align-items:center; gap:10px; padding:7px 14px;
+    border-bottom:1px solid var(--line); background:#FAFAF7; flex:0 0 auto;
+  }
+  .zoom{display:flex; align-items:center; gap:2px}
+  .zoom button{
+    width:24px; height:24px; display:grid; place-items:center; padding:0;
+    border:1px solid var(--line-strong); background:#fff; border-radius:3px;
+    cursor:pointer; font-size:14px; line-height:1; color:#4A4E52;
+  }
+  .zoom button:hover{background:#F3F4EF}
+  .zoom button:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .zoom .val{
+    min-width:46px; text-align:center; font-family:var(--mono); font-size:10.5px;
+    color:var(--muted); font-variant-numeric:tabular-nums;
+  }
+  .canvas-hint{margin-left:auto; font-size:11px; color:var(--muted); text-align:right}
+
+  .viewport{
+    flex:1; overflow:auto; position:relative; min-height:0;
+    background-image:radial-gradient(circle at 1px 1px,#D3D5CE 1px,transparent 0);
+    background-size:24px 24px;
+  }
+  .sizer{position:relative}
+  .world{position:absolute; top:0; left:0; transform-origin:0 0}
+  .edges{position:absolute; inset:0; pointer-events:none}
+  .edge{pointer-events:stroke}
+  .edge .wire{fill:none; stroke:#C8CAC3; stroke-width:1.35; transition:stroke .12s}
+  .edge .hit{fill:none; stroke:transparent; stroke-width:14; cursor:pointer}
+  .edge .tick{stroke:#C8CAC3; stroke-width:1.35; fill:none}
+  .edge .edge-label{
+    font-family:var(--mono); font-size:9.5px; fill:#5D6165;
+    opacity:0; transition:opacity .12s;
+  }
+  .edge:hover .wire, .edge.hot .wire{stroke:var(--ec); stroke-width:1.8}
+  .edge:hover .tick, .edge.hot .tick{stroke:var(--ec)}
+  .edge:hover .edge-label{opacity:1}
+
+  .card{
+    position:absolute; width:320px; background:#fff;
+    border:1px solid var(--line-strong); border-radius:4px;
+    box-shadow:0 1px 0 rgba(35,37,40,.045);
+    transition:box-shadow .12s,border-color .12s,opacity .12s;
+  }
+  .card::before{
+    content:''; position:absolute; inset:0 0 auto 0; height:3px; border-radius:3px 3px 0 0;
+    background:var(--dc);
+  }
+  .card header{
+    height:44px; display:flex; align-items:center; gap:8px; padding:3px 10px 0 12px;
+    cursor:grab; border-bottom:1px solid var(--line); background:var(--dsoft);
+    border-radius:3px 3px 0 0; touch-action:none;
+  }
+  .card h2{
+    margin:0; font-family:var(--mono); font-size:12.5px; font-weight:600;
+    letter-spacing:-.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .card .badge-count{
+    margin-left:auto; font-size:10px; color:var(--muted); background:#fff;
+    border:1px solid var(--line); border-radius:2px; padding:1px 5px;
+    font-variant-numeric:tabular-nums; flex:0 0 auto;
+  }
+  .card.selected{box-shadow:0 0 0 2px var(--dc)}
+  .card.dragging{cursor:grabbing; box-shadow:0 10px 24px rgba(35,37,40,.16); z-index:4}
+  .card.dim{opacity:.42}
+
+  .cols{list-style:none; margin:0; padding:0 0 8px}
+  .cols li{
+    height:26px; display:flex; align-items:center; gap:8px;
+    padding:0 12px 0 9px; border-bottom:1px solid #F0F1EC;
+    cursor:pointer; font-family:var(--mono); font-size:11.5px;
+  }
+  .cols li:hover{background:#F6F7F2}
+  .cols li.sel{background:#F1F3EC; box-shadow:inset 2px 0 0 var(--dc)}
+  .key-slot{width:26px; flex:0 0 26px; display:flex}
+  .badge{
+    font-family:var(--sans); font-size:8.5px; font-weight:700; letter-spacing:.03em;
+    padding:1px 3px; border-radius:2px; border:1px solid transparent; line-height:1.35;
+  }
+  .badge.pk{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .badge.fk{background:#fff; color:var(--dc); border-color:var(--dc)}
+  .cname{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .ctype{margin-left:auto; font-size:10px; color:#8A8E92; flex:0 0 auto}
+
+  .legend{
+    position:absolute; left:14px; bottom:14px; z-index:6;
+    display:flex; align-items:center; gap:12px; pointer-events:none;
+    background:rgba(252,252,250,.94); border:1px solid var(--line);
+    border-radius:3px; padding:6px 10px; font-size:10.5px; color:var(--muted);
+  }
+  .legend span{display:inline-flex; align-items:center; gap:5px}
+  .legend svg{display:block}
+
+  .inspector{
+    width:330px; flex:0 0 330px; border-left:1px solid var(--line);
+    background:var(--panel); display:flex; flex-direction:column; min-height:0;
+  }
+  .panel-head{
+    display:flex; align-items:baseline; gap:8px; padding:12px 16px 11px;
+    border-bottom:1px solid var(--line); flex:0 0 auto;
+  }
+  .panel-head h2{margin:0; font-size:12.5px; font-weight:600}
+  .panel-head .hint{font-size:11px; color:var(--muted); margin-left:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .panel-body{overflow:auto; padding:14px 16px 48px; flex:1}
+
+  .fieldset{padding:0}
+  .fieldset + .fieldset{border-top:1px solid var(--line); margin-top:16px; padding-top:14px}
+  .fieldset h3{
+    margin:0 0 10px; font-size:10.5px; font-weight:600; color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .field{display:flex; flex-direction:column; gap:5px; margin-bottom:11px}
+  .field label{font-size:11px; font-weight:500; color:#4E5256}
+  .field input[type=text], .field select, .field textarea{
+    font-family:var(--mono); font-size:11.5px; padding:6px 8px; width:100%;
+    border:1px solid var(--line-strong); border-radius:3px; background:#fff; color:var(--ink);
+  }
+  .field textarea{font-family:var(--sans); font-size:12px; line-height:1.45; resize:vertical; min-height:58px}
+  .field input[type=text]:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--ink); box-shadow:0 0 0 2px rgba(35,37,40,.1);
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .check{display:flex; align-items:center; gap:8px; margin-bottom:11px}
+  .check input{width:14px; height:14px; accent-color:#232528}
+  .check label{font-size:11.5px; color:#4E5256}
+  .row-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px}
+  .row-actions .btn{flex:1 1 auto}
+
+  .col-list{list-style:none; margin:0; padding:0; border:1px solid var(--line); border-radius:3px; overflow:hidden}
+  .col-list li{
+    display:flex; align-items:center; gap:7px; padding:5px 8px; cursor:pointer;
+    font-family:var(--mono); font-size:10.5px; background:#fff;
+  }
+  .col-list li + li{border-top:1px solid #F0F1EC}
+  .col-list li:hover{background:#F5F6F1}
+  .col-list li:focus-visible{outline:2px solid var(--ink); outline-offset:-2px}
+  .col-list li.sel{background:#EFF1EA}
+  .col-list .t{margin-left:auto; color:#8A8E92; font-size:9.5px}
+
+  .empty{padding:22px 4px; color:var(--muted); font-size:12px; line-height:1.55; text-align:center}
+  .empty strong{display:block; color:var(--ink); font-weight:600; margin-bottom:4px}
+
+  .scrim{position:fixed; inset:0; background:rgba(35,37,40,.2); z-index:30}
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; width:min(500px,94vw); z-index:40;
+    background:var(--panel); border-left:1px solid var(--line-strong);
+    box-shadow:-14px 0 36px rgba(35,37,40,.1);
+    display:flex; flex-direction:column;
+  }
+  .drawer[hidden], .scrim[hidden]{display:none}
+  .drawer-head{
+    display:flex; align-items:center; gap:10px; padding:14px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .drawer-head h2{margin:0; font-size:13px; font-weight:600}
+  .drawer-head .close{margin-left:auto; width:26px; height:26px; padding:0; font-size:16px;
+    border:1px solid transparent; background:transparent; border-radius:3px; cursor:pointer; color:var(--muted)}
+  .drawer-head .close:hover{background:#EFEFEA; color:var(--ink)}
+  .drawer-body{flex:1; overflow:auto; padding:14px 16px 24px}
+  .drawer-foot{border-top:1px solid var(--line); padding:12px 16px; display:flex; gap:8px}
+  .drawer-foot .btn.primary{flex:1}
+
+  .change-list{list-style:none; margin:0 0 4px; padding:0}
+  .change-list li{
+    display:flex; gap:8px; align-items:flex-start; padding:7px 0;
+    border-bottom:1px solid #EEEFEA; font-size:12px; line-height:1.5;
+  }
+  .change-list .tag{
+    flex:0 0 auto; font-size:8.5px; font-weight:700; letter-spacing:.03em;
+    padding:2px 4px; border-radius:2px; margin-top:1px; font-family:var(--sans);
+  }
+  .tag.add{background:#E7EEE2; color:#3F5C2E}
+  .tag.mod{background:#FAF0D6; color:#7A5A05}
+  .tag.del{background:#F7E4E8; color:#7E0024}
+  .change-list code{font-family:var(--mono); font-size:10.5px; background:#F1F2ED; padding:0 3px; border-radius:2px}
+  .change-list .why{color:var(--muted); font-size:11px; display:block; margin-top:2px}
+
+  .prompt-box{
+    margin-top:16px; border:1px solid var(--line); border-radius:3px; background:#F7F8F4;
+    max-height:320px; overflow:auto; padding:10px 12px;
+    font-family:var(--mono); font-size:10.5px; line-height:1.6; color:#3A3E42;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .sec-title{
+    display:flex; align-items:center; gap:6px; margin:16px 0 6px;
+    font-size:11px; font-weight:600; color:#4E5256;
+  }
+  .sec-title:first-child{margin-top:0}
+
+  .toast{
+    position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(8px);
+    background:var(--ink); color:#fff; font-size:12px; padding:9px 14px; border-radius:3px;
+    opacity:0; pointer-events:none; transition:opacity .16s,transform .16s; z-index:60;
+    max-width:90vw;
+  }
+  .toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:1100px){
+    .workspace{flex-direction:column}
+    .rail{width:auto; flex:0 0 auto; border-right:0; border-bottom:1px solid var(--line); padding:8px; overflow-x:auto}
+    .rail-inner{flex-direction:row; gap:4px}
+    .rail-group{display:flex; gap:4px; align-items:center; padding:0}
+    .rail-group + .rail-group{margin-top:0}
+    .rail-group-title{display:none}
+    .rail-item{width:auto; padding:5px 8px; border:1px solid var(--line); border-radius:3px; border-left-width:1px}
+    .rail-item[aria-current="true"]{border-color:var(--dc); background:#fff}
+    .rail-item .ct{display:none}
+    .inspector{width:auto; flex:0 0 auto; max-height:46vh; border-left:0; border-top:1px solid var(--line)}
+    .viewport{min-height:300px}
+    .canvas-hint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important; animation:none !important}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>Esquema de la base de datos</h1>
+    <p>Escuela. SQLite en modo WAL, 7 tablas, sin triggers.</p>
+  </div>
+  <div class="actions">
+    <span class="chip" id="changeChip"><span class="dot"></span><span id="changeChipText">Sin cambios</span></span>
+    <button class="btn" id="btnChanges" type="button">Ver cambios</button>
+    <button class="btn primary" id="btnPrompt" type="button" disabled>Copiar prompt</button>
+    <button class="btn ghost" id="btnReset" type="button">Reiniciar</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <aside class="rail" aria-label="Tablas">
+    <div class="rail-inner" id="railList"></div>
+  </aside>
+
+  <section class="canvas-wrap">
+    <div class="canvas-bar">
+      <div class="zoom">
+        <button type="button" id="zoomOut" aria-label="Alejar">−</button>
+        <span class="val" id="zoomVal">100%</span>
+        <button type="button" id="zoomIn" aria-label="Acercar">+</button>
+        <button type="button" id="zoomFit" style="width:auto;padding:0 8px" aria-label="Ajustar a la ventana">Ajustar</button>
+      </div>
+      <button class="btn sm" id="btnAddTable" type="button">Nueva tabla</button>
+      <p class="canvas-hint" id="canvasHint">Arrastra las tablas para ordenarlas. Clic en una columna para editarla.</p>
+    </div>
+    <div class="viewport" id="viewport">
+      <div class="sizer" id="sizer">
+        <div class="world" id="world">
+          <svg class="edges" id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span>
+        <svg width="34" height="14" viewBox="0 0 34 14"><path d="M1 7h20" stroke="#B9BBB3" fill="none"/><path d="M21 7 33 2M21 7h12M21 7 33 12" stroke="#B9BBB3" fill="none"/></svg>
+        uno a muchos
+      </span>
+      <span>
+        <svg width="34" height="14" viewBox="0 0 34 14"><path d="M1 7h32" stroke="#B9BBB3" fill="none"/><path d="M8 2v10" stroke="#B9BBB3"/></svg>
+        clave foránea
+      </span>
+    </div>
+  </section>
+
+  <aside class="inspector" aria-label="Detalle del esquema">
+    <div class="panel-head">
+      <h2>Detalle</h2>
+      <span class="hint" id="selHint">Sin selección</span>
+    </div>
+    <div class="panel-body" id="panelBody"></div>
+  </aside>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Cambios propuestos">
+  <div class="drawer-head">
+    <h2>Cambios propuestos</h2>
+    <button class="close" id="btnCloseDrawer" type="button" aria-label="Cerrar">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <button class="btn primary" id="btnCopyPrompt" type="button">Copiar prompt</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────
+   Modelo
+   ───────────────────────────────────────────────────────────── */
+
+const DOMAINS = {
+  roster:       { label: 'Roster',        color: '#575A5D', soft: '#EDEEEE' },
+  programa:     { label: 'Programa',      color: '#BE8900', soft: '#FBF3E0' },
+  asignaciones: { label: 'Asignaciones',  color: '#7E0024', soft: '#F9E9EE' },
+  ajustes:      { label: 'Ajustes',       color: '#3B3F42', soft: '#EAEBE8' }
+};
+
+const TYPES = ['INTEGER', 'TEXT', 'REAL', 'BLOB', 'NUMERIC'];
+const DELETE_RULES = ['NO ACTION', 'CASCADE', 'SET NULL', 'RESTRICT'];
+const CARD_W = 320;
+const HEAD_H = 45;   /* borde + cabecera */
+const ROW_H = 26;
+const ROW_CENTER = 13;
+
+const BASE_SCHEMA = {
+  tables: [
+    {
+      name: 'hermanos', domain: 'roster', x: 440, y: 140,
+      note: 'Roster de la congregación. Una fila por hermano, activo o dado de baja lógica.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria del hermano.' },
+        { name: 'nombre', type: 'TEXT', notNull: true, desc: 'Nombre completo tal como aparece en el roster.' },
+        { name: 'sexo', type: 'TEXT', notNull: true, check: "'masculino', 'femenino'", desc: 'Filtra las partes reservadas a varones.' },
+        { name: 'rol', type: 'TEXT', notNull: true, check: "'anciano', 'siervo_ministerial', 'publicador', 'estudiante_biblia'", desc: 'Define quién puede cubrir partes no estudiantiles.' },
+        { name: 'puede_presidir', type: 'INTEGER', notNull: true, def: '0', desc: 'Aprobado para presidir la reunión.' },
+        { name: 'puede_conducir_estudio', type: 'INTEGER', notNull: true, def: '0', desc: 'Aprobado para conducir el estudio bíblico.' },
+        { name: 'puede_ser_consejero_sala', type: 'INTEGER', notNull: true, def: '0', desc: 'Aprobado para consejero de sala auxiliar.' },
+        { name: 'activo', type: 'INTEGER', notNull: true, def: '1', desc: 'Baja lógica: en 0 se oculta del selector sin borrar su historial.' },
+        { name: 'notas', type: 'TEXT', desc: 'Notas libres, por ejemplo circunstancias especiales.' }
+      ]
+    },
+    {
+      name: 'semanas', domain: 'programa', x: 840, y: 140,
+      note: 'Una fila por semana del programa, de lunes a domingo.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria de la semana.' },
+        { name: 'fecha_inicio', type: 'TEXT', notNull: true, desc: 'Lunes de la semana, ISO 8601 (YYYY-MM-DD).' },
+        { name: 'fecha_fin', type: 'TEXT', notNull: true, desc: 'Domingo de la semana, ISO 8601.' },
+        { name: 'libro_biblico', type: 'TEXT', desc: 'Libro en estudio para la sección Tesoros.' },
+        { name: 'cancion_apertura', type: 'INTEGER', desc: 'Número de la canción de apertura.' },
+        { name: 'cancion_intermedia', type: 'INTEGER', desc: 'Número de la canción intermedia.' },
+        { name: 'cancion_cierre', type: 'INTEGER', desc: 'Número de la canción de cierre.' },
+        { name: 'tipo_especial', type: 'TEXT', notNull: true, def: "'normal'", check: "'normal', 'asamblea', 'conmemoracion', 'visita_superintendente'", desc: 'Semana normal o con tratamiento especial.' },
+        { name: 'presidente_id', type: 'INTEGER', desc: 'Presidente de la semana.', refName: 'hermanos' },
+        { name: 'consejero_sala_id', type: 'INTEGER', desc: 'Consejero de la sala auxiliar.', refName: 'hermanos' },
+        { name: 'orador_oracion_apertura_id', type: 'INTEGER', desc: 'Ora en la apertura.', refName: 'hermanos' },
+        { name: 'orador_oracion_intermedia_id', type: 'INTEGER', desc: 'Ora antes de la sección Nuestra Vida Cristiana.', refName: 'hermanos' },
+        { name: 'orador_oracion_cierre_id', type: 'INTEGER', desc: 'Ora en el cierre.', refName: 'hermanos' }
+      ]
+    },
+    {
+      name: 'partes', domain: 'programa', x: 1240, y: 140,
+      note: 'Partes del programa S-140 dentro de una semana.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria del parte.' },
+        { name: 'semana_id', type: 'INTEGER', notNull: true, desc: 'Semana a la que pertenece.', refName: 'semanas', onDelete: 'CASCADE' },
+        { name: 'numero_orden', type: 'INTEGER', notNull: true, desc: 'Posición del parte dentro de la semana.' },
+        { name: 'seccion', type: 'TEXT', notNull: true, check: "'tesoros', 'mejores_maestros', 'vida_cristiana', 'marco'", desc: 'Sección del programa.' },
+        { name: 'tipo_asignacion', type: 'TEXT', notNull: true, desc: 'Catálogo TipoAsignacion (enum Rust), sin CHECK en la base.' },
+        { name: 'titulo', type: 'TEXT', desc: 'Título del parte, por ejemplo el tema del discurso.' },
+        { name: 'duracion_minutos', type: 'INTEGER', desc: 'Duración planificada.' },
+        { name: 'requiere_sala_auxiliar', type: 'INTEGER', notNull: true, def: '0', desc: 'El parte se replica en la sala auxiliar.' },
+        { name: 'requiere_ayudante', type: 'INTEGER', notNull: true, def: '0', desc: 'El parte requiere una asignación de ayudante.' }
+      ]
+    },
+    {
+      name: 'asignaciones', domain: 'asignaciones', x: 1240, y: 560,
+      note: 'Quién cubre cada rol en cada parte. Índice único por parte, ámbito y rol.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria de la asignación.' },
+        { name: 'parte_id', type: 'INTEGER', notNull: true, desc: 'Parte asignado.', refName: 'partes', onDelete: 'CASCADE' },
+        { name: 'ambito', type: 'TEXT', notNull: true, check: "'auditorio_principal', 'sala_auxiliar'", desc: 'Sala donde se cumple la asignación.' },
+        { name: 'rol', type: 'TEXT', notNull: true, check: "'estudiante', 'ayudante', 'conductor', 'lector'", desc: 'Rol del hermano dentro del parte.' },
+        { name: 'hermano_id', type: 'INTEGER', notNull: true, desc: 'Hermano asignado. Sin borrado en cascada.', refName: 'hermanos' }
+      ]
+    },
+    {
+      name: 'familias', domain: 'roster', x: 40, y: 140,
+      note: 'Agrupaciones de hermanos por familia.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria de la familia.' },
+        { name: 'nombre', type: 'TEXT', notNull: true, desc: 'Nombre de la familia.' },
+        { name: 'notas', type: 'TEXT', desc: 'Notas libres.' }
+      ]
+    },
+    {
+      name: 'familia_miembros', domain: 'roster', x: 40, y: 400,
+      note: 'Unión muchos a muchos entre familias y hermanos.',
+      compositePk: ['familia_id', 'hermano_id'],
+      columns: [
+        { name: 'familia_id', type: 'INTEGER', pk: true, notNull: true, desc: 'Familia.', refName: 'familias', onDelete: 'CASCADE' },
+        { name: 'hermano_id', type: 'INTEGER', pk: true, notNull: true, desc: 'Hermano que pertenece a la familia.', refName: 'hermanos', onDelete: 'CASCADE' }
+      ]
+    },
+    {
+      name: 'congregation_settings', domain: 'ajustes', x: 40, y: 660,
+      note: 'Tabla singleton con los ajustes de la congregación. Siempre una sola fila.',
+      columns: [
+        { name: 'id', type: 'INTEGER', pk: true, notNull: true, check: '1', desc: 'Único valor posible: 1.' },
+        { name: 'has_auxiliary_room', type: 'INTEGER', notNull: true, def: '1', desc: 'La congregación tiene sala auxiliar. Ajuste no destructivo.' }
+      ]
+    }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   Estado y utilidades
+   ───────────────────────────────────────────────────────────── */
+
+const LS_KEY = 'escuela.schema.draft.v2';
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const uid = (p) => p + Math.random().toString(36).slice(2, 9);
+
+function stamp(schema) {
+  for (const t of schema.tables) {
+    if (!t.uid) t.uid = uid('t');
+    for (const c of t.columns) if (!c.uid) c.uid = uid('c');
+    if (t.compositePk) t.columns.forEach((c) => { if (t.compositePk.includes(c.name)) c.pk = true; });
+  }
+  /* resuelve refName -> ref (uid) sin perder el nombre original */
+  const byName = new Map(schema.tables.map((t) => [t.name, t.uid]));
+  for (const t of schema.tables) {
+    for (const c of t.columns) {
+      if (c.ref && !c.refName) c.refName = c.ref;
+      if (c.refName && byName.has(c.refName)) c.ref = byName.get(c.refName);
+      delete c.refName;
+    }
+  }
+  return schema;
+}
+
+const BASELINE = stamp(clone(BASE_SCHEMA));
+let state = loadDraft() || clone(BASELINE);
+
+let sel = { table: null, column: null };
+let scale = 0.8;
+let drag = null;
+let armed = null;
+let toastTimer = null;
+
+let WORLD_W = 1600;
+let WORLD_H = 860;
+
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.tables) || !parsed.tables.length) return null;
+    return stamp(parsed);
+  } catch (e) { return null; }
+}
+
+function saveDraft() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* file:// sin almacenamiento */ }
+}
+
+const byUid = (u) => state.tables.find((t) => t.uid === u) || null;
+const tableName = (u) => { const t = byUid(u); return t ? t.name : null; };
+const cardH = (t) => 2 + 44 + t.columns.length * ROW_H + 8;
+const rowY = (t, i) => t.y + HEAD_H + i * ROW_H + ROW_CENTER;
+
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2400);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Aristas
+   ───────────────────────────────────────────────────────────── */
+
+let EDGES = [];
+
+function edgeList() {
+  const list = [];
+  for (const t of state.tables) {
+    t.columns.forEach((c, i) => {
+      const dst = c.ref ? byUid(c.ref) : null;
+      if (!dst || dst.uid === t.uid) return;
+      let di = dst.columns.findIndex((x) => x.name === 'id');
+      if (di < 0) di = 0;
+      list.push({ src: t, si: i, dst, di, col: c });
+    });
+  }
+  return list;
+}
+
+function ortho(pts, r) {
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i - 1], [x, y] = pts[i], [x1, y1] = pts[i + 1];
+    const l1 = Math.hypot(x0 - x, y0 - y) || 1;
+    const l2 = Math.hypot(x1 - x, y1 - y) || 1;
+    const rr = Math.min(r, l1 / 2, l2 / 2);
+    const p1x = x + ((x0 - x) / l1) * rr, p1y = y + ((y0 - y) / l1) * rr;
+    const p2x = x + ((x1 - x) / l2) * rr, p2y = y + ((y1 - y) / l2) * rr;
+    d += ` L ${p1x.toFixed(1)} ${p1y.toFixed(1)} Q ${x} ${y} ${p2x.toFixed(1)} ${p2y.toFixed(1)}`;
+  }
+  const last = pts[pts.length - 1];
+  return d + ` L ${last[0]} ${last[1]}`;
+}
+
+function geom(e) {
+  const { src, si, dst, di } = e;
+  const sy = rowY(src, si);
+  const ty = rowY(dst, di);
+  const dx = dst.x - src.x;
+  const backward = src.x > dst.x + CARD_W + 200;
+
+  if (backward) {
+    const sx = src.x, sy2 = rowY(src, si);
+    const lane = Math.min(src.y, dst.y) - 56;
+    const lead = 26;
+    const tx = dst.x + CARD_W / 2;
+    const pts = [[sx, sy2], [sx - lead, sy2], [sx - lead, lane], [tx, lane], [tx, dst.y]];
+    return { d: ortho(pts, 7), sx, sy: sy2, tx, ty: dst.y, dstAngle: Math.PI / 2, srcAngle: Math.PI };
+  }
+
+  if (Math.abs(dx) > 260) {
+    const goRight = dx > 0;
+    const sx = goRight ? src.x + CARD_W : src.x;
+    const tx = goRight ? dst.x : dst.x + CARD_W;
+    const dir = goRight ? 1 : -1;
+    const off = Math.max(40, Math.min(130, Math.abs(tx - sx) / 2));
+    const c1x = sx + dir * off, c2x = tx - dir * off;
+    return {
+      d: `M ${sx} ${sy} C ${c1x} ${sy} ${c2x} ${ty} ${tx} ${ty}`,
+      sx, sy, tx, ty,
+      srcAngle: dir > 0 ? 0 : Math.PI,
+      dstAngle: tx > c2x ? 0 : Math.PI
+    };
+  }
+
+  const goDown = dst.y > src.y;
+  const sx = src.x + CARD_W / 2;
+  const sy2 = goDown ? src.y + cardH(src) : src.y;
+  const tx = dst.x + CARD_W / 2;
+  const ty2 = goDown ? dst.y : dst.y + cardH(dst);
+  const off = Math.max(30, Math.min(90, Math.abs(ty2 - sy2) / 2));
+  const dir = goDown ? 1 : -1;
+  return {
+    d: `M ${sx} ${sy2} C ${sx} ${sy2 + dir * off} ${tx} ${ty2 - dir * off} ${tx} ${ty2}`,
+    sx, sy: sy2, tx, ty: ty2,
+    srcAngle: dir > 0 ? Math.PI / 2 : -Math.PI / 2,
+    dstAngle: dir > 0 ? Math.PI / 2 : -Math.PI / 2
+  };
+}
+
+function crowMarks(g) {
+  let out = '';
+  for (const off of [-0.46, 0, 0.46]) {
+    const a = g.dstAngle + Math.PI + off;
+    out += `<line class="tick" x1="${g.tx.toFixed(1)}" y1="${g.ty.toFixed(1)}" x2="${(g.tx + Math.cos(a) * 9).toFixed(1)}" y2="${(g.ty + Math.sin(a) * 9).toFixed(1)}"/>`;
+  }
+  const bx = g.sx + Math.cos(g.srcAngle) * 11;
+  const by = g.sy + Math.sin(g.srcAngle) * 11;
+  const pa = g.srcAngle + Math.PI / 2;
+  out += `<line class="tick" x1="${(bx + Math.cos(pa) * 4).toFixed(1)}" y1="${(by + Math.sin(pa) * 4).toFixed(1)}" x2="${(bx - Math.cos(pa) * 4).toFixed(1)}" y2="${(by - Math.sin(pa) * 4).toFixed(1)}"/>`;
+  return out;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Pintado
+   ───────────────────────────────────────────────────────────── */
+
+function renderCards() {
+  const world = $('#world');
+  $$('.card', world).forEach((n) => n.remove());
+
+  /* orden visual: las seleccionadas al final para quedar encima */
+  const ordered = state.tables.slice().sort((a, b) => {
+    if (a.uid === sel.table) return 1;
+    if (b.uid === sel.table) return -1;
+    return 0;
+  });
+
+  for (const t of ordered) {
+    const d = DOMAINS[t.domain] || DOMAINS.roster;
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.dataset.uid = t.uid;
+    el.style.cssText = `left:${t.x}px;top:${t.y}px;--dc:${d.color};--dsoft:${d.soft}`;
+    el.innerHTML =
+      `<header data-drag><h2>${esc(t.name)}</h2><span class="badge-count">${t.columns.length}</span></header>` +
+      `<ul class="cols">` +
+      t.columns.map((c, i) =>
+        `<li data-col="${i}">` +
+        `<span class="key-slot">${c.pk ? '<span class="badge pk">PK</span>' : (c.ref ? '<span class="badge fk">FK</span>' : '')}</span>` +
+        `<span class="cname">${esc(c.name)}</span>` +
+        `<span class="ctype">${esc(c.type)}</span>` +
+        `</li>`
+      ).join('') +
+      `</ul>`;
+    world.appendChild(el);
+  }
+  applySelection();
+}
+
+function worldSize() {
+  let w = 1600, h = 860;
+  for (const t of state.tables) {
+    w = Math.max(w, t.x + CARD_W + 60);
+    h = Math.max(h, t.y + cardH(t) + 60);
+  }
+  return { w, h };
+}
+
+function renderEdges() {
+  const svg = $('#edges');
+  const size = worldSize();
+  WORLD_W = size.w;
+  WORLD_H = size.h;
+  EDGES = edgeList();
+  svg.setAttribute('width', WORLD_W);
+  svg.setAttribute('height', WORLD_H);
+  svg.style.width = WORLD_W + 'px';
+  svg.style.height = WORLD_H + 'px';
+
+  let html = '';
+  EDGES.forEach((e, i) => {
+    const g = geom(e);
+    const dc = (DOMAINS[e.src.domain] || DOMAINS.roster).color;
+    html +=
+      `<g class="edge" data-edge="${i}" style="--ec:${dc}">` +
+      `<path class="hit" d="${g.d}"/>` +
+      `<path class="wire" d="${g.d}"/>` +
+      crowMarks(g) +
+      `<text class="edge-label">${esc(e.col.name)} → ${esc(e.dst.name)}</text>` +
+      `</g>`;
+  });
+  svg.innerHTML = html;
+
+  $$('g.edge', svg).forEach((gEl) => {
+    const wire = gEl.querySelector('.wire');
+    const label = gEl.querySelector('.edge-label');
+    if (!wire || !label) return;
+    const len = wire.getTotalLength();
+    const p = wire.getPointAtLength(len * 0.5);
+    label.setAttribute('x', (p.x + 7).toFixed(1));
+    label.setAttribute('y', (p.y - 7).toFixed(1));
+  });
+
+  applySelection();
+}
+
+function relatedUids(u) {
+  const set = new Set([u]);
+  for (const e of EDGES) {
+    if (e.src.uid === u) set.add(e.dst.uid);
+    if (e.dst.uid === u) set.add(e.src.uid);
+  }
+  return set;
+}
+
+function applySelection() {
+  const u = sel.table;
+  const rel = u ? relatedUids(u) : null;
+
+  $$('.card').forEach((el) => {
+    const isSel = el.dataset.uid === u;
+    el.classList.toggle('selected', isSel);
+    el.classList.toggle('dim', !!(rel && !rel.has(el.dataset.uid)));
+    if (!isSel) $$('li[data-col]', el).forEach((li) => li.classList.remove('sel'));
+    if (isSel && sel.column !== null) {
+      $$('li[data-col]', el).forEach((li) => {
+        li.classList.toggle('sel', Number(li.dataset.col) === sel.column);
+      });
+    }
+  });
+
+  $$('g.edge').forEach((gEl) => {
+    const e = EDGES[Number(gEl.dataset.edge)];
+    gEl.classList.toggle('hot', !!(u && e && (e.src.uid === u || e.dst.uid === u)));
+  });
+
+  $$('.rail-item').forEach((b) => {
+    b.setAttribute('aria-current', b.dataset.uid === u ? 'true' : 'false');
+  });
+}
+
+function renderRail() {
+  const list = $('#railList');
+  const groups = {};
+  for (const t of state.tables) (groups[t.domain] = groups[t.domain] || []).push(t);
+
+  list.innerHTML = Object.keys(DOMAINS).filter((k) => groups[k]).map((k) => {
+    const d = DOMAINS[k];
+    return `<div class="rail-group">
+      <h3 class="rail-group-title">${esc(d.label)}</h3>
+      ${groups[k].map((t) =>
+        `<button class="rail-item" type="button" data-uid="${t.uid}" data-domain="${k}" style="--dc:${d.color}" aria-current="false">
+          <span class="ind"></span><span class="nm">${esc(t.name)}</span><span class="ct">${t.columns.length}</span>
+        </button>`
+      ).join('')}
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Inspector
+   ───────────────────────────────────────────────────────────── */
+
+function renderInspector() {
+  const body = $('#panelBody');
+  const hint = $('#selHint');
+  const t = sel.table ? byUid(sel.table) : null;
+
+  if (!t) {
+    hint.textContent = 'Sin selección';
+    body.innerHTML =
+      `<div class="empty"><strong>Sin selección</strong>` +
+      `Haz clic en una tabla del lienzo para ver sus columnas y editarlas.` +
+      `</div>`;
+    return;
+  }
+
+  const col = sel.column !== null ? t.columns[sel.column] : null;
+  hint.textContent = col ? `${t.name}.${col.name}` : t.name;
+
+  let html = '';
+
+  if (col) {
+    html += `<section class="fieldset">
+      <h3>Columna seleccionada</h3>
+      <div class="field"><label for="c-name">Nombre</label>
+        <input id="c-name" type="text" data-field="c:name" value="${esc(col.name)}" autocomplete="off" spellcheck="false"></div>
+      <div class="grid2">
+        <div class="field"><label for="c-type">Tipo</label>
+          <select id="c-type" data-field="c:type">${TYPES.map((ty) => `<option${ty === col.type ? ' selected' : ''}>${ty}</option>`).join('')}</select></div>
+        <div class="field"><label for="c-def">Valor por defecto</label>
+          <input id="c-def" type="text" data-field="c:def" value="${esc(col.def || '')}" placeholder="—" autocomplete="off" spellcheck="false"></div>
+      </div>
+      <div class="check"><input id="c-nn" type="checkbox" data-field="c:notNull"${col.notNull ? ' checked' : ''}>
+        <label for="c-nn">NOT NULL</label></div>
+      <div class="field"><label for="c-check">Valores permitidos (CHECK)</label>
+        <input id="c-check" type="text" data-field="c:check" value="${esc(col.check || '')}" placeholder="'valor_a', 'valor_b'" autocomplete="off" spellcheck="false"></div>
+      <div class="grid2">
+        <div class="field"><label for="c-ref">Referencia (FK)</label>
+          <select id="c-ref" data-field="c:ref">
+            <option value="">Sin referencia</option>
+            ${state.tables.filter((x) => x.uid !== t.uid).map((x) =>
+              `<option value="${x.uid}"${col.ref === x.uid ? ' selected' : ''}>${esc(x.name)}.id</option>`).join('')}
+          </select></div>
+        <div class="field"><label for="c-del">Al borrar</label>
+          <select id="c-del" data-field="c:onDelete">${DELETE_RULES.map((r) =>
+            `<option${(col.onDelete || 'NO ACTION') === r ? ' selected' : ''}>${r}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label for="c-desc">Descripción</label>
+        <textarea id="c-desc" data-field="c:desc" rows="3">${esc(col.desc || '')}</textarea></div>
+      <div class="row-actions">
+        <button class="btn danger sm" type="button" data-action="delete-column" data-uid="${col.uid}">Eliminar columna</button>
+      </div>
+    </section>`;
+  }
+
+  html += `<section class="fieldset">
+    <h3>Tabla</h3>
+    <div class="field"><label for="t-name">Nombre</label>
+      <input id="t-name" type="text" data-field="t:name" value="${esc(t.name)}" autocomplete="off" spellcheck="false"></div>
+    <div class="grid2">
+      <div class="field"><label for="t-domain">Dominio</label>
+        <select id="t-domain" data-field="t:domain">${Object.keys(DOMAINS).map((k) =>
+          `<option value="${k}"${t.domain === k ? ' selected' : ''}>${esc(DOMAINS[k].label)}</option>`).join('')}</select></div>
+      <div class="field"><label>Columnas</label>
+        <div style="font-family:var(--mono);font-size:11.5px;padding:6px 8px;border:1px dashed var(--line-strong);border-radius:3px;color:var(--muted)">${t.columns.length}</div></div>
+    </div>
+    <div class="field"><label for="t-desc">Descripción</label>
+      <textarea id="t-desc" data-field="t:desc" rows="3">${esc(t.note || '')}</textarea></div>
+    <div class="row-actions">
+      <button class="btn sm" type="button" data-action="add-column">Añadir columna</button>
+      <button class="btn danger sm" type="button" data-action="delete-table" data-uid="${t.uid}">Eliminar tabla</button>
+    </div>
+  </section>`;
+
+  html += `<section class="fieldset"><h3>Columnas de ${esc(t.name)}</h3><ul class="col-list">` +
+    t.columns.map((c, i) =>
+      `<li data-pick="${i}" tabindex="0" role="button" class="${i === sel.column ? 'sel' : ''}">` +
+      (c.pk ? '<span class="badge pk">PK</span>' : (c.ref ? '<span class="badge fk">FK</span>' : '<span style="width:20px"></span>')) +
+      `<span>${esc(c.name)}</span><span class="t">${esc(c.type)}</span></li>`
+    ).join('') + `</ul></section>`;
+
+  body.innerHTML = html;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Edición
+   ───────────────────────────────────────────────────────────── */
+
+function syncCard(t) {
+  const el = document.querySelector(`.card[data-uid="${t.uid}"]`);
+  if (!el) return;
+  const h = el.querySelector('h2');
+  if (h) h.textContent = t.name;
+  const count = el.querySelector('.badge-count');
+  if (count) count.textContent = t.columns.length;
+
+  t.columns.forEach((c, i) => {
+    const li = el.querySelector(`li[data-col="${i}"]`);
+    if (!li) return;
+    li.querySelector('.cname').textContent = c.name;
+    li.querySelector('.ctype').textContent = c.type;
+    li.querySelector('.key-slot').innerHTML =
+      c.pk ? '<span class="badge pk">PK</span>' : (c.ref ? '<span class="badge fk">FK</span>' : '');
+  });
+
+  const rail = document.querySelector(`.rail-item[data-uid="${t.uid}"]`);
+  if (rail) {
+    rail.querySelector('.nm').textContent = t.name;
+    rail.querySelector('.ct').textContent = t.columns.length;
+    rail.style.setProperty('--dc', (DOMAINS[t.domain] || DOMAINS.roster).color);
+  }
+
+  const list = $$('#panelBody .col-list li');
+  list.forEach((li, i) => {
+    const c = t.columns[i];
+    if (!c || li.children.length < 3) return;
+    li.children[1].textContent = c.name;
+    li.children[2].textContent = c.type;
+  });
+}
+
+function onPanelInput(e) {
+  const field = e.target.dataset.field;
+  if (!field) return;
+  const t = byUid(sel.table);
+  if (!t) return;
+  const [scope, key] = field.split(':');
+
+  if (scope === 't') {
+    if (key === 'name') t.name = e.target.value;
+    else if (key === 'domain') t.domain = e.target.value;
+    else if (key === 'desc') t.note = e.target.value;
+    const el = document.querySelector(`.card[data-uid="${t.uid}"]`);
+    if (el && key === 'domain') {
+      const d = DOMAINS[t.domain] || DOMAINS.roster;
+      el.style.setProperty('--dc', d.color);
+      el.style.setProperty('--dsoft', d.soft);
+    }
+  } else {
+    const c = t.columns[sel.column];
+    if (!c) return;
+    if (key === 'name') c.name = e.target.value;
+    else if (key === 'type') c.type = e.target.value;
+    else if (key === 'def') c.def = e.target.value;
+    else if (key === 'check') c.check = e.target.value;
+    else if (key === 'desc') c.desc = e.target.value;
+    else if (key === 'notNull') c.notNull = e.target.checked;
+    else if (key === 'ref') { c.ref = e.target.value || null; renderEdges(); }
+    else if (key === 'onDelete') c.onDelete = e.target.value;
+  }
+
+  syncCard(t);
+  renderEdges();
+  $('#selHint').textContent = sel.column !== null && t.columns[sel.column]
+    ? `${t.name}.${t.columns[sel.column].name}` : t.name;
+  updateChip();
+  saveDraft();
+}
+
+function onPanelClick(e) {
+  const btn = e.target.closest('[data-action]');
+  const pick = e.target.closest('[data-pick]');
+  const t = byUid(sel.table);
+  if (!t) return;
+
+  if (pick) {
+    sel.column = Number(pick.dataset.pick);
+    applySelection();
+    renderInspector();
+    return;
+  }
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+
+  if (action === 'add-column') {
+    const c = { uid: uid('c'), name: 'nueva_columna', type: 'TEXT', notNull: false, desc: '' };
+    t.columns.push(c);
+    sel.column = t.columns.length - 1;
+    renderAll();
+    const inp = $('#c-name');
+    if (inp) { inp.focus(); inp.select(); }
+    toast('Columna añadida');
+    return;
+  }
+
+  if (action === 'delete-column') {
+    if (!confirmStep(btn, 'Eliminar columna')) return;
+    t.columns.splice(sel.column, 1);
+    sel.column = t.columns.length ? Math.min(sel.column, t.columns.length - 1) : null;
+    renderAll();
+    toast('Columna eliminada');
+    return;
+  }
+
+  if (action === 'delete-table') {
+    if (!confirmStep(btn, 'Eliminar tabla')) return;
+    const gone = t.uid;
+    state.tables = state.tables.filter((x) => x.uid !== gone);
+    for (const other of state.tables) {
+      for (const c of other.columns) if (c.ref === gone) { c.ref = null; c.onDelete = undefined; }
+    }
+    sel = { table: null, column: null };
+    renderAll();
+    toast('Tabla eliminada');
+  }
+}
+
+function confirmStep(btn) {
+  if (armed === btn) {
+    armed = null;
+    btn.dataset.armed = '0';
+    if (btn.dataset.label) btn.textContent = btn.dataset.label;
+    return true;
+  }
+  armed = btn;
+  btn.dataset.armed = '1';
+  btn.dataset.label = btn.textContent;
+  btn.textContent = 'Confirmar';
+  setTimeout(() => {
+    if (btn.isConnected && armed === btn) {
+      armed = null;
+      btn.dataset.armed = '0';
+      btn.textContent = btn.dataset.label;
+    }
+  }, 3200);
+  return false;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Eventos de lienzo
+   ───────────────────────────────────────────────────────────── */
+
+function cardEl(u) { return document.querySelector(`.card[data-uid="${u}"]`); }
+
+function selectTable(u) {
+  sel = { table: u, column: null };
+  applySelection();
+  renderInspector();
+}
+
+function bindCanvas() {
+  const world = $('#world');
+  let frame = null;
+
+  world.addEventListener('pointerdown', (e) => {
+    const header = e.target.closest('[data-drag]');
+    if (!header) return;
+    const card = header.closest('.card');
+    const t = byUid(card.dataset.uid);
+    if (!t) return;
+    selectTable(t.uid);
+    drag = { uid: t.uid, x: e.clientX, y: e.clientY, ox: t.x, oy: t.y };
+    card.classList.add('dragging');
+    try { card.setPointerCapture(e.pointerId); } catch (err) { /* noop */ }
+    e.preventDefault();
+  });
+
+  world.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const t = byUid(drag.uid);
+    if (!t) return;
+    t.x = Math.max(0, Math.round(drag.ox + (e.clientX - drag.x) / scale));
+    t.y = Math.max(0, Math.round(drag.oy + (e.clientY - drag.y) / scale));
+    const el = cardEl(t.uid);
+    if (el) { el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; }
+    if (!frame) {
+      frame = requestAnimationFrame(() => { frame = null; renderEdges(); });
+    }
+  });
+
+  const endDrag = () => {
+    if (!drag) return;
+    const el = cardEl(drag.uid);
+    if (el) el.classList.remove('dragging');
+    drag = null;
+    saveDraft();
+  };
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  world.addEventListener('click', (e) => {
+    const card = e.target.closest('.card');
+    if (!card) {
+      if (!e.target.closest('.edge')) {
+        sel = { table: null, column: null };
+        applySelection();
+        renderInspector();
+      }
+      return;
+    }
+    const t = byUid(card.dataset.uid);
+    if (!t) return;
+    const li = e.target.closest('li[data-col]');
+    sel = { table: t.uid, column: li ? Number(li.dataset.col) : null };
+    applySelection();
+    renderInspector();
+  });
+
+  $('#edges').addEventListener('click', (e) => {
+    const g = e.target.closest('g.edge');
+    if (!g) return;
+    const edge = EDGES[Number(g.dataset.edge)];
+    if (!edge) return;
+    sel = { table: edge.src.uid, column: edge.si };
+    applySelection();
+    renderInspector();
+    toast(`${edge.src.name}.${edge.col.name} → ${edge.dst.name}.id`);
+  });
+}
+
+function focusTable(u) {
+  const t = byUid(u);
+  if (!t) return;
+  selectTable(u);
+  const vp = $('#viewport');
+  vp.scrollTo({
+    left: Math.max(0, (t.x + CARD_W / 2) * scale - vp.clientWidth / 2),
+    top: Math.max(0, (t.y + 120) * scale - vp.clientHeight / 2),
+    behavior: 'smooth'
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Diferencias contra el esquema base
+   ───────────────────────────────────────────────────────────── */
+
+function indexSchema(s) {
+  const tables = new Map(), cols = new Map();
+  for (const t of s.tables) {
+    tables.set(t.uid, t);
+    for (const c of t.columns) cols.set(c.uid, { table: t, col: c });
+  }
+  return { tables, cols };
+}
+
+function normCol(col, table, nameOf) {
+  return {
+    name: col.name,
+    type: col.type,
+    notNull: !!col.notNull,
+    def: col.def || '',
+    check: col.check || '',
+    desc: col.desc || '',
+    ref: col.ref ? nameOf(col.ref) : null,
+    refUid: col.ref || null,
+    onDelete: col.ref ? (col.onDelete || 'NO ACTION') : 'NO ACTION',
+    table: table.name
+  };
+}
+
+function computeDiff() {
+  const B = indexSchema(BASELINE), C = indexSchema(state);
+  const bName = (u) => { const t = B.tables.get(u); return t ? t.name : null; };
+  const cName = (u) => { const t = C.tables.get(u); return t ? t.name : null; };
+
+  const d = {
+    addedTables: [], removedTables: [], changedTables: [],
+    addedCols: [], removedCols: [], changedCols: []
+  };
+
+  for (const [, t] of C.tables) if (!B.tables.has(t.uid)) d.addedTables.push(t);
+  for (const [, t] of B.tables) if (!C.tables.has(t.uid)) d.removedTables.push(t);
+
+  for (const [, t] of C.tables) {
+    const bt = B.tables.get(t.uid);
+    if (!bt) continue;
+    const diffs = [];
+    if (bt.name !== t.name) diffs.push(`nombre \`${bt.name}\` → \`${t.name}\``);
+    if (bt.domain !== t.domain) diffs.push(`dominio \`${bt.domain}\` → \`${t.domain}\``);
+    if ((bt.note || '') !== (t.note || '')) diffs.push('cambia la descripción');
+    if (diffs.length) d.changedTables.push({ table: t, diffs });
+  }
+
+  for (const [, ref] of C.cols) {
+    const before = B.cols.get(ref.col.uid);
+    if (!before) {
+      if (B.tables.has(ref.table.uid)) d.addedCols.push({ table: ref.table, col: ref.col });
+      continue;
+    }
+    const a = normCol(before.col, before.table, bName);
+    const b = normCol(ref.col, ref.table, cName);
+    const diffs = [];
+    if (a.name !== b.name) diffs.push(`nombre \`${a.name}\` → \`${b.name}\``);
+    if (a.type !== b.type) diffs.push(`tipo \`${a.type}\` → \`${b.type}\``);
+    if (a.notNull !== b.notNull) diffs.push(b.notNull ? 'pasa a `NOT NULL`' : 'pasa a admitir nulos');
+    if (a.def !== b.def) diffs.push(`default \`${a.def || '—'}\` → \`${b.def || '—'}\``);
+    if (a.check !== b.check) diffs.push(b.check ? `CHECK \`${b.check}\`` : 'elimina el CHECK');
+    if (a.desc !== b.desc) diffs.push('cambia la descripción');
+    if (a.refUid !== b.refUid) diffs.push(b.ref ? `FK → \`${b.ref}.id\`` : 'elimina la FK');
+    else if (a.ref && a.onDelete !== b.onDelete) diffs.push(`ON DELETE \`${a.onDelete}\` → \`${b.onDelete}\``);
+    if (diffs.length) d.changedCols.push({ table: ref.table, col: ref.col, diffs });
+  }
+
+  for (const [, ref] of B.cols) {
+    if (!C.cols.has(ref.col.uid)) d.removedCols.push({ table: ref.table, col: ref.col });
+  }
+
+  return d;
+}
+
+function diffCount(d) {
+  return d.addedTables.length + d.removedTables.length + d.changedTables.length +
+    d.addedCols.length + d.removedCols.length + d.changedCols.length;
+}
+
+function updateChip() {
+  const d = computeDiff();
+  const n = diffCount(d);
+  $('#changeChip').classList.toggle('dirty', n > 0);
+  $('#changeChipText').textContent = n === 0 ? 'Sin cambios' : `${n} ${n === 1 ? 'cambio' : 'cambios'}`;
+  $('#btnPrompt').disabled = n === 0;
+  $('#btnChanges').disabled = n === 0;
+  return d;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Prompt
+   ───────────────────────────────────────────────────────────── */
+
+function ddlFor(table) {
+  const lines = table.columns.map((c) => {
+    let s = `    ${c.name} ${c.type}`;
+    if (c.pk && !table.compositePk) s += ' PRIMARY KEY';
+    if (c.auto) s += ' AUTOINCREMENT';
+    if (c.notNull && (!c.pk || table.compositePk)) s += ' NOT NULL';
+    if (c.def !== undefined && c.def !== '') s += ` DEFAULT ${c.def}`;
+    if (c.check) s += ` CHECK(${c.name} IN (${c.check}))`;
+    if (c.ref) {
+      const r = byUid(c.ref);
+      if (r) {
+        s += ` REFERENCES ${r.name}(id)`;
+        if (c.onDelete && c.onDelete !== 'NO ACTION') s += ` ON DELETE ${c.onDelete}`;
+      }
+    }
+    return s;
+  });
+  if (table.compositePk) lines.push(`    PRIMARY KEY (${table.compositePk.join(', ')})`);
+  return `CREATE TABLE IF NOT EXISTS ${table.name} (\n${lines.join(',\n')}\n);`;
+}
+
+function describeCol(tableName, col) {
+  const bits = [`\`${col.type}\``];
+  if (col.notNull) bits.push('NOT NULL');
+  if (col.def) bits.push(`DEFAULT ${col.def}`);
+  if (col.ref) {
+    const r = byUid(col.ref);
+    if (r) bits.push(`FK → \`${r.name}.id\``);
+  }
+  return `- \`${tableName}.${col.name}\` (${bits.join(', ')})${col.desc ? `. ${col.desc}` : '.'}`;
+}
+
+function buildPrompt(d) {
+  d = d || computeDiff();
+  const L = [];
+  const domainLabel = (k) => (DOMAINS[k] || DOMAINS.roster).label;
+
+  L.push('# Cambios propuestos al esquema SQLite — Escuela');
+  L.push('');
+  L.push('Aplica estos cambios a la base local de Escuela. La definición vive en `src-tauri/src/db.rs`');
+  L.push('(`run_migrations`, migraciones idempotentes). Mantén `schemaDB.md` y `docs/user/architecture.md`');
+  L.push('sincronizados con el resultado final.');
+  L.push('');
+
+  if (d.addedTables.length) {
+    L.push('## Tablas nuevas');
+    L.push('');
+    for (const t of d.addedTables) {
+      L.push(`### \`${t.name}\` — dominio ${domainLabel(t.domain)}`);
+      if (t.note) { L.push(''); L.push(t.note); }
+      L.push('');
+      L.push('```sql');
+      L.push(ddlFor(t));
+      L.push('```');
+      L.push('');
+    }
+  }
+
+  if (d.removedTables.length) {
+    L.push('## Tablas eliminadas');
+    L.push('');
+    for (const t of d.removedTables) L.push(`- \`${t.name}\``);
+    L.push('');
+  }
+
+  if (d.changedTables.length) {
+    L.push('## Tablas modificadas');
+    L.push('');
+    for (const ch of d.changedTables) L.push(`- \`${ch.table.name}\`: ${ch.diffs.join('; ')}.`);
+    L.push('');
+  }
+
+  if (d.addedCols.length) {
+    L.push('## Columnas nuevas');
+    L.push('');
+    for (const { table, col } of d.addedCols) L.push(describeCol(table.name, col));
+    L.push('');
+  }
+
+  if (d.changedCols.length) {
+    L.push('## Columnas modificadas');
+    L.push('');
+    for (const ch of d.changedCols) L.push(`- \`${ch.table.name}.${ch.col.name}\`: ${ch.diffs.join('; ')}.`);
+    L.push('');
+  }
+
+  if (d.removedCols.length) {
+    L.push('## Columnas eliminadas');
+    L.push('');
+    for (const ch of d.removedCols) L.push(`- \`${ch.table.name}.${ch.col.name}\``);
+    L.push('');
+  }
+
+  const ddlTables = [];
+  const seen = new Set();
+  const pushTable = (t) => { if (t && !seen.has(t.uid)) { seen.add(t.uid); ddlTables.push(t); } };
+  d.changedTables.forEach((c) => pushTable(c.table));
+  d.changedCols.forEach((c) => pushTable(c.table));
+  d.addedCols.forEach((c) => pushTable(c.table));
+  if (ddlTables.length) {
+    L.push('## DDL resultante de las tablas modificadas');
+    L.push('');
+    L.push('```sql');
+    for (const t of ddlTables) { L.push(ddlFor(t)); L.push(''); }
+    L.push('```');
+    L.push('');
+  }
+
+  L.push('## Verificación');
+  L.push('');
+  L.push('- [ ] Migración idempotente: `CREATE TABLE IF NOT EXISTS` y `ALTER TABLE ... ADD COLUMN`.');
+  L.push('- [ ] `cargo test` dentro de `src-tauri` en verde.');
+  L.push('- [ ] `pnpm test` y `pnpm build` en verde.');
+  L.push('- [ ] `schemaDB.md`, el diagrama ER y `docs/user/architecture.md` reflejan el esquema nuevo.');
+  L.push('- [ ] Si algún cambio choca con las reglas del S-38, detente y pregunta antes de inventar columnas.');
+  L.push('');
+
+  return L.join('\n');
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) { /* fallback abajo */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Cajón de cambios
+   ───────────────────────────────────────────────────────────── */
+
+function openDrawer() {
+  renderDrawer();
+  $('#scrim').hidden = false;
+  $('#drawer').hidden = false;
+  $('#btnCopyPrompt').focus();
+}
+
+function closeDrawer() {
+  $('#scrim').hidden = true;
+  $('#drawer').hidden = true;
+}
+
+function renderDrawer() {
+  const d = updateChip();
+  const body = $('#drawerBody');
+  const items = [];
+
+  const push = (tag, title, why) => items.push(
+    `<li><span class="tag ${tag}">${tag === 'add' ? 'NUEVO' : tag === 'del' ? 'QUITA' : 'CAMBIA'}</span>` +
+    `<div><code>${esc(title)}</code>${why ? `<span class="why">${esc(why)}</span>` : ''}</div></li>`
+  );
+
+  for (const t of d.addedTables) push('add', t.name, `Tabla nueva en el dominio ${(DOMAINS[t.domain] || DOMAINS.roster).label}.`);
+  for (const t of d.removedTables) push('del', t.name, 'Se elimina la tabla completa.');
+  for (const ch of d.changedTables) push('mod', ch.table.name, ch.diffs.join('; '));
+  for (const { table, col } of d.addedCols) push('add', `${table.name}.${col.name}`, `Columna ${col.type}.`);
+  for (const ch of d.changedCols) push('mod', `${ch.table.name}.${ch.col.name}`, ch.diffs.join('; '));
+  for (const ch of d.removedCols) push('del', `${ch.table.name}.${ch.col.name}`, 'Se elimina la columna.');
+
+  const n = diffCount(d);
+  body.innerHTML =
+    `<p style="margin:0 0 4px;font-size:12px;color:var(--muted);line-height:1.55">` +
+    `${n === 0 ? 'No hay cambios todavía.' : `Revisa lo que cambió y copia el prompt para aplicarlo al código.`}</p>` +
+    (n ? `<ul class="change-list">${items.join('')}</ul>` : '') +
+    `<div class="sec-title">Prompt para el agente</div>` +
+    `<pre class="prompt-box" id="promptBox"></pre>`;
+
+  const box = $('#promptBox');
+  if (box) box.textContent = n ? buildPrompt(d) : 'Sin cambios.';
+  $('#btnCopyPrompt').disabled = n === 0;
+}
+
+async function copyPrompt() {
+  const d = computeDiff();
+  if (!diffCount(d)) { toast('Todavía no has hecho cambios'); return; }
+  const ok = await copyText(buildPrompt(d));
+  toast(ok ? 'Prompt copiado al portapapeles' : 'No se pudo copiar. Selecciona el texto del panel.');
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Escala y arranque
+   ───────────────────────────────────────────────────────────── */
+
+function setScale(s) {
+  scale = Math.max(0.35, Math.min(1.4, s));
+  const world = $('#world');
+  world.style.width = WORLD_W + 'px';
+  world.style.height = WORLD_H + 'px';
+  world.style.transform = `scale(${scale})`;
+  $('#sizer').style.width = WORLD_W * scale + 'px';
+  $('#sizer').style.height = WORLD_H * scale + 'px';
+  $('#zoomVal').textContent = Math.round(scale * 100) + '%';
+}
+
+function fitScale() {
+  const vp = $('#viewport');
+  const s = (vp.clientWidth - 36) / WORLD_W;
+  return Math.max(0.5, Math.min(1, s));
+}
+
+function renderBrand() {
+  const n = state.tables.length;
+  const cols = state.tables.reduce((acc, t) => acc + t.columns.length, 0);
+  const el = $('.brand p');
+  if (el) el.textContent = `Escuela. SQLite en modo WAL, ${n} tablas, ${cols} columnas, sin triggers.`;
+}
+
+function renderAll() {
+  renderBrand();
+  renderRail();
+  renderCards();
+  renderEdges();
+  renderInspector();
+  updateChip();
+  setScale(scale);
+  saveDraft();
+}
+
+function nextSlot() {
+  let bottom = 140;
+  for (const t of state.tables) bottom = Math.max(bottom, t.y + cardH(t));
+  return { x: 40 + (state.tables.length % 3) * 400, y: bottom + 50 };
+}
+
+function addTable() {
+  const slot = nextSlot();
+  const t = {
+    uid: uid('t'),
+    name: 'tabla_nueva',
+    domain: 'programa',
+    x: slot.x,
+    y: slot.y,
+    note: '',
+    columns: [
+      { uid: uid('c'), name: 'id', type: 'INTEGER', pk: true, auto: true, notNull: true, desc: 'Clave primaria.' }
+    ]
+  };
+  state.tables.push(t);
+  sel = { table: t.uid, column: 0 };
+  renderAll();
+  const inp = $('#t-name');
+  if (inp) { inp.focus(); inp.select(); }
+  toast('Tabla añadida');
+}
+
+function init() {
+  const world = $('#world');
+  world.style.width = WORLD_W + 'px';
+  world.style.height = WORLD_H + 'px';
+
+  renderBrand();
+  renderRail();
+  renderCards();
+  renderEdges();
+  renderInspector();
+  updateChip();
+  setScale(fitScale());
+  bindCanvas();
+
+  $('#panelBody').addEventListener('input', onPanelInput);
+  $('#panelBody').addEventListener('click', onPanelClick);
+  $('#panelBody').addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-pick]')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  $('#railList').addEventListener('click', (e) => {
+    const b = e.target.closest('.rail-item');
+    if (b) focusTable(b.dataset.uid);
+  });
+
+  $('#btnAddTable').addEventListener('click', addTable);
+  $('#zoomIn').addEventListener('click', () => setScale(scale + 0.1));
+  $('#zoomOut').addEventListener('click', () => setScale(scale - 0.1));
+  $('#zoomFit').addEventListener('click', () => { setScale(fitScale()); $('#viewport').scrollTo({ left: 0, top: 0, behavior: 'smooth' }); });
+
+  $('#btnChanges').addEventListener('click', openDrawer);
+  $('#btnCloseDrawer').addEventListener('click', closeDrawer);
+  $('#scrim').addEventListener('click', closeDrawer);
+  $('#btnPrompt').addEventListener('click', copyPrompt);
+  $('#btnCopyPrompt').addEventListener('click', copyPrompt);
+
+  $('#btnReset').addEventListener('click', (e) => {
+    if (!confirmStep(e.currentTarget, 'Reiniciar')) return;
+    state = clone(BASELINE);
+    sel = { table: null, column: null };
+    renderAll();
+    setScale(fitScale());
+    toast('Esquema original restaurado');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('#drawer').hidden) closeDrawer();
+  });
+
+  if (JSON.stringify(state) !== JSON.stringify(BASELINE)) {
+    toast('Borrador local restaurado');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
